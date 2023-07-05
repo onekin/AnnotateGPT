@@ -1,0 +1,133 @@
+@import "./variables";
+
+.tagHeaderName {
+  color:white;
+  font-size: 14px;
+  text-align: center;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  margin-bottom: 1px;
+}
+
+.tagGroup{
+  border: 1px solid grey;
+  width: 95%;
+  margin: 5px auto;
+  border-radius: 5px;
+  padding: 0;
+}
+
+.groupName{
+  background: $subContainerHeaderBackgroundColor;
+  color:white;
+  font-size: 14px;
+  text-align: center;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  margin-bottom: 1px;
+  cursor: pointer;
+}
+
+.groupName:after{
+  background-image: url($chromeExtensionMainURL + 'images/arrowUp.svg');
+  background-size: 20px 20px;
+  display: inline-block;
+  width: 0;
+  height: 15px;
+  content:"";
+  padding-right: 20px;
+  float:right;
+  transition: transform 0.5s;
+}
+
+.addCustomCriteria {
+  float:left;
+  height: 15px;
+  width: 0;
+  padding-right: 15px;
+  background-size: 15px 15px;
+  background-image: url($chromeExtensionMainURL + 'images/add.png');
+  margin-top: 2px;
+  margin-left: 1px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 1s;
+}
+
+.addCustomCriteria:hover {
+  background-color: rgba(200,200,200,0.7);
+}
+
+
+.addCustomCriteriaWhite {
+  float:left;
+  height: 15px;
+  width: 0;
+  padding-right: 15px;
+  background-size: 15px 15px;
+  background-image: url($chromeExtensionMainURL + 'images/addWhite.png');
+  margin-top: 2px;
+  margin-left: 1px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 1s;
+}
+
+
+.addCustomCriteriaWhite:hover {
+  background-color: rgba(200,200,200,0.6);
+}
+
+
+.tagContainer[aria-hidden="true"]{
+  display: none;
+}
+
+/* Collapsable tag group */
+
+.tagGroup[aria-expanded="false"] {
+  .tagButtonContainer {
+    height: 0;
+    overflow: hidden;
+  }
+
+  .groupName:after {
+    transform: rotate(180deg);
+    padding-top: 3px;
+  }
+}
+
+.tagButtonContainer {
+  transition: height 0.5s;
+}
+
+.tagButton {
+  cursor: pointer;
+  margin-bottom: 5px;
+  display: block;
+  border: 1px solid black;
+  background-color: rgba(200,200,200,0.8);
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 5px;
+  transition: background-color 0.5s ease;
+  color: black;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: calc( #{$sideBarWidth} - 0.6rem - 10px);
+  min-width: calc( #{$sideBarWidth} - 0.6rem - 10px);
+  text-overflow: ellipsis;
+  font-size: 15px;
+}
+
+.tagButton[data-chosen="true"] {
+  border: 3px solid black;
+}
+
+.tagButton[role="annotation"] {
+  padding: 5px;
+}
+
+.buttonIcon {
+  height: 1.5rem;
+}

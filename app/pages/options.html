@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" type="text/css" href="../styles/options.css">
+
+  <title>Review&Go configuration</title>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <header></header>
+
+  <!-- Navigation bar -->
+
+  <!-- Container -->
+  <div id="main-container" class="container">
+
+    <div class="jumbotron">
+      <img alt="Review and go logo" title="Review and go logo" class="logo" src="../images/icon-38.png">
+      <h2 class="title">Review&Go configuration</h2>
+      <div class="card">
+        <div class="card-header card-header bg-dark text-white">User manual</div>
+        <div class="card-body">
+          <div class="form-group">
+            Visit whenever you want the <a href="https://github.com/haritzmedina/reviewandgo/wiki" target="_blank">user manual</a> for further information or checkout the <a href="https://www.youtube.com/watch?v=iPC6YEr3qlo">video</a>.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header card-header bg-dark text-white">Annotation storage</div>
+        <div class="card-body">
+          <div class="form-check">
+            <label for="storageDropdown">Select your annotations storage</label>
+            <select class="form-control" id="storageDropdown">
+              <option value="localStorage" selected="selected">Local storage - Beta</option>
+              <option value="hypothesis">Hypothes.is</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="localStorageConfigurationCard" class="card storageConfiguration">
+        <div class="card-header bg-dark text-white">Local storage</div>
+        <div class="card-body">
+          <div class="form-check">
+            <button class="btn btn-secondary" id="restoreDatabaseButton">Restore database</button>
+            <button class="btn btn-secondary" id="backupDatabaseButton">Backup database</button>
+            <button class="btn btn-secondary" id="deleteDatabaseButton">Delete database</button>
+          </div>
+        </div>
+      </div>
+      <!-- Hypothesis login -->
+      <div id="hypothesisConfigurationCard" class="card storageConfiguration">
+        <div class="card-header bg-dark text-white">Hypothesis</div>
+        <div class="card-body">
+          <div id="hypothesisLoginContainer" class="configurationSectionContainer">
+            <button class="btn btn-secondary" id="hypothesisLogin">Log in</button>
+          </div>
+          <div id="hypothesisLoggedInContainer" class="configurationSectionContainer">
+            Logged in as <span id="hypothesisLoggedInUsername" class="clickableInfoSpan">Unknown user</span>
+            <button class="btn btn-secondary" id="hypothesisLogout">Log out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../scripts/options.js"></script>
+</body>
+</html>

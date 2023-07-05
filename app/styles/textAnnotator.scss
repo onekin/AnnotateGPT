@@ -1,0 +1,31 @@
+.reply_user {
+  font-size: 70%;
+  font-style: oblique;
+}
+
+.reply_text {
+  font-size: 70%;
+}
+.highlightedAnnotation .highlightedAnnotation{ // TODO
+  background-color: transparent !important;
+}
+
+// POLE SELECTION IN COMMENT BOX
+.criterionName{
+  margin-bottom:5%;
+}
+.poleRadio{
+  display:none;
+}
+.poleRadio:checked + .poleImage{
+  opacity:1;
+  border-radius:15px 15px 15px 15px;
+  border: solid 2px #a4caf4;
+}
+.poleRadio + .poleImage{
+  opacity:0.4;
+  vertical-align:middle;
+}
+.poleRadio + .poleImage:hover{
+  opacity:1;
+}

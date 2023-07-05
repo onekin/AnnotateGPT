@@ -1,0 +1,34 @@
+@import '../../node_modules/bootstrap/scss/bootstrap';
+
+div[aria-hidden="true"] {
+  display: none;
+}
+
+.requiredFormInput:after {
+  color: red;
+  content: " *";
+}
+
+input:invalid {
+  border-color: red;
+  border-width: 2px;
+}
+
+#toolset[aria-hidden="true"]{
+  display:none;
+}
+
+.toolButton {
+  width: 32px;
+  cursor: pointer;
+}
+
+.toolButton:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.clickableInfoSpan {
+  font-weight: bold;
+  cursor: pointer;
+}

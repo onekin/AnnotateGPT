@@ -1,0 +1,219 @@
+<style>
+  #recentActivityTitle{
+    width: 100%;
+    text-align: center;
+    margin-top: 3%;
+    margin-bottom: 5%;
+    color: #555;
+    font-size: xx-large;
+  }
+  #recentActivity{
+    width: 80%;
+    margin-left: 10%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 3%;
+  }
+  .reviewAndGoActivity{
+    border: 1px solid #ccc;
+    border-radius: 5%;
+    min-height: 150px;
+  }
+  .reviewAndGoActivity:nth-child(1){
+    padding: 0%;
+  }
+  .reviewAndGoActivity:nth-child(n+2){
+    padding: 10%;
+    background-image: url('/images/pdfIcon.png');
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    background-size: 32px;
+  }
+  .reviewAndGoActivity:nth-child(n+2):hover, #openDocumentButton:not(.dragoverActive):hover{
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+    transform: translate3d(0, -2px, 0px);
+    cursor: pointer;
+  }
+  #openDocumentButton{
+    border: 1px dashed #ccc;
+  }
+  #openDocumentButton input{
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+  }
+  #openDocumentButton img{
+    width: 80%;
+    padding: 10%;
+    opacity: 0.3;
+    filter: brightness(0.7) grayscale(1);
+  }
+  #openDocumentButton.dragoverActive{
+    border-color: rgba(0, 200, 0, 0.9);
+  }
+  #openDocumentButton.dragoverActive img{
+    opacity: 0.9;
+    filter: none;
+  }
+  .activityDocument{
+    font-weight: bold;
+    font-size: 150%;
+    word-break: break-word;
+    -webkit-line-clamp: 4;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+  }
+  .activityModel{
+    margin-top: 2%;
+    color:#444;
+  }
+  .activityLastAnnotation{
+    margin-top: 2%;
+    color:#444;
+    font-style: italic;
+  }
+  #filesystemOverlay{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #ddd;
+    z-index: 100;
+    opacity: 0.7;
+  }
+  #filesystemContainer{
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    position: fixed;
+    border: solid 2px #ccc;
+    border-radius: 2%;
+    background-color: #fff;
+    z-index: 101;
+    /*padding:2%;*/
+    padding-top:3%;
+    padding-left:2%;
+    padding-right:1%;
+    box-sizing: border-box;
+    /*overflow-y: auto;*/
+  }
+  #rootUl, #rootUl ul{
+    list-style-type: none;
+  }
+  .folderClosed::after{
+    content: "\25B6";
+    color: #111;
+    display: inline-block;
+    margin-left: 6px;
+  }
+  .folderOpen::after{
+    content: "\25B6";
+    color: #111;
+    display: inline-block;
+    margin-left: 6px;
+    transform: rotate(90deg);
+  }
+  .folderClosed + ul{
+    display:none;
+  }
+  .folderOpen + ul{
+    display:block;
+  }
+  #rootUl li{
+    min-height: 20px;
+  }
+  #rootUl ul{
+    margin-top: 8px;
+  }
+  .folderClosed::before, .folderOpen::before{
+    background-image: url(../../../images/folderIcon.png);
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    content: '';
+    margin-right: 9px;
+  }
+  .regularFile::before{
+    background-image: url(../../../images/fileIcon.png);
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    content: '';
+    margin-right: 9px;  }
+  .pdfFile::before{
+    background-image: url(../../../images/pdfIcon.png);
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    content: '';
+    margin-right: 9px;
+  }
+  .regularFile{
+    color:#666;
+  }
+  .regularFile:hover{
+    cursor:default;
+  }
+  .pdfFile:hover, .folderClosed:hover, .folderOpen:hover{
+    cursor:pointer;
+  }
+  #filesystemCloseButton {
+    position:fixed;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin: 0;
+    z-index: 102;
+    top: 11%;
+    right: 11%;
+    transition: all 0.5s ease;
+  }
+  #filesystemCloseButton:hover{
+    cursor:pointer;
+  }
+  #filesystemCloseButton span {
+    margin: 0 auto;
+    width: 80%;
+    height: 2px;
+    margin: 0 auto;
+    display: block;
+    background: #555;
+    transition: all 0.8s cubic-bezier(0.810, -0.330, 0.345, 1.375);
+  }
+  #filesystemCloseButton span:first-of-type {
+    transform: rotate(45deg) translate(7px, 7px);
+  }
+  #filesystemCloseButton span:nth-of-type(2) {
+    opacity: 0;
+  }
+  #filesystemCloseButton span:last-of-type {
+    transform: rotate(-45deg) translate(-4px, 4px);
+  }
+  #filesystemDiv{
+    overflow-y: auto;
+    height: 100%;
+  }
+</style>
+
+<script src="../../../scripts/recentActivity.js"></script>
+<h1 id="recentActivityTitle">
+  Recent activity
+</h1>
+<div id="recentActivity">
+  <div class="reviewAndGoActivity" id="openDocumentButton">
+    <img src="/images/plusIcon.png" />
+  </div>
+</div>

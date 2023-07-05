@@ -1,0 +1,25 @@
+{
+  "criteria": [
+    {
+      "name": "Typos",
+      "group": "Presentation",
+      "description": "Typos in the dissemination",
+      "levels": [],
+      "custom": true
+    }
+  ],
+  "defaultLevels": [
+    {
+      "name": "Strength",
+      "description": ""
+    },
+    {
+      "name": "Minor weakness",
+      "description": ""
+    },
+    {
+      "name": "Major weakness",
+      "description": ""
+    }
+  ]
+}
