@@ -13,8 +13,9 @@ chrome.tabs.onCreated.addListener(() => {
 
 })
 
-const HypothesisManager = require('./background/HypothesisManager')
-const StorageManager = require('./background/StorageManager')
+// const HypothesisManager = require('./background/HypothesisManager')
+// const StorageManager = require('./background/StorageManager')
+const LLMManager = require('./background/LLM_Manager')
 const Popup = require('./popup/Popup')
 
 const _ = require('lodash')
@@ -23,19 +24,23 @@ const RecentActivity = require('./background/RecentActivity')
 
 class Background {
   constructor () {
-    this.hypothesisManager = null
+    // this.hypothesisManager = null
     this.tabs = {}
     this.recentActivityTabs = {}
   }
 
   init () {
     // Initialize hypothesis manager
-    this.hypothesisManager = new HypothesisManager()
-    this.hypothesisManager.init()
+    // this.hypothesisManager = new HypothesisManager()
+    // this.hypothesisManager.init()
 
     // Initialize storage manager
-    this.storageManager = new StorageManager()
-    this.storageManager.init()
+    // this.storageManager = new StorageManager()
+    // this.storageManager.init()
+
+    // Initialize LLM manager
+    this.llmManager = new LLMManager()
+    this.llmManager.init()
 
     this.recentActivity = new RecentActivity()
 

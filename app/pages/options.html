@@ -7,7 +7,7 @@
 
   <link rel="stylesheet" type="text/css" href="../styles/options.css">
 
-  <title>Review&Go configuration</title>
+  <title>CoReviewer configuration</title>
 </head>
 <body>
 <div class="container">
@@ -31,14 +31,25 @@
         </div>
       </div>
       <div class="card">
-        <div class="card-header card-header bg-dark text-white">Annotation storage</div>
+        <div class="card-header card-header bg-dark text-white">Large Language Model</div>
         <div class="card-body">
           <div class="form-check">
-            <label for="storageDropdown">Select your annotations storage</label>
-            <select class="form-control" id="storageDropdown">
-              <option value="localStorage" selected="selected">Local storage - Beta</option>
-              <option value="hypothesis">Hypothes.is</option>
+            <label for="LLMDropdown">Select your Large Language Model</label>
+            <select class="form-control" id="LLMDropdown">
+              <option value="anthropic" selected="selected">Anthropic</option>
+              <option value="openAI">OpenAI</option>
             </select>
+          </div>
+          <br>
+          <div id="anthropic-ApiKeyContainer" class="APIKey-Configuration">
+            <label>Paste here your Anthropic API key:</label>
+            <input type="text" id="anthropic-APIKey"/>
+            <button id="anthropic-APIKeyValidationButton" class="APIKeyValidationButton">Validate and save</button>
+          </div>
+          <div id="openAI-ApiKeyContainer" class="APIKey-Configuration">
+            <label>Paste here your OpenAI API key:</label>
+            <input type="text" id="openAI-APIKey" />
+            <button id="openAI-APIKeyValidationButton" class="APIKeyValidationButton">Validate and save</button>
           </div>
         </div>
       </div>
@@ -52,18 +63,6 @@
           </div>
         </div>
       </div>
-      <!-- Hypothesis login -->
-      <div id="hypothesisConfigurationCard" class="card storageConfiguration">
-        <div class="card-header bg-dark text-white">Hypothesis</div>
-        <div class="card-body">
-          <div id="hypothesisLoginContainer" class="configurationSectionContainer">
-            <button class="btn btn-secondary" id="hypothesisLogin">Log in</button>
-          </div>
-          <div id="hypothesisLoggedInContainer" class="configurationSectionContainer">
-            Logged in as <span id="hypothesisLoggedInUsername" class="clickableInfoSpan">Unknown user</span>
-            <button class="btn btn-secondary" id="hypothesisLogout">Log out</button>
-          </div>
-        </div>
       </div>
     </div>
   </div>
