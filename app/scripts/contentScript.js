@@ -1,5 +1,5 @@
-const ContentScriptManager = require('./contentScript/ContentScriptManager')
-const AnnotationBasedInitializer = require('./contentScript/AnnotationBasedInitializer')
+import ContentScriptManager from './contentScript/ContentScriptManager'
+import AnnotationBasedInitializer from './contentScript/AnnotationBasedInitializer'
 
 const _ = require('lodash')
 

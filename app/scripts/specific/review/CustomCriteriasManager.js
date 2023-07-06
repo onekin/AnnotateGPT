@@ -1,3 +1,4 @@
+import AnthropicManager from '../../llm/anthropic/AnthropicManager'
 const Alerts = require('../../utils/Alerts')
 const LanguageUtils = require('../../utils/LanguageUtils')
 const Events = require('../../contentScript/Events')
@@ -381,7 +382,7 @@ class CustomCriteriasManager {
         items['delete'] = { name: 'Delete criterion' }
       }
       // Modify menu element
-      items['assistChatGPT'] = { name: 'ChatGPT assistance' }
+      items['llmAssistance'] = { name: 'LLM assistance' }
       $.contextMenu({
         selector: '[data-mark="' + tagGroup.config.name + '"]',
         build: () => {
@@ -393,8 +394,28 @@ class CustomCriteriasManager {
                 this.deleteCriteriaHandler(currentTagGroup)
               } else if (key === 'modify') {
                 this.modifyCriteriaHandler(currentTagGroup)
-              } else if (key === 'assistChatGPT') {
+              } else if (key === 'llmAssistance') {
                 // this.modifyCriteriaHandler(currentTagGroup)
+                chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, ({ llm }) => {
+                  if (llm) {
+                    let selectedLLM = llm
+                    chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getAPIKEY', data: selectedLLM }, ({ apiKey }) => {
+                      console.log(selectedLLM + ' ' + apiKey)
+                      if (selectedLLM === 'anthropic') {
+                        AnthropicManager.askCriteria(tagGroup, tagGroup, apiKey, (pepino) => {
+                          console.log('THIS IS THE RESULT:' + pepino)
+                        })
+                      } else if (selectedLLM === 'openAI') {
+                        console.log('TODO')
+                      }
+                    })
+                  } else {
+                    let callback = () => {
+                      window.open(chrome.extension.getURL('pages/options.html'))
+                    }
+                    Alerts.infoAlert({ text: 'Please, configure your LLM.', title: 'Please select a LLM and provide your API key', callback: callback() })
+                  }
+                })
               }
             },
             items: items
@@ -575,4 +596,4 @@ class CustomCriteriasManager {
   }
 }
 
-module.exports = CustomCriteriasManager
+export default CustomCriteriasManager

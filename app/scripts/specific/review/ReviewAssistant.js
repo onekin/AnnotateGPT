@@ -3,11 +3,11 @@
 const Alerts = require('../../utils/Alerts')
 const Config = require('../../Config')
 //const {Review, Mark, MajorConcern, MinorConcern, Strength, Annotation} = require('../../exporter/reviewModel.js')
-const {Review,Annotation,AnnotationGroup} = require('../../exporter/reviewModel.js')
+import {Review,Annotation,AnnotationGroup} from '../../exporter/reviewModel.js'
 
-let swal = require('sweetalert2')
+import Swal from 'sweetalert2/dist/sweetalert2.js'
 
-const ReviewAssistant = {
+export const ReviewAssistant = {
   parseAnnotations (annotations){
     const criterionTag = Config.review.namespace + ':' + Config.review.tags.grouped.relation + ':'
     const levelTag = Config.review.namespace + ':' + Config.review.tags.grouped.subgroup + ':'
@@ -48,7 +48,7 @@ const ReviewAssistant = {
     let strengthNum = review.strengths.length;
     let concernNum = review.majorConcerns.length + review.minorConcerns.length;
     if (strengthNum === 0 && concernNum > 0){
-      swal({
+      Swal.fire({
         type: 'info',
         text: 'You should consider including strengths too.',
         toast: true,
@@ -58,7 +58,7 @@ const ReviewAssistant = {
       })
     }
     else if (concernNum === 0 && strengthNum > 0) {
-      swal({
+      Swal.fire({
         type: 'info',
         text: 'You should consider including weaknesses too.',
         toast: true,
@@ -73,4 +73,3 @@ const ReviewAssistant = {
   }
 }
 
-module.exports = ReviewAssistant

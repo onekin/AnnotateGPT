@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-class Review {
+export class Review {
   constructor(){
     this._annotations = []
   }
@@ -139,7 +139,7 @@ class Review {
   }
 }
 
-class Annotation {
+export class Annotation {
   constructor(id,criterion,level,group,highlightText,page,comment,suggestedLiterature){
     this._criterion = criterion
     this._level = level
@@ -176,36 +176,35 @@ class Annotation {
   }
 }
 
-class AnnotationGroup {
-  constructor(annotations,review){
+export class AnnotationGroup {
+  constructor (annotations, review) {
     this._annotations = annotations
     this._review = review
   }
-  get annotations(){
+
+  get annotations () {
     return this._annotations
   }
-  toString(){
+
+  toString () {
     let t = this._annotations[0].criterion + ':'
-    for(let i in this._annotations){
-      if(this._annotations[i].highlightText===null) continue
+    for (let i in this._annotations) {
+      if (this._annotations[i].highlightText === null) continue
       t += '\r\n\t* '
-      if(this._annotations[i].page!==null) t += '(Page '+this._annotations[i].page+'): '
-      t += '"'+this._annotations[i].highlightText+'". ';
-      if(this._annotations[i].comment!=null&&this._annotations[i].comment!="") t += '\r\n\t'+this._annotations[i].comment;
+      if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
+      t += '"' + this._annotations[i].highlightText + '". ';
+      if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t' + this._annotations[i].comment;
     }
-    let literature = [].concat.apply([],this._annotations.map((e) => {return e.suggestedLiterature}))
+    let literature = [].concat.apply([], this._annotations.map((e) => {return e.suggestedLiterature}))
     let reviewReferences = this._review.references
-    if(literature.length>0){
+    if (literature.length > 0) {
       t += '\n\tI would encourage the authors to look at the following papers: ';
-      for(let j in literature){
-        t += '['+(reviewReferences.indexOf(literature[j])+1)+']'
-        if(j===literature.length-2&&literature.length>1) t += ' and '
-        else if(literature.length>1&&j<literature.length-1) t += ', '
+      for (let j in literature) {
+        t += '[' + (reviewReferences.indexOf(literature[j]) + 1) + ']'
+        if (j === literature.length - 2 && literature.length > 1) t += ' and '
+        else if (literature.length > 1 && j < literature.length - 1) t += ', '
       }
     }
     return t
   }
 }
-
-module.exports = {Review,Annotation,AnnotationGroup}
-

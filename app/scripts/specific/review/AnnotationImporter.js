@@ -26,4 +26,4 @@ class AnnotationImporter {
   }
 }
 
-module.exports = AnnotationImporter
+export default AnnotationImporter

@@ -39,4 +39,4 @@ class AnnotationExporter {
   }
 }
 
-module.exports = AnnotationExporter
+export default AnnotationExporter

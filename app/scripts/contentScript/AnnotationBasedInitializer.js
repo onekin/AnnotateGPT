@@ -41,4 +41,4 @@ class AnnotationBasedInitializer {
   }
 }
 
-module.exports = AnnotationBasedInitializer
+export default AnnotationBasedInitializer

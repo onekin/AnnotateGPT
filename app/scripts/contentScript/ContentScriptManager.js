@@ -1,3 +1,5 @@
+import ReviewContentScript from '../specific/review/ReviewContentScript'
+import AnnotationBasedInitializer from './AnnotationBasedInitializer'
 const _ = require('lodash')
 const ContentTypeManager = require('./ContentTypeManager')
 const Sidebar = require('./Sidebar')
@@ -6,8 +8,6 @@ const Events = require('./Events')
 const ModeManager = require('./ModeManager')
 const RolesManager = require('./RolesManager')
 const GroupSelector = require('./GroupSelector')
-const AnnotationBasedInitializer = require('./AnnotationBasedInitializer')
-const HypothesisClientManager = require('../storage/hypothesis/HypothesisClientManager')
 const LocalStorageManager = require('../storage/local/LocalStorageManager')
 const Config = require('../Config')
 const Alerts = require('../utils/Alerts')
@@ -159,7 +159,6 @@ class ContentScriptManager {
     if (window.abwa.specificContentManager) {
       window.abwa.specificContentManager.destroy()
     }
-    const ReviewContentScript = require('../specific/review/ReviewContentScript')
     window.abwa.specificContentManager = new ReviewContentScript(Config.review)
     window.abwa.specificContentManager.init(() => {
       if (_.isFunction(callback)) {
@@ -188,47 +187,36 @@ class ContentScriptManager {
   }
 
   loadStorage (callback) {
-    chrome.runtime.sendMessage({scope: 'storage', cmd: 'getSelectedStorage'}, ({storage}) => {
-      if (storage === 'hypothesis') {
-        // Hypothesis
-        window.abwa.storageManager = new HypothesisClientManager()
-      } else if (storage === 'localStorage') {
-        // Local storage
-        window.abwa.storageManager = new LocalStorageManager()
+    window.abwa.storageManager = new LocalStorageManager()
+    window.abwa.storageManager.init((err) => {
+      if (err) {
+        Alerts.errorAlert({text: 'Unable to initialize storage manager. Error: ' + err.message + '. ' +
+            'Please reload webpage and try again.'})
       } else {
-        // By default it is selected Hypothes.is
-        window.abwa.storageManager = new LocalStorageManager()
-      }
-      window.abwa.storageManager.init((err) => {
-        if (err) {
-          Alerts.errorAlert({text: 'Unable to initialize storage manager. Error: ' + err.message + '. ' +
-              'Please reload webpage and try again.'})
-        } else {
-          window.abwa.storageManager.isLoggedIn((err, isLoggedIn) => {
-            if (err) {
+        window.abwa.storageManager.isLoggedIn((err, isLoggedIn) => {
+          if (err) {
+            if (_.isFunction(callback)) {
+              callback(err)
+            }
+          } else {
+            if (isLoggedIn) {
               if (_.isFunction(callback)) {
-                callback(err)
+                callback()
               }
             } else {
-              if (isLoggedIn) {
-                if (_.isFunction(callback)) {
-                  callback()
-                }
-              } else {
-                window.abwa.storageManager.logIn((err) => {
-                  if (err) {
-                    callback(err)
-                  } else {
-                    if (_.isFunction(callback)) {
-                      callback()
-                    }
+              window.abwa.storageManager.logIn((err) => {
+                if (err) {
+                  callback(err)
+                } else {
+                  if (_.isFunction(callback)) {
+                    callback()
                   }
-                })
-              }
+                }
+              })
             }
-          })
-        }
-      })
+          }
+        })
+      }
     })
   }
 }
@@ -239,4 +227,4 @@ ContentScriptManager.status = {
   notInitialized: 'notInitialized'
 }
 
-module.exports = ContentScriptManager
+export default ContentScriptManager

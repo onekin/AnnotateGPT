@@ -1,14 +1,13 @@
 /* eslint-disable */
-
+import AnnotationExporter from './AnnotationExporter'
+import AnnotationImporter from './AnnotationImporter'
+const ReviewSchema = require('../../model/schema/Review')
+const ImportSchema = require('./ImportSchema')
 const axios = require('axios')
 const _ = require('lodash')
 const Alerts = require('../../utils/Alerts')
 const LanguageUtils = require('../../utils/LanguageUtils')
 const Screenshots = require('./Screenshots')
-const AnnotationExporter = require('./AnnotationExporter')
-const AnnotationImporter = require('./AnnotationImporter')
-const ReviewSchema = require('../../model/schema/Review')
-const ImportSchema = require('./ImportSchema')
 const $ = require('jquery')
 require('jquery-contextmenu/dist/jquery.contextMenu')
 
@@ -23,7 +22,7 @@ const jsYaml = require('js-yaml')
 const FileUtils = require('../../utils/FileUtils')
 
 
-let swal = require('sweetalert2')
+import swal from 'sweetalert2/dist/sweetalert2.js'
 
 class ReviewGenerator {
   init (callback) {
@@ -669,4 +668,4 @@ class ReviewGenerator {
   }
 }
 
-module.exports = ReviewGenerator
+export default ReviewGenerator

@@ -1,6 +1,6 @@
+import CustomCriteriasManager from './CustomCriteriasManager'
+import ReviewGenerator from './ReviewGenerator'
 const _ = require('lodash')
-const ReviewGenerator = require('./ReviewGenerator')
-const CustomCriteriasManager = require('./CustomCriteriasManager')
 
 class ReviewContentScript {
   constructor (config) {
@@ -28,4 +28,4 @@ class ReviewContentScript {
   }
 }
 
-module.exports = ReviewContentScript
+export default ReviewContentScript
