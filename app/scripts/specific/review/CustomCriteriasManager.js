@@ -374,6 +374,8 @@ class CustomCriteriasManager {
     let arrayOfTagGroups = _.values(window.abwa.tagManager.currentTags)
     for (let i = 0; i < arrayOfTagGroups.length; i++) {
       let tagGroup = arrayOfTagGroups[i]
+      let criterion = tagGroup.config.name
+      let description = tagGroup.config.options.description
       let items = {}
       // Modify menu element
       items['modify'] = { name: 'Modify criterion' }
@@ -402,8 +404,9 @@ class CustomCriteriasManager {
                     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getAPIKEY', data: selectedLLM }, ({ apiKey }) => {
                       console.log(selectedLLM + ' ' + apiKey)
                       if (selectedLLM === 'anthropic') {
-                        AnthropicManager.askCriteria(tagGroup, tagGroup, apiKey, (pepino) => {
-                          console.log('THIS IS THE RESULT:' + pepino)
+                        AnthropicManager.askCriteria(criterion, description, apiKey, (answer) => {
+                          console.log('THIS IS THE RESULT:' + answer)
+                          // this.drawAnnotations(answer)
                         })
                       } else if (selectedLLM === 'openAI') {
                         console.log('TODO')
@@ -593,6 +596,20 @@ class CustomCriteriasManager {
    */
   alreadyExistsThisCriteriaName (name) {
     return !!_.find(window.abwa.tagManager.currentTags, (tag) => { return tag.config.name === name })
+  }
+
+  drawAnnotations (json) {
+    console.log('DRAWING')
+    console.log('NAME')
+    console.log(json.name)
+    console.log('COMMENT')
+    console.log(json.comment)
+    console.log('PARAGRAPHS')
+    console.log(json.paragraphs[0])
+    console.log(json.paragraphs[1])
+    console.log(json.paragraphs[2])
+    console.log('SENTIMENT')
+    console.log(json.sentiment)
   }
 }
 

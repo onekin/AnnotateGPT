@@ -11,7 +11,7 @@ export class Document {
       configurable: true,
       writable: true,
       value: void 0
-    });
+    })
     this.pageContent = fields.pageContent
       ? fields.pageContent.toString()
       : this.pageContent

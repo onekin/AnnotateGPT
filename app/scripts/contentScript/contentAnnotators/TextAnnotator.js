@@ -316,7 +316,6 @@ class TextAnnotator extends ContentAnnotator {
    */
   initAnnotationsObserver (callback) {
     this.observerInterval = setInterval(() => {
-      console.debug('Observer interval')
       // If a swal is displayed, do not execute highlighting observer
       if (document.querySelector('.swal2-container') === null) { // TODO Look for a better solution...
         if (this.allAnnotations) {
@@ -334,7 +333,6 @@ class TextAnnotator extends ContentAnnotator {
     }, ANNOTATION_OBSERVER_INTERVAL_IN_SECONDS * 1000)
     // TODO Improve the way to highlight to avoid this interval (when search in PDFs it is highlighted empty element instead of element)
     this.cleanInterval = setInterval(() => {
-      console.debug('Clean interval')
       let highlightedElements = document.querySelectorAll('.highlightedAnnotation')
       highlightedElements.forEach((element) => {
         if (element.innerText === '') {
