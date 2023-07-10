@@ -401,7 +401,7 @@ class CustomCriteriasManager {
               } else if (key === 'llmAssistance') {
                 // this.modifyCriteriaHandler(currentTagGroup)
                 chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
-                  if (llm) {
+                  if (llm && llm !== '') {
                     let selectedLLM = llm
                     let documents = await LLMTextUtils.loadDocument()
                     let model = window.abwa.tagManager.model

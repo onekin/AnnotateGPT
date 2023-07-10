@@ -14,7 +14,7 @@ class LLMManager {
             if (err) {
               sendResponse({err: err})
             } else {
-              if (llm.data) {
+              if (llm && llm.data) {
                 let parsedLLM = JSON.parse(llm.data)
                 sendResponse({llm: parsedLLM || ''})
               } else {
