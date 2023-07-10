@@ -57,14 +57,16 @@ class TextAnnotator extends ContentAnnotator {
   initEvents (callback) {
     this.initSelectionEvents(() => {
       this.initAnnotateEvent(() => {
-        this.initReloadAnnotationsEvent(() => {
-          this.initDeleteAllAnnotationsEvent(() => {
-            this.initDocumentURLChangeEvent(() => {
-              this.initTagsUpdatedEvent(() => {
-                // Reload annotations periodically
-                if (_.isFunction(callback)) {
-                  callback()
-                }
+        this.initAnnotateByLLMEvent(() => {
+          this.initReloadAnnotationsEvent(() => {
+            this.initDeleteAllAnnotationsEvent(() => {
+              this.initDocumentURLChangeEvent(() => {
+                this.initTagsUpdatedEvent(() => {
+                  // Reload annotations periodically
+                  if (_.isFunction(callback)) {
+                    callback()
+                  }
+                })
               })
             })
           })
@@ -140,6 +142,14 @@ class TextAnnotator extends ContentAnnotator {
     }
   }
 
+  initAnnotateByLLMEvent (callback) {
+    this.events.annotateByLLMEvent = {element: document, event: Events.annotateByLLM, handler: this.createAnnotationByLLMEventHandler()}
+    this.events.annotateByLLMEvent.element.addEventListener(this.events.annotateByLLMEvent.event, this.events.annotateByLLMEvent.handler, false)
+    if (_.isFunction(callback)) {
+      callback()
+    }
+  }
+
   createAnnotationEventHandler () {
     return (event) => {
       // If selection is empty, return null
@@ -162,6 +172,30 @@ class TextAnnotator extends ContentAnnotator {
       let selectors = TextAnnotator.getSelectors(range)
       // Construct the annotation to send to storage
       let annotation = TextAnnotator.constructAnnotation(selectors, event.detail.tags)
+      window.abwa.storageManager.client.createNewAnnotation(annotation, (err, annotation) => {
+        if (err) {
+          Alerts.errorAlert({text: 'Unexpected error, unable to create annotation'})
+        } else {
+          // Add to annotations
+          this.allAnnotations.push(annotation)
+          LanguageUtils.dispatchCustomEvent(Events.updatedAllAnnotations, {annotations: this.allAnnotations})
+          // Send event annotation is created
+          LanguageUtils.dispatchCustomEvent(Events.annotationCreated, {annotation: annotation})
+          console.debug('Created annotation with ID: ' + annotation.id)
+          this.highlightAnnotation(annotation, () => {
+            window.getSelection().removeAllRanges()
+          })
+        }
+      })
+    }
+  }
+
+  createAnnotationByLLMEventHandler () {
+    return (event) => {
+      let selectors = event.detail.selectors
+      let tags = event.detail.tags
+      // Construct the annotation to send to storage
+      let annotation = TextAnnotator.constructAnnotation(selectors, tags)
       window.abwa.storageManager.client.createNewAnnotation(annotation, (err, annotation) => {
         if (err) {
           Alerts.errorAlert({text: 'Unexpected error, unable to create annotation'})

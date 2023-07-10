@@ -1,4 +1,6 @@
 import AnthropicManager from '../../llm/anthropic/AnthropicManager'
+import LLMTextUtils from '../../utils/LLMTextUtils'
+import OpenAIManager from '../../llm/openAI/OpenAIManager'
 const Alerts = require('../../utils/Alerts')
 const LanguageUtils = require('../../utils/LanguageUtils')
 const Events = require('../../contentScript/Events')
@@ -398,25 +400,43 @@ class CustomCriteriasManager {
                 this.modifyCriteriaHandler(currentTagGroup)
               } else if (key === 'llmAssistance') {
                 // this.modifyCriteriaHandler(currentTagGroup)
-                chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, ({ llm }) => {
+                chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
                   if (llm) {
                     let selectedLLM = llm
+                    let documents = await LLMTextUtils.loadDocument()
+                    let model = window.abwa.tagManager.model
+                    let tags = [
+                      model.namespace + ':' + model.config.grouped.relation + ':' + criterion
+                    ]
                     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getAPIKEY', data: selectedLLM }, ({ apiKey }) => {
                       console.log(selectedLLM + ' ' + apiKey)
+                      let callback = (json) => {
+                        for (let i = 0; i < json.paragraphs.length; i += 1) {
+                          let paragraph = json.paragraphs[i]
+                          let selectors = this.getSelectorsFromLLM(paragraph, documents)
+                          LanguageUtils.dispatchCustomEvent(Events.annotateByLLM, {
+                            tags: tags,
+                            selectors: selectors
+                          })
+                        }
+                      }
+                      let params = {criterion: criterion, description: description, apiKey: apiKey, documents: documents, callback: callback}
                       if (selectedLLM === 'anthropic') {
-                        AnthropicManager.askCriteria(criterion, description, apiKey, (answer) => {
-                          console.log('THIS IS THE RESULT:' + answer)
-                          // this.drawAnnotations(answer)
-                        })
+                        AnthropicManager.askCriteria(params)
                       } else if (selectedLLM === 'openAI') {
-                        console.log('TODO')
+                        console.log('OpenAIQuestion')
+                        OpenAIManager.askCriteria(params)
                       }
                     })
                   } else {
                     let callback = () => {
                       window.open(chrome.extension.getURL('pages/options.html'))
                     }
-                    Alerts.infoAlert({ text: 'Please, configure your LLM.', title: 'Please select a LLM and provide your API key', callback: callback() })
+                    Alerts.infoAlert({
+                      text: 'Please, configure your LLM.',
+                      title: 'Please select a LLM and provide your API key',
+                      callback: callback()
+                    })
                   }
                 })
               }
@@ -598,18 +618,35 @@ class CustomCriteriasManager {
     return !!_.find(window.abwa.tagManager.currentTags, (tag) => { return tag.config.name === name })
   }
 
-  drawAnnotations (json) {
-    console.log('DRAWING')
-    console.log('NAME')
-    console.log(json.name)
-    console.log('COMMENT')
-    console.log(json.comment)
-    console.log('PARAGRAPHS')
-    console.log(json.paragraphs[0])
-    console.log(json.paragraphs[1])
-    console.log(json.paragraphs[2])
-    console.log('SENTIMENT')
-    console.log(json.sentiment)
+  getSelectorsFromLLM (paragraph, documents) {
+    let selectors = []
+    let pageNumber = LLMTextUtils.getPageNumberFromDocuments(paragraph, documents)
+    if (pageNumber) {
+      let fragmentSelector = {
+        type: 'FragmentSelector',
+        conformsTo: 'http://tools.ietf.org/rfc/rfc3778',
+        page: pageNumber
+      }
+      selectors.push(fragmentSelector)
+      // let pageContent = LLMTextUtils.getPageContent(pageNumber)
+      let page = documents.find(document => document.metadata.loc.pageNumber === pageNumber)
+      let pageContent = page.pageContent
+      let index = LLMTextUtils.getIndexesOfParagraph(pageContent, paragraph)
+      let textPositionSelector = {
+        type: 'TextPositionSelector',
+        start: index,
+        end: index + paragraph.length
+      }
+      selectors.push(textPositionSelector)
+      let textQuoteSelector = {
+        type: 'TextQuoteSelector',
+        exact: pageContent.substring(index, index + paragraph.length),
+        prefix: pageContent.substring(index - 32, index),
+        suffix: pageContent.substring(index + paragraph.length, index + paragraph.length + 32)
+      }
+      selectors.push(textQuoteSelector)
+    }
+    return selectors
   }
 }
 

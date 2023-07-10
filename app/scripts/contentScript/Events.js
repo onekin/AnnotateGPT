@@ -1,5 +1,6 @@
 const Events = {
   annotate: 'annotate',
+  annotateByLLM: 'annotateByLLM',
   annotationCreated: 'annotationCreated',
   annotationDeleted: 'annotationDeleted',
   annotationValidated: 'annotationValidated',
