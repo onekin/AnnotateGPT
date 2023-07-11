@@ -21,8 +21,10 @@ const DefaultCriteria = require('./DefaultCriteria')
 const jsYaml = require('js-yaml')
 const FileUtils = require('../../utils/FileUtils')
 
-
-import swal from 'sweetalert2/dist/sweetalert2.js'
+let Swal = null
+if (document && document.head) {
+  Swal = require('sweetalert2')
+}
 
 class ReviewGenerator {
   init (callback) {
@@ -267,21 +269,26 @@ class ReviewGenerator {
       }
 
       if(!isMetaReviewGroup(groupAnnotations)){
-        swal.fire({
-          title: 'Are you sure?',
-          text: "Annotations made in this review model will be removed.",
-          type: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, go ahead!'
-        }).then((result) => {
-          if (result.value) {
-            removeConfAnnotations(groupAnnotations).then(() => {
-              importAnnotations()
-            })
-          }
-        })
+        ReviewGenerator.tryToLoadSwal()
+        if (_.isNull(Swal)) {
+          Alerts.errorAlert({text: 'Unable to load swal'})
+        } else {
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "Annotations made in this review model will be removed.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, go ahead!'
+          }).then((result) => {
+            if (result.value) {
+              removeConfAnnotations(groupAnnotations).then(() => {
+                importAnnotations()
+              })
+            }
+          })
+        }
       }
       else{
         importAnnotations()
@@ -396,11 +403,11 @@ class ReviewGenerator {
           preConfirm: (groupName) => {
             if (_.isString(groupName)) {
               if (groupName.length <= 0) {
-                const swal = require('sweetalert2')
-                swal.showValidationMessage('Name cannot be empty.')
+                const Swal = require('sweetalert2')
+                Swal.showValidationMessage('Name cannot be empty.')
               } else if (groupName.length > 25) {
-                const swal = require('sweetalert2')
-                swal.showValidationMessage('The review model name cannot be higher than 25 characters.')
+                const Swal = require('sweetalert2')
+                Swal.showValidationMessage('The review model name cannot be higher than 25 characters.')
               } else {
                 return groupName
               }
@@ -532,21 +539,25 @@ class ReviewGenerator {
 
       let displayAnnotation = (annotation) => {
         let swalContent = '';
-        if(annotation.highlightText!=null&&annotation.highlightText!='') swalContent += '<h2 style="text-align:left;margin-bottom:10px;">Highlight</h2><div style="text-align:justify;font-style:italic">"'+annotation.highlightText.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'"</div>'
-        if(annotation.comment!=null&&annotation.comment!='') swalContent += '<h2 style="text-align:left;margin-top:10px;margin-bottom:10px;">Comment</h2><div style="text-align:justify;">'+annotation.comment.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>'
-        if(annotation.suggestedLiterature!=null&&annotation.suggestedLiterature.length>0) swalContent += '<h2 style="text-align:left;margin-top:10px;margin-bottom:10px;">Suggested literature</h2><div style="text-align:justify;"><ul style="padding-left:10px;">'+annotation.suggestedLiterature.map((e) => {return '<li>'+e.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</li>'}).join('')+'</ul></div>'
-        swal({
-          html: swalContent,
-          confirmButtonText: "View in context"
-        }).then((result) => {
-          if(result.value){
-            document.querySelector("#reviewCanvas").parentNode.removeChild(document.querySelector("#reviewCanvas"))
-            window.abwa.contentAnnotator.goToAnnotation(window.abwa.contentAnnotator.allAnnotations.find((e) => {return e.id==annotation.id}))
-            document.querySelector("#abwaSidebarButton").style.display = "block"
-          }
-        })
+        if (annotation.highlightText != null && annotation.highlightText != '') swalContent += '<h2 style="text-align:left;margin-bottom:10px;">Highlight</h2><div style="text-align:justify;font-style:italic">"' + annotation.highlightText.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '"</div>'
+        if (annotation.comment != null && annotation.comment != '') swalContent += '<h2 style="text-align:left;margin-top:10px;margin-bottom:10px;">Comment</h2><div style="text-align:justify;">' + annotation.comment.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>'
+        if (annotation.suggestedLiterature != null && annotation.suggestedLiterature.length > 0) swalContent += '<h2 style="text-align:left;margin-top:10px;margin-bottom:10px;">Suggested literature</h2><div style="text-align:justify;"><ul style="padding-left:10px;">' + annotation.suggestedLiterature.map((e) => {return '<li>' + e.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</li>'}).join('') + '</ul></div>'
+        ReviewGenerator.tryToLoadSwal()
+        if (_.isNull(Swal)) {
+          Alerts.errorAlert({text: 'Unable to load swal'})
+        } else {
+          Swal({
+            html: swalContent,
+            confirmButtonText: "View in context"
+          }).then((result) => {
+            if (result.value) {
+              document.querySelector("#reviewCanvas").parentNode.removeChild(document.querySelector("#reviewCanvas"))
+              window.abwa.contentAnnotator.goToAnnotation(window.abwa.contentAnnotator.allAnnotations.find((e) => {return e.id == annotation.id}))
+              document.querySelector("#abwaSidebarButton").style.display = "block"
+            }
+          })
+        }
       }
-
       let getGroupAnnotationCount = (group) => {
         let i = 0
         canvasClusters[group].forEach((e) => {i += review.annotations.filter((a) => {return a.criterion===e}).length})
@@ -664,6 +675,16 @@ class ReviewGenerator {
     // Callback
     if (_.isFunction(callback)) {
       callback()
+    }
+  }
+
+   static tryToLoadSwal () {
+    if (_.isNull(Swal)) {
+      try {
+        Swal = require('sweetalert2')
+      } catch (e) {
+        Swal = null
+      }
     }
   }
 }

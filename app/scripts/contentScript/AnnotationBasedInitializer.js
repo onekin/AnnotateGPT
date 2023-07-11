@@ -1,6 +1,5 @@
 const _ = require('lodash')
 const URLUtils = require('../utils/URLUtils')
-
 const Config = require('../Config')
 
 class AnnotationBasedInitializer {

@@ -399,50 +399,108 @@ class CustomCriteriasManager {
               } else if (key === 'modify') {
                 this.modifyCriteriaHandler(currentTagGroup)
               } else if (key === 'llmAssistance') {
-                // this.modifyCriteriaHandler(currentTagGroup)
-                chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
-                  if (llm && llm !== '') {
-                    let selectedLLM = llm
-                    let documents = await LLMTextUtils.loadDocument()
-                    let model = window.abwa.tagManager.model
-                    let tags = [
-                      model.namespace + ':' + model.config.grouped.relation + ':' + criterion
-                    ]
-                    chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getAPIKEY', data: selectedLLM }, ({ apiKey }) => {
-                      console.log(selectedLLM + ' ' + apiKey)
-                      let callback = (json) => {
-                        for (let i = 0; i < json.paragraphs.length; i += 1) {
-                          let paragraph = json.paragraphs[i]
-                          let selectors = this.getSelectorsFromLLM(paragraph, documents)
-                          LanguageUtils.dispatchCustomEvent(Events.annotateByLLM, {
-                            tags: tags,
-                            selectors: selectors
+                if (description.length < 20) {
+                  Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
+                } else {
+                  // this.modifyCriteriaHandler(currentTagGroup)
+                  chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
+                    if (llm && llm !== '') {
+                      let selectedLLM = llm
+                      Alerts.confirmAlert({
+                        title: criterion + ' assessment',
+                        text: 'Do you want to assess this criterion using ' + llm + '?',
+                        cancelButtonText: 'Cancel',
+                        callback: async () => {
+                          let documents = []
+                          let model = window.abwa.tagManager.model
+                          let tags = [
+                            model.namespace + ':' + model.config.grouped.relation + ':' + criterion
+                          ]
+                          documents = await LLMTextUtils.loadDocument()
+                          chrome.runtime.sendMessage({
+                            scope: 'llm',
+                            cmd: 'getAPIKEY',
+                            data: selectedLLM
+                          }, ({ apiKey }) => {
+                            let callback = (json) => {
+                              let annotations = []
+                              for (let i = 0; i < json.paragraphs.length; i += 1) {
+                                let paragraph = json.paragraphs[i]
+                                let selectors = this.getSelectorsFromLLM(paragraph, documents)
+                                let annotation = {
+                                  paragraph: paragraph,
+                                  selectors: selectors
+                                }
+                                annotations.push(annotation)
+                                if (selectors.length > 0) {
+                                  LanguageUtils.dispatchCustomEvent(Events.annotateByLLM, {
+                                    tags: tags,
+                                    selectors: selectors
+                                  })
+                                }
+                              }
+                              let noCreatedAnnotations = annotations.filter((annotation) => annotation.selectors.length === 0)
+                              let createdAnnotations = annotations.filter((annotation) => annotation.selectors.length === 3)
+                              console.log('Created: ' + createdAnnotations.length)
+                              console.log('No created: ' + noCreatedAnnotations.length)
+                              if (createdAnnotations.length > 0) {
+                                let afterSuccess = () => {CustomCriteriasManager.showParagraphs(noCreatedAnnotations)}
+                                Alerts.successAlert({
+                                  title: 'Annotations created!!!',
+                                  text: 'Number of annotations created: ' + createdAnnotations.length,
+                                  callback: afterSuccess
+                                })
+                              } else if (noCreatedAnnotations.length > 0) {
+                                CustomCriteriasManager.showParagraphs(noCreatedAnnotations)
+                              }
+                            }
+                            let params = {
+                              criterion: criterion,
+                              description: description,
+                              apiKey: apiKey,
+                              documents: documents,
+                              callback: callback
+                            }
+                            if (selectedLLM === 'anthropic') {
+                              AnthropicManager.askCriteria(params)
+                            } else if (selectedLLM === 'openAI') {
+                              console.log('OpenAIQuestion')
+                              OpenAIManager.askCriteria(params)
+                            }
                           })
                         }
+                      })
+                    } else {
+                      let callback = () => {
+                        window.open(chrome.extension.getURL('pages/options.html'))
                       }
-                      let params = {criterion: criterion, description: description, apiKey: apiKey, documents: documents, callback: callback}
-                      if (selectedLLM === 'anthropic') {
-                        AnthropicManager.askCriteria(params)
-                      } else if (selectedLLM === 'openAI') {
-                        console.log('OpenAIQuestion')
-                        OpenAIManager.askCriteria(params)
-                      }
-                    })
-                  } else {
-                    let callback = () => {
-                      window.open(chrome.extension.getURL('pages/options.html'))
+                      Alerts.infoAlert({
+                        text: 'Please, configure your LLM.',
+                        title: 'Please select a LLM and provide your API key',
+                        callback: callback()
+                      })
                     }
-                    Alerts.infoAlert({
-                      text: 'Please, configure your LLM.',
-                      title: 'Please select a LLM and provide your API key',
-                      callback: callback()
-                    })
-                  }
-                })
+                  })
+                }
               }
             },
             items: items
           }
+        }
+      })
+    }
+  }
+
+  static showParagraphs (annotations) {
+    if (annotations.length > 0) {
+      let annotation = annotations.pop()
+      Alerts.confirmAlert({
+        title: 'The LLM also suggests this information for your criterion',
+        text: 'Consider this idea: ' + annotation.paragraph,
+        confirmButtonText: 'OK',
+        showCancelButton: false,
+        callback: () => {
+          CustomCriteriasManager.showParagraphs(annotations)
         }
       })
     }

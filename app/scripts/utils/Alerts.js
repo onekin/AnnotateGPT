@@ -13,7 +13,7 @@ class Alerts {
         callback(new Error('Unable to load swal'))
       }
     } else {
-      swal({
+      swal.fire({
         title: title,
         html: text,
         type: alertType,
@@ -37,7 +37,7 @@ class Alerts {
         callback(new Error('Unable to load swal'))
       }
     } else {
-      swal({
+      swal.fire({
         title: title,
         html: text,
         type: alertType,
@@ -59,7 +59,7 @@ class Alerts {
         callback(new Error('Unable to load swal'))
       }
     } else {
-      swal({
+      swal.fire({
         type: Alerts.alertType.info,
         title: title,
         html: text
@@ -74,7 +74,7 @@ class Alerts {
         callback(new Error('Unable to load swal'))
       }
     } else {
-      swal({
+      swal.fire({
         type: Alerts.alertType.error,
         title: title,
         html: text,
@@ -94,7 +94,7 @@ class Alerts {
         callback(new Error('Unable to load swal'))
       }
     } else {
-      swal({
+      swal.fire({
         type: Alerts.alertType.success,
         title: title,
         html: text
@@ -109,7 +109,7 @@ class Alerts {
         callback(new Error('Unable to load swal'))
       }
     } else {
-      swal({
+      swal.fire({
         position: position,
         type: type,
         title: title, // TODO i18n
@@ -128,7 +128,7 @@ class Alerts {
       }
     } else {
       let timerInterval
-      swal({
+      swal.fire({
         position: position,
         title: title,
         html: text,
@@ -159,7 +159,7 @@ class Alerts {
         callback(new Error('Unable to load swal'))
       }
     } else {
-      swal({
+      swal.fire({
         title: title,
         input: input,
         inputPlaceholder: inputPlaceholder,
@@ -189,7 +189,7 @@ class Alerts {
         callback(new Error('Unable to load swal'))
       }
     } else {
-      swal({
+      swal.fire({
         title: title,
         html: html,
         focusConfirm: false,
@@ -220,7 +220,7 @@ class Alerts {
         callback(new Error('Unable to load swal'))
       }
     } else {
-      swal({
+      swal.fire({
         type: Alerts.alertType.warning,
         title: title,
         html: text
