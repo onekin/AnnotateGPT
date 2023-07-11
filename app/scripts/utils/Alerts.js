@@ -6,7 +6,7 @@ if (document && document.head) {
 }
 
 class Alerts {
-  static confirmAlert ({alertType = Alerts.alertType.info, title = '', text = '', cancelButtonText = 'Cancel', confirmButtonText = 'OK', callback}) {
+  static confirmAlert ({alertType = Alerts.alertType.info, title = '', text = '', cancelButtonText = 'Cancel', confirmButtonText = 'OK', showCancelButton = true, callback}) {
     Alerts.tryToLoadSwal()
     if (_.isNull(swal)) {
       if (_.isFunction(callback)) {
@@ -17,7 +17,7 @@ class Alerts {
         title: title,
         html: text,
         type: alertType,
-        showCancelButton: true,
+        showCancelButton: showCancelButton,
         cancelButtonText: cancelButtonText,
         confirmButtonText: confirmButtonText
       }).then((result) => {
@@ -52,7 +52,7 @@ class Alerts {
     }
   }
 
-  static infoAlert ({text = chrome.i18n.getMessage('expectedInfoMessageNotFound'), title = 'Info', callback}) {
+  static infoAlert ({text = chrome.i18n.getMessage('expectedInfoMessageNotFound'), title = 'Info', callback, confirmButtonText = 'OK'}) {
     Alerts.tryToLoadSwal()
     if (_.isNull(swal)) {
       if (_.isFunction(callback)) {
@@ -62,7 +62,12 @@ class Alerts {
       swal.fire({
         type: Alerts.alertType.info,
         title: title,
+        confirmButtonText: confirmButtonText,
         html: text
+      }).then(() => {
+        if (_.isFunction(callback)) {
+          callback(null)
+        }
       })
     }
   }

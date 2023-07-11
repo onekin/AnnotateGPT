@@ -63,13 +63,18 @@ class OpenAIManager {
             Swal.close()
             const jsonString = res.text
             let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
+            let lastIndex = retrievedJSON.lastIndexOf('}')
+            retrievedJSON = retrievedJSON.substring(0, lastIndex)
             try {
-              const jsonObject = JSON.parse('{' + retrievedJSON)
+              const jsonObject = JSON.parse('{' + retrievedJSON + '}')
               if (_.isFunction(callback)) {
                 callback(jsonObject)
               }
             } catch (err) {
-              Alerts.errorAlert({text: 'Please try again. You may need to provide a more accurate criterion description', title: 'Error parsing the answer'})
+              Alerts.errorAlert({
+                text: 'Please try again. You may need to provide a more accurate criterion description',
+                title: 'Error parsing the answer'
+              })
             }
           }
         })

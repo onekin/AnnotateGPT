@@ -423,36 +423,41 @@ class CustomCriteriasManager {
                             data: selectedLLM
                           }, ({ apiKey }) => {
                             let callback = (json) => {
-                              let annotations = []
-                              for (let i = 0; i < json.paragraphs.length; i += 1) {
-                                let paragraph = json.paragraphs[i]
-                                let selectors = this.getSelectorsFromLLM(paragraph, documents)
-                                let annotation = {
-                                  paragraph: paragraph,
-                                  selectors: selectors
+                              let comment = json.comment
+                              let sentiment = json.sentiment
+                              Alerts.infoAlert({
+                                title: 'The criterion ' + criterion + ' is ' + sentiment,
+                                text: comment,
+                                confirmButtonText: 'OK',
+                                showCancelButton: false,
+                                callback: () => {
+                                  let annotations = []
+                                  for (let i = 0; i < json.paragraphs.length; i += 1) {
+                                    let paragraph = json.paragraphs[i]
+                                    let selectors = this.getSelectorsFromLLM(paragraph, documents)
+                                    let annotation = {
+                                      paragraph: paragraph,
+                                      selectors: selectors
+                                    }
+                                    annotations.push(annotation)
+                                    if (selectors.length > 0) {
+                                      LanguageUtils.dispatchCustomEvent(Events.annotateByLLM, {
+                                        tags: tags,
+                                        selectors: selectors
+                                      })
+                                    }
+                                  }
+                                  let noCreatedAnnotations = annotations.filter((annotation) => annotation.selectors.length === 0)
+                                  let createdAnnotations = annotations.filter((annotation) => annotation.selectors.length === 3)
+                                  console.log('Created: ' + createdAnnotations.length)
+                                  console.log('No created: ' + noCreatedAnnotations.length)
+                                  if (createdAnnotations.length > 0) {
+                                    CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations)
+                                  } else if (noCreatedAnnotations.length > 0) {
+                                    CustomCriteriasManager.showParagraphs(noCreatedAnnotations)
+                                  }
                                 }
-                                annotations.push(annotation)
-                                if (selectors.length > 0) {
-                                  LanguageUtils.dispatchCustomEvent(Events.annotateByLLM, {
-                                    tags: tags,
-                                    selectors: selectors
-                                  })
-                                }
-                              }
-                              let noCreatedAnnotations = annotations.filter((annotation) => annotation.selectors.length === 0)
-                              let createdAnnotations = annotations.filter((annotation) => annotation.selectors.length === 3)
-                              console.log('Created: ' + createdAnnotations.length)
-                              console.log('No created: ' + noCreatedAnnotations.length)
-                              if (createdAnnotations.length > 0) {
-                                let afterSuccess = () => {CustomCriteriasManager.showParagraphs(noCreatedAnnotations)}
-                                Alerts.successAlert({
-                                  title: 'Annotations created!!!',
-                                  text: 'Number of annotations created: ' + createdAnnotations.length,
-                                  callback: afterSuccess
-                                })
-                              } else if (noCreatedAnnotations.length > 0) {
-                                CustomCriteriasManager.showParagraphs(noCreatedAnnotations)
-                              }
+                              })
                             }
                             let params = {
                               criterion: criterion,
@@ -494,13 +499,44 @@ class CustomCriteriasManager {
   static showParagraphs (annotations) {
     if (annotations.length > 0) {
       let annotation = annotations.pop()
-      Alerts.confirmAlert({
-        title: 'The LLM also suggests this information for your criterion',
-        text: 'Consider this idea: ' + annotation.paragraph,
-        confirmButtonText: 'OK',
+      let buttonText
+      if (annotations.length > 0) {
+        buttonText = 'Next'
+      } else {
+        buttonText = 'OK'
+      }
+      Alerts.infoAlert({
+        title: 'The LLM suggests this information for your criterion',
+        text: annotation.paragraph,
+        confirmButtonText: buttonText,
         showCancelButton: false,
         callback: () => {
           CustomCriteriasManager.showParagraphs(annotations)
+        }
+      })
+    }
+  }
+
+  static showAnnotatedParagraphs (createdAnnotations, noCreatedAnnotations) {
+    if (createdAnnotations.length > 0) {
+      let annotation = createdAnnotations.pop()
+      let buttonText
+      if (createdAnnotations.length > 0 || noCreatedAnnotations.length > 0) {
+        buttonText = 'Next'
+      } else {
+        buttonText = 'OK'
+      }
+      Alerts.confirmAlert({
+        title: 'Annotation created!',
+        text: 'The following text has been highlighted: \n' + annotation.paragraph,
+        confirmButtonText: buttonText,
+        showCancelButton: false,
+        callback: () => {
+          if (createdAnnotations.length > 0) {
+            CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations)
+          } else if (noCreatedAnnotations.length > 0) {
+            CustomCriteriasManager.showParagraphs(noCreatedAnnotations)
+          }
         }
       })
     }

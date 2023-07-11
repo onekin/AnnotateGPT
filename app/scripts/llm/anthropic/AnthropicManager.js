@@ -27,9 +27,11 @@ class AnthropicManager {
             console.log('Creating LLM connection')
             b.innerText = 'Creating LLM connection'
             // Create LLM
+            // https://docs.anthropic.com/claude/reference/selecting-a-model
             const model = new ChatAnthropic({
               temperature: 0.2,
-              anthropicApiKey: apiKey
+              anthropicApiKey: apiKey,
+              modelName: 'claude-2.0'
             })
             // Document QA
             let query = 'I will provide you the content of a research paper. Then, you have to act as an academic reviewer and assess ' +
@@ -37,8 +39,8 @@ class AnthropicManager {
               ' Met, Partially met, or Not met. Then, you have to explain  why it is met or not met and finally provide three' +
               ' text fragments as pieces of evidence from the provided article that supports the decision of the result. You have to provide the response in JSON format with' +
               ' the following keys: -name (contains the criteria name), -sentiment (met, partially met or not met), -comment (the reason of the results),' +
-              ' -paragraphs (an array with the THREE text fragments written in the same way as in the article that support the result). Only response with the JSON' +
-              '```' + criterion + ':' + description
+              ' -paragraphs (an array with the THREE text fragments written in the same way as in the article that support the result)' +
+              '```' + description + '```'
             // Create QA chain
             console.log('Creating chain')
             b.innerText = 'Creating chain'
@@ -52,8 +54,10 @@ class AnthropicManager {
             Swal.close()
             const jsonString = res.text
             let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
+            let lastIndex = retrievedJSON.lastIndexOf('}')
+            retrievedJSON = retrievedJSON.substring(0, lastIndex)
             try {
-              const jsonObject = JSON.parse('{' + retrievedJSON)
+              const jsonObject = JSON.parse('{' + retrievedJSON + '}')
               if (_.isFunction(callback)) {
                 callback(jsonObject)
               }

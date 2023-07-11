@@ -38,7 +38,7 @@ class LLMTextUtils {
   }
   static getPageNumberFromDocuments (paragraph, documents) {
     paragraph = this.compressText(paragraph)
-    for (let i = 1; i < documents.length; i += 1) {
+    for (let i = 0; i < documents.length; i += 1) {
       let documentText = this.compressText(documents[i].pageContent)
       if (documentText.includes(paragraph)) {
         let pageNumber = documents[i].metadata.loc.pageNumber
