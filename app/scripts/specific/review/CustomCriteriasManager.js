@@ -441,9 +441,14 @@ class CustomCriteriasManager {
                                     }
                                     annotations.push(annotation)
                                     if (selectors.length > 0) {
+                                      let commentData = {
+                                        comment: comment,
+                                        sentiment: sentiment
+                                      }
                                       LanguageUtils.dispatchCustomEvent(Events.annotateByLLM, {
                                         tags: tags,
-                                        selectors: selectors
+                                        selectors: selectors,
+                                        commentData: commentData
                                       })
                                     }
                                   }

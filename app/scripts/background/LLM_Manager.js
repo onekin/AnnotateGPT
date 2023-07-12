@@ -31,6 +31,28 @@ class LLMManager {
               sendResponse({llm: selectedLLM})
             }
           })
+        } else if (request.cmd === 'setCriterionQuery') {
+          let criterionQuery = request.data.query
+          ChromeStorage.setData('llm.criterionQuery', {data: JSON.stringify(criterionQuery)}, ChromeStorage.sync, (err) => {
+            if (err) {
+              sendResponse({err: err})
+            } else {
+              sendResponse({query: criterionQuery})
+            }
+          })
+        } else if (request.cmd === 'getCriterionQuery') {
+          ChromeStorage.getData('llm.criterionQuery', ChromeStorage.sync, (err, llm) => {
+            if (err) {
+              sendResponse({err: err})
+            } else {
+              if (llm && llm.data) {
+                let parsedQuery = JSON.parse(llm.data)
+                sendResponse({criterionQuery: parsedQuery || ''})
+              } else {
+                sendResponse({criterionQuery: ''})
+              }
+            }
+          })
         } else if (request.cmd === 'getAPIKEY') {
           let llmKey = 'llm.' + request.data + 'key'
           ChromeStorage.getData(llmKey, ChromeStorage.sync, (err, apiKey) => {

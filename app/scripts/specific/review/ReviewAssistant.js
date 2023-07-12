@@ -1,14 +1,12 @@
 /* eslint-disable */
-
 const Alerts = require('../../utils/Alerts')
 const Config = require('../../Config')
 //const {Review, Mark, MajorConcern, MinorConcern, Strength, Annotation} = require('../../exporter/reviewModel.js')
 import {Review,Annotation,AnnotationGroup} from '../../exporter/reviewModel.js'
-
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 
-export const ReviewAssistant = {
-  parseAnnotations (annotations){
+class ReviewAssistant {
+  static parseAnnotations (annotations){
     const criterionTag = Config.review.namespace + ':' + Config.review.tags.grouped.relation + ':'
     const levelTag = Config.review.namespace + ':' + Config.review.tags.grouped.subgroup + ':'
     const majorConcernLevel = 'Major weakness'
@@ -42,8 +40,9 @@ export const ReviewAssistant = {
       r.insertAnnotation(new Annotation(annotations[a].id,criterion,level,highlightText,pageNumber,comment,suggestedLiterature))
     }
     return r
-  },
-  checkBalanced(){
+  }
+
+  static checkBalanced () {
     let review = this.parseAnnotations(window.abwa.contentAnnotator.allAnnotations);
     let strengthNum = review.strengths.length;
     let concernNum = review.majorConcerns.length + review.minorConcerns.length;
@@ -67,9 +66,7 @@ export const ReviewAssistant = {
         position: 'bottom-end'
       })
     }
-  },
-  checkSelective: () => {
-    return;
   }
 }
 
+export default ReviewAssistant

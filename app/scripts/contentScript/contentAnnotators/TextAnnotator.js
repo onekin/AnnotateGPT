@@ -1,3 +1,4 @@
+// const ReviewAssistant = require('../../specific/review/ReviewAssistant')
 const ContentAnnotator = require('./ContentAnnotator')
 const ContentTypeManager = require('../ContentTypeManager')
 const Tag = require('../Tag')
@@ -16,7 +17,6 @@ const Alerts = require('../../utils/Alerts')
 const ANNOTATION_OBSERVER_INTERVAL_IN_SECONDS = 3
 const ANNOTATIONS_UPDATE_INTERVAL_IN_SECONDS = 60
 
-const ReviewAssistant = require('../../specific/review/ReviewAssistant')
 const Config = require('../../Config')
 let swal = require('sweetalert2')
 
@@ -195,7 +195,8 @@ class TextAnnotator extends ContentAnnotator {
       let selectors = event.detail.selectors
       let tags = event.detail.tags
       // Construct the annotation to send to storage
-      let annotation = TextAnnotator.constructAnnotation(selectors, tags)
+      let commentData = event.detail.commentData
+      let annotation = TextAnnotator.constructAnnotation(selectors, tags, commentData)
       window.abwa.storageManager.client.createNewAnnotation(annotation, (err, annotation) => {
         if (err) {
           Alerts.errorAlert({text: 'Unexpected error, unable to create annotation'})
@@ -253,7 +254,7 @@ class TextAnnotator extends ContentAnnotator {
     return selectors
   }
 
-  static constructAnnotation (selectors, tags) {
+  static constructAnnotation (selectors, tags, commentData) {
     // Check if selectors exist, if then create a target for annotation, in other case the annotation will be a page annotation
     let target = []
     if (_.isObject(selectors)) {
@@ -271,6 +272,13 @@ class TextAnnotator extends ContentAnnotator {
       target: target,
       text: '',
       uri: window.abwa.contentTypeManager.getDocumentURIToSaveInStorage()
+    }
+    if (commentData.comment) {
+      data.text = JSON.stringify({comment: commentData.comment, suggestedLiterature: []})
+    }
+    if (commentData.sentiment) {
+      let tag = TextAnnotator.findTagForSentiment(commentData.sentiment)
+      data.tags.push(tag)
     }
     // Get link for all files
     data.document = {
@@ -610,7 +618,7 @@ class TextAnnotator extends ContentAnnotator {
             // Redraw annotations
             DOMTextUtils.unHighlightElements([...document.querySelectorAll('[data-annotation-id="' + annotation.id + '"]')])
             that.highlightAnnotation(annotation)
-            ReviewAssistant.checkBalanced()
+            // ReviewAssistant.checkBalanced()
           }
         })
       if (isSidebarOpened) {
@@ -658,7 +666,6 @@ class TextAnnotator extends ContentAnnotator {
       swal({
         html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<textarea id="swal-textarea" class="swal2-textarea" placeholder="Type your feedback here...">' + form.comment + '</textarea>' + '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
         showLoaderOnConfirm: true,
-        position: 'bottom',
         width: '40em',
         preConfirm: () => {
           let newComment = $('#swal-textarea').val()
@@ -990,6 +997,17 @@ class TextAnnotator extends ContentAnnotator {
         }
       })
     }, 1000)
+  }
+
+  static findTagForSentiment (sentiment) {
+    sentiment = sentiment.toLowerCase()
+    if (sentiment === 'not met') {
+      return 'review:level:Major weakness'
+    } else if (sentiment === 'partially met') {
+      return 'review:level:Minor weakness'
+    } else if (sentiment === 'met') {
+      return 'review:level:Strength'
+    }
   }
 }
 

@@ -21,7 +21,7 @@
 
     <div class="jumbotron">
       <img alt="Review and go logo" title="Review and go logo" class="logo" src="../images/icon-38.png">
-      <h2 class="title">Review&Go configuration</h2>
+      <h2 class="title">CoReviewer configuration</h2>
       <div class="card">
         <div class="card-header card-header bg-dark text-white">User manual</div>
         <div class="card-body">
@@ -31,7 +31,7 @@
         </div>
       </div>
       <div class="card">
-        <div class="card-header card-header bg-dark text-white">Large Language Model</div>
+        <div class="card-header card-header bg-dark text-white">Large Language Model selection</div>
         <div class="card-body">
           <div class="form-check">
             <label for="LLMDropdown">Select your Large Language Model</label>
@@ -51,15 +51,27 @@
             <input type="text" id="openAI-APIKey" />
             <button id="openAI-APIKeyValidationButton" class="APIKeyValidationButton">Validate and save</button>
           </div>
-        </div>
+        </div >
+      </div>
+      <div class="card">
+        <div class="card-header card-header bg-dark text-white">Criterion assessment query</div>
+        <div class="card-body">
+          <div id="QueryContainer" class="Query-Configuration">
+            <label>Configure your query here, consider that you have to include the criterion description with [C_DESCRIPTION] and the name with [C_NAME]:</label>
+            </br>
+            <textarea type="text" id="criterionQuery" rows="5" cols="100"></textarea>
+            </br>
+            <button id="saveQueryButton" class="saveQueryButtonClass">Validate and save</button><label id="criterionQueryMessage"></label>
+          </div>
+        </div >
       </div>
       <div id="localStorageConfigurationCard" class="card storageConfiguration">
         <div class="card-header bg-dark text-white">Local storage</div>
         <div class="card-body">
           <div class="form-check">
-            <button class="btn btn-secondary" id="restoreDatabaseButton">Restore database</button>
-            <button class="btn btn-secondary" id="backupDatabaseButton">Backup database</button>
-            <button class="btn btn-secondary" id="deleteDatabaseButton">Delete database</button>
+            <button class="btn btn-secondary" id="restoreDatabaseButton">Restore annotations</button>
+            <button class="btn btn-secondary" id="backupDatabaseButton">Backup annotations</button>
+            <button class="btn btn-secondary" id="deleteDatabaseButton">Delete annotations</button>
           </div>
         </div>
       </div>

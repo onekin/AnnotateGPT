@@ -6,6 +6,12 @@ const _ = require('lodash')
 
 class Options {
   init () {
+    const defaultQuery = 'I will provide you the content of a research paper. Then, you have to act as an academic reviewer and assess ' +
+      ' the [C_NAME] criterion which description is separated by triple backticks ```[C_DESCRIPTION]```. For the criterion, you have to assess if it is met considering these possible results:' +
+      ' Met, Partially met, or Not met. Then, you have to explain  why it is met or not met and finally provide three' +
+      ' text fragments as pieces of evidence from the provided article that supports the decision of the result. You have to provide the response in JSON format with' +
+      ' the following keys: -name (contains the criteria name), -sentiment (met, partially met or not met), -comment (the reason of the results),' +
+      ' -paragraphs (an array with the THREE text fragments written in the same way as in the article that support the result)'
     // Storage type
     document.querySelector('#LLMDropdown').addEventListener('change', (event) => {
       // Get value
@@ -13,6 +19,25 @@ class Options {
         this.setLLM(event.target.selectedOptions[0].value)
         // Show/hide configuration for selected storage
         this.showSelectedLLMConfiguration(event.target.selectedOptions[0].value)
+      }
+    })
+
+    document.querySelector('#saveQueryButton').addEventListener('click', () => {
+      let currentQuery = document.querySelector('#criterionQuery').value
+      let messageLabel = document.querySelector('#criterionQueryMessage')
+      if (this.checkQuery(currentQuery)) {
+        this.setCriterionQuery(currentQuery)
+      } else {
+        messageLabel.innerHTML = 'Invalid query'
+      }
+    })
+
+    chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getCriterionQuery' }, ({ criterionQuery }) => {
+      if (criterionQuery && criterionQuery !== '') {
+        document.querySelector('#criterionQuery').value = criterionQuery
+      } else {
+        document.querySelector('#criterionQuery').value = defaultQuery
+        this.setCriterionQuery(defaultQuery)
       }
     })
 
@@ -168,6 +193,26 @@ class Options {
       let input = document.querySelector('#' + selectedLLM + '-APIKey')
       input.disabled = true
     })
+  }
+
+  setCriterionQuery (criterionQuery) {
+    chrome.runtime.sendMessage({
+      scope: 'llm',
+      cmd: 'setCriterionQuery',
+      data: {query: criterionQuery}
+    }, ({query}) => {
+      console.log('Query stored ' + query)
+      let messageLabel = document.querySelector('#criterionQueryMessage')
+      messageLabel.innerHTML = 'Query saved'
+    })
+  }
+
+  checkQuery (query) {
+    if (query.includes('[C_DESCRIPTION]') && query.includes('[C_NAME]')) {
+      return true
+    } else {
+      return false
+    }
   }
 }
 
