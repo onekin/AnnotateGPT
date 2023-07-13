@@ -404,6 +404,9 @@ class CustomCriteriasManager {
                 } else {
                   // this.modifyCriteriaHandler(currentTagGroup)
                   chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
+                    if (llm === '') {
+                      llm = Config.review.defaultLLM
+                    }
                     if (llm && llm !== '') {
                       let selectedLLM = llm
                       Alerts.confirmAlert({
@@ -464,30 +467,36 @@ class CustomCriteriasManager {
                                 }
                               })
                             }
-                            let params = {
-                              criterion: criterion,
-                              description: description,
-                              apiKey: apiKey,
-                              documents: documents,
-                              callback: callback
-                            }
-                            if (selectedLLM === 'anthropic') {
-                              AnthropicManager.askCriteria(params)
-                            } else if (selectedLLM === 'openAI') {
-                              console.log('OpenAIQuestion')
-                              OpenAIManager.askCriteria(params)
+                            if (apiKey && apiKey !== '') {
+                              chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getCriterionQuery' }, async ({ criterionQuery }) => {
+                                criterionQuery = criterionQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion)
+                                let params = {
+                                  criterion: criterion,
+                                  description: description,
+                                  apiKey: apiKey,
+                                  documents: documents,
+                                  callback: callback,
+                                  criterionQuery: criterionQuery
+                                }
+                                if (selectedLLM === 'anthropic') {
+                                  AnthropicManager.askCriteria(params)
+                                } else if (selectedLLM === 'openAI') {
+                                  console.log('OpenAIQuestion')
+                                  OpenAIManager.askCriteria(params)
+                                }
+                              })
+                            } else {
+                              let callback = () => {
+                                window.open(chrome.extension.getURL('pages/options.html'))
+                              }
+                              Alerts.infoAlert({
+                                text: 'Please, configure your LLM.',
+                                title: 'Please select a LLM and provide your API key',
+                                callback: callback()
+                              })
                             }
                           })
                         }
-                      })
-                    } else {
-                      let callback = () => {
-                        window.open(chrome.extension.getURL('pages/options.html'))
-                      }
-                      Alerts.infoAlert({
-                        text: 'Please, configure your LLM.',
-                        title: 'Please select a LLM and provide your API key',
-                        callback: callback()
                       })
                     }
                   })

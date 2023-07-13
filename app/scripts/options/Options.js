@@ -3,15 +3,12 @@ const FileUtils = require('../utils/FileUtils')
 const LocalStorageManager = require('../storage/local/LocalStorageManager')
 const FileSaver = require('file-saver')
 const _ = require('lodash')
+const Config = require('../Config')
 
 class Options {
   init () {
-    const defaultQuery = 'I will provide you the content of a research paper. Then, you have to act as an academic reviewer and assess ' +
-      ' the [C_NAME] criterion which description is separated by triple backticks ```[C_DESCRIPTION]```. For the criterion, you have to assess if it is met considering these possible results:' +
-      ' Met, Partially met, or Not met. Then, you have to explain  why it is met or not met and finally provide three' +
-      ' text fragments as pieces of evidence from the provided article that supports the decision of the result. You have to provide the response in JSON format with' +
-      ' the following keys: -name (contains the criteria name), -sentiment (met, partially met or not met), -comment (the reason of the results),' +
-      ' -paragraphs (an array with the THREE text fragments written in the same way as in the article that support the result)'
+    const defaultQuery = Config.review.defaultQuery
+    const defaultLLM = Config.review.defaultLLM
     // Storage type
     document.querySelector('#LLMDropdown').addEventListener('change', (event) => {
       // Get value
@@ -22,13 +19,21 @@ class Options {
       }
     })
 
+    document.querySelector('#defaultQueryButton').addEventListener('click', () => {
+      let messageLabel = document.querySelector('#criterionQueryMessage')
+      this.setCriterionQuery(defaultQuery)
+      let currentQuery = document.querySelector('#criterionQuery')
+      currentQuery.value = defaultQuery
+      messageLabel.innerHTML = 'Prompt saved'
+    })
+
     document.querySelector('#saveQueryButton').addEventListener('click', () => {
       let currentQuery = document.querySelector('#criterionQuery').value
       let messageLabel = document.querySelector('#criterionQueryMessage')
       if (this.checkQuery(currentQuery)) {
         this.setCriterionQuery(currentQuery)
       } else {
-        messageLabel.innerHTML = 'Invalid query'
+        messageLabel.innerHTML = 'Invalid prompt'
       }
     })
 
@@ -41,9 +46,9 @@ class Options {
       }
     })
 
-    chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, ({ llm = 'anthropic' }) => {
-      document.querySelector('#LLMDropdown').value = llm || 'anthropic'
-      this.showSelectedLLMConfiguration(llm || 'anthropic')
+    chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, ({ llm = defaultLLM }) => {
+      document.querySelector('#LLMDropdown').value = llm || defaultLLM
+      this.showSelectedLLMConfiguration(llm || defaultLLM)
     })
 
     // Get all the buttons with the same class name
@@ -201,9 +206,9 @@ class Options {
       cmd: 'setCriterionQuery',
       data: {query: criterionQuery}
     }, ({query}) => {
-      console.log('Query stored ' + query)
+      console.log('Prompt stored ' + query)
       let messageLabel = document.querySelector('#criterionQueryMessage')
-      messageLabel.innerHTML = 'Query saved'
+      messageLabel.innerHTML = 'Prompt saved'
     })
   }
 

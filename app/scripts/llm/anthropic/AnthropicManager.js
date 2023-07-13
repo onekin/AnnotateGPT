@@ -8,7 +8,7 @@ if (document && document.head) {
 }
 
 class AnthropicManager {
-  static async askCriteria ({criterion, description, apiKey, documents, callback}) {
+  static async askCriteria ({criterion, description, apiKey, documents, callback, criterionQuery}) {
     let alert = function () {
       AnthropicManager.tryToLoadSwal()
       if (_.isNull(Swal)) {
@@ -34,13 +34,18 @@ class AnthropicManager {
               modelName: 'claude-2.0'
             })
             // Document QA
-            let query = 'I will provide you the content of a research paper. Then, you have to act as an academic reviewer and assess ' +
-              'assess the criterion that is separated by triple backticks for the following paper. For the criterion, you have to assess if it is met considering these possible results:' +
-              ' Met, Partially met, or Not met. Then, you have to explain  why it is met or not met and finally provide three' +
-              ' text fragments as pieces of evidence from the provided article that supports the decision of the result. You have to provide the response in JSON format with' +
-              ' the following keys: -name (contains the criteria name), -sentiment (met, partially met or not met), -comment (the reason of the results),' +
-              ' -paragraphs (an array with the THREE text fragments written in the same way as in the article that support the result)' +
-              '```' + description + '```'
+            let query
+            if (criterionQuery) {
+              query = criterionQuery
+            } else {
+              query = 'I will provide you the content of a research paper. Then, you have to act as an academic reviewer and assess ' +
+                'assess the criterion that is separated by triple backticks for the following paper. For the criterion, you have to assess if it is met considering these possible results:' +
+                ' Met, Partially met, or Not met. Then, you have to explain  why it is met or not met and finally provide three' +
+                ' text fragments as pieces of evidence from the provided article that supports the decision of the result. You have to provide the response in JSON format with' +
+                ' the following keys: -name (contains the criteria name), -sentiment (met, partially met or not met), -comment (the reason of the results),' +
+                ' -paragraphs (an array with the THREE text fragments written in the same way as in the article that support the result)' +
+                '```' + description + '```'
+            }
             // Create QA chain
             console.log('Creating chain')
             b.innerText = 'Creating chain'

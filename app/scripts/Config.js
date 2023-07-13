@@ -3,6 +3,13 @@ const Config = {
     groupName: 'ReviewAndGo',
     namespace: 'review',
     urlParamName: 'rag',
+    defaultLLM: 'anthropic',
+    defaultQuery: 'I will provide you the content of a research paper. Then, you have to act as an academic reviewer and assess ' +
+      ' the [C_NAME] criterion which description is separated by triple backticks ```[C_DESCRIPTION]```. For the criterion, you have to assess if it is met considering these possible results:' +
+      ' Met, Partially met, or Not met. Then, you have to explain  why it is met or not met and finally provide three' +
+      ' text fragments as pieces of evidence from the provided article that supports the decision of the result. You have to provide the response in JSON format with' +
+      ' the following keys: -name (contains the criteria name), -sentiment (met, partially met or not met), -comment (the reason of the results),' +
+      ' -paragraphs (an array with the THREE text fragments written in the same way as in the article that support the result)',
     tags: { // Defined tags for the domain
       grouped: { // Grouped annotations
         group: 'criteria',

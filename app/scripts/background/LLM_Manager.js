@@ -1,5 +1,5 @@
 const ChromeStorage = require('../utils/ChromeStorage')
-
+const Config = require('../Config')
 class LLMManager {
   init () {
     // Initialize replier for requests related to storage
@@ -41,6 +41,7 @@ class LLMManager {
             }
           })
         } else if (request.cmd === 'getCriterionQuery') {
+          const defaultQuery = Config.review.defaultQuery
           ChromeStorage.getData('llm.criterionQuery', ChromeStorage.sync, (err, llm) => {
             if (err) {
               sendResponse({err: err})
@@ -49,7 +50,7 @@ class LLMManager {
                 let parsedQuery = JSON.parse(llm.data)
                 sendResponse({criterionQuery: parsedQuery || ''})
               } else {
-                sendResponse({criterionQuery: ''})
+                sendResponse({criterionQuery: defaultQuery})
               }
             }
           })
