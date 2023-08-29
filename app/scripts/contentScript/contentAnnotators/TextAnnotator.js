@@ -650,13 +650,13 @@ class TextAnnotator extends ContentAnnotator {
         poleChoiceRadio += '>'
         switch (e) {
           case 'Strength':
-            poleChoiceRadio += '<img class="poleImage" alt="Strength" title="Mark as a strength" width="20" src="' + chrome.extension.getURL('images/strength.png') + '"/>'
+            poleChoiceRadio += '<img class="poleImage" alt="Strength" title="Mark as a strength" width="20" src="' + chrome.runtime.getURL('images/strength.png') + '"/>'
             break
           case 'Major weakness':
-            poleChoiceRadio += '<img class="poleImage" alt="Major concern" title="Mark as a major concern" width="20" src="' + chrome.extension.getURL('images/majorConcern.png') + '"/>'
+            poleChoiceRadio += '<img class="poleImage" alt="Major concern" title="Mark as a major concern" width="20" src="' + chrome.runtime.getURL('images/majorConcern.png') + '"/>'
             break
           case 'Minor weakness':
-            poleChoiceRadio += '<img class="poleImage" alt="Minor concern" title="Mark as a minor concern" width="20" src="' + chrome.extension.getURL('images/minorConcern.png') + '"/>'
+            poleChoiceRadio += '<img class="poleImage" alt="Minor concern" title="Mark as a minor concern" width="20" src="' + chrome.runtime.getURL('images/minorConcern.png') + '"/>'
             break
         }
         poleChoiceRadio += ' <span class="swal2-label" style="margin-right:5%;" title="\'+e+\'">' + e + '</span>'

@@ -8,7 +8,6 @@ const ExportSchema = require('../specific/review/ExportSchema')
 const ReviewSchema = require('../model/schema/Review')
 const Events = require('./Events')
 const TagManager = require('./TagManager')
-const HypothesisClientManager = require('../storage/hypothesis/HypothesisClientManager')
 
 const LocalStorageManager = require('../storage/local/LocalStorageManager')
 
@@ -121,7 +120,7 @@ class GroupSelector {
   }
 
   checkIsLoggedIn (callback) {
-    let sidebarURL = chrome.extension.getURL('pages/sidebar/groupSelection.html')
+    let sidebarURL = chrome.runtime.getURL('pages/sidebar/groupSelection.html')
     $.get(sidebarURL, (html) => {
       // Append sidebar to content
       $('#abwaSidebarContainer').append($.parseHTML(html))
@@ -136,8 +135,6 @@ class GroupSelector {
             $('#loggedInGroupContainer').attr('aria-hidden', 'true')
             // Hide purposes wrapper
             $('#purposesWrapper').attr('aria-hidden', 'true')
-            // Start listening to when is logged in continuously
-            chrome.runtime.sendMessage({scope: 'hypothesis', cmd: 'startListeningLogin'})
             // Open the sidebar to notify user that needs to log in
             window.abwa.sidebar.openSidebar()
             if (_.isFunction(callback)) {
@@ -161,13 +158,6 @@ class GroupSelector {
         }
       } else {
         this.groups = groups
-        // TODO Improve this method somehow to remove from here
-        // Remove public group in hypothes.is
-        if (LanguageUtils.isInstanceOf(window.abwa.storageManager, HypothesisClientManager)) {
-          _.remove(this.groups, (group) => {
-            return group.id === '__world__'
-          })
-        }
         // TODO Remove groups that are not related to Review&Go from storage
         if (_.isFunction(callback)) {
           callback(null, groups)

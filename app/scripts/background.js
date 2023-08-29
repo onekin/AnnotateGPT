@@ -6,38 +6,26 @@ chrome.runtime.onInstalled.addListener((details) => {
 })
 
 chrome.tabs.onUpdated.addListener((tabId) => {
-  chrome.pageAction.show(tabId)
+  chrome.action.show(tabId)
 })
 
 chrome.tabs.onCreated.addListener(() => {
 
 })
 
-// const HypothesisManager = require('./background/HypothesisManager')
-// const StorageManager = require('./background/StorageManager')
 const LLMManager = require('./background/LLM_Manager')
 const Popup = require('./popup/Popup')
-
 const _ = require('lodash')
 
 const RecentActivity = require('./background/RecentActivity')
 
 class Background {
   constructor () {
-    // this.hypothesisManager = null
     this.tabs = {}
     this.recentActivityTabs = {}
   }
 
   init () {
-    // Initialize hypothesis manager
-    // this.hypothesisManager = new HypothesisManager()
-    // this.hypothesisManager.init()
-
-    // Initialize storage manager
-    // this.storageManager = new StorageManager()
-    // this.storageManager.init()
-
     // Initialize LLM manager
     this.llmManager = new LLMManager()
     this.llmManager.init()
@@ -45,7 +33,7 @@ class Background {
     this.recentActivity = new RecentActivity()
 
     // Initialize page_action event handler
-    chrome.pageAction.onClicked.addListener((tab) => {
+    chrome.action.onClicked.addListener((tab) => {
       // Check if current tab is a local file
       if (tab.url.startsWith('chrome://newtab') || (tab.url.startsWith('chrome-extension://') && tab.url.endsWith('pages/specific/review/recentActivity.html'))) {
         if (this.recentActivityTabs[tab.id]) {
@@ -54,12 +42,12 @@ class Background {
               this.recentActivityTabs[tab.id].deactivate()
             })
           } else {
-            chrome.tabs.update(tab.id, {url: chrome.extension.getURL('pages/specific/review/recentActivity.html')}, () => {
+            chrome.tabs.update(tab.id, {url: chrome.runtime.getURL('pages/specific/review/recentActivity.html')}, () => {
               this.recentActivityTabs[tab.id].activate()
             })
           }
         } else {
-          chrome.tabs.update(tab.id, {url: chrome.extension.getURL('pages/specific/review/recentActivity.html')}, () => {
+          chrome.tabs.update(tab.id, {url: chrome.runtime.getURL('pages/specific/review/recentActivity.html')}, () => {
             this.recentActivityTabs[tab.id] = new RecentActivity()
             this.recentActivityTabs[tab.id].activate()
           })
@@ -147,5 +135,5 @@ class Background {
   }
 }
 
-window.background = new Background()
-window.background.init()
+const background = new Background()
+background.init()

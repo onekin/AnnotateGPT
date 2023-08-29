@@ -29,26 +29,26 @@ if (document && document.head) {
 class ReviewGenerator {
   init (callback) {
     // Create generator button
-    let generatorWrapperURL = chrome.extension.getURL('pages/specific/review/generator.html')
+    let generatorWrapperURL = chrome.runtime.getURL('pages/specific/review/generator.html')
     axios.get(generatorWrapperURL).then((response) => {
       document.querySelector('#abwaSidebarContainer').insertAdjacentHTML('afterbegin', response.data)
       this.container = document.querySelector('#reviewGenerator')
       // Set generator image and event
-      let generatorImageURL = chrome.extension.getURL('/images/generator.png')
+      let generatorImageURL = chrome.runtime.getURL('/images/generator.png')
       this.generatorImage = this.container.querySelector('#reviewGeneratorButton')
       this.generatorImage.src = generatorImageURL
       this.generatorImage.addEventListener('click', () => {
         this.generateReviewButtonHandler()
       })
       // Set delete annotations image and event
-      let deleteAnnotationsImageURL = chrome.extension.getURL('/images/deleteAnnotations.png')
+      let deleteAnnotationsImageURL = chrome.runtime.getURL('/images/deleteAnnotations.png')
       this.deleteAnnotationsImage = this.container.querySelector('#deleteAnnotationsButton')
       this.deleteAnnotationsImage.src = deleteAnnotationsImageURL
       this.deleteAnnotationsImage.addEventListener('click', () => {
         this.deleteAnnotations()
       })
       // Set create canvas image and event
-      let overviewImageURL = chrome.extension.getURL('/images/overview.png')
+      let overviewImageURL = chrome.runtime.getURL('/images/overview.png')
       this.overviewImage = this.container.querySelector('#overviewButton')
       this.overviewImage.src = overviewImageURL
       this.overviewImage.addEventListener('click', () => {
@@ -62,14 +62,14 @@ class ReviewGenerator {
         this.resume()
       })*/
       // Set import export image and event
-      let importExportImageURL = chrome.extension.getURL('/images/importExport.png')
+      let importExportImageURL = chrome.runtime.getURL('/images/importExport.png')
       this.importExportImage = this.container.querySelector('#importExportButton')
       this.importExportImage.src = importExportImageURL
       this.importExportImage.addEventListener('click', () => {
         this.importExportButtonHandler()
       })
       // Set configuration button
-      let configurationImageURL = chrome.extension.getURL('/images/configuration.png')
+      let configurationImageURL = chrome.runtime.getURL('/images/configuration.png')
       this.configurationImage = this.container.querySelector('#configurationButton')
       this.configurationImage.src = configurationImageURL
       this.configurationImage.addEventListener('click', () => {
@@ -379,9 +379,9 @@ class ReviewGenerator {
             } else if (key === 'questionnaire') {
               window.open("https://forms.gle/5u8wsh2xUW8KcdtC9","_blank")
             } else if (key === 'recentActivity') {
-              window.open(chrome.extension.getURL('/pages/specific/review/recentActivity.html'),"_blank")
+              window.open(chrome.runtime.getURL('/pages/specific/review/recentActivity.html'),"_blank")
             } else if (key === 'config') {
-              window.open(chrome.extension.getURL('/pages/options.html'),"_blank")
+              window.open(chrome.runtime.getURL('/pages/options.html'),"_blank")
             }
           },
           items: items
@@ -482,7 +482,7 @@ class ReviewGenerator {
     window.abwa.sidebar.closeSidebar()
     Alerts.loadingAlert({text: chrome.i18n.getMessage('GeneratingReviewReport')})
     let review = this.parseAnnotations(window.abwa.contentAnnotator.allAnnotations)
-    let canvasPageURL = chrome.extension.getURL('pages/specific/review/reviewCanvas.html')
+    let canvasPageURL = chrome.runtime.getURL('pages/specific/review/reviewCanvas.html')
     axios.get(canvasPageURL).then((response) => {
       document.body.lastChild.insertAdjacentHTML('afterend', response.data)
       document.querySelector("#abwaSidebarButton").style.display = "none"

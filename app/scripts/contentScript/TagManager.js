@@ -1,7 +1,6 @@
 const _ = require('lodash')
 const $ = require('jquery')
 const jsYaml = require('js-yaml')
-const ModeManager = require('./ModeManager')
 const LanguageUtils = require('../utils/LanguageUtils')
 const ColorUtils = require('../utils/ColorUtils')
 const Events = require('./Events')
@@ -75,7 +74,7 @@ class TagManager {
   }
 
   initTagsStructure (callback) {
-    let tagWrapperUrl = chrome.extension.getURL('pages/sidebar/tagWrapper.html')
+    let tagWrapperUrl = chrome.runtime.getURL('pages/sidebar/tagWrapper.html')
     $.get(tagWrapperUrl, (html) => {
       $('#abwaSidebarContainer').append($.parseHTML(html))
       this.tagsContainer = {evidencing: document.querySelector('#tagsEvidencing')}
@@ -326,13 +325,6 @@ class TagManager {
   }
 
   initEventHandlers (callback) {
-    // For mode change
-    this.events.modeChange = {
-      element: document,
-      event: Events.modeChanged,
-      handler: (event) => { this.modeChangeHandler(event) }
-    }
-    this.events.modeChange.element.addEventListener(this.events.modeChange.event, this.events.modeChange.handler, false)
     // For annotation event, reload sidebar with elements chosen and not chosen ones
     this.events.annotationCreated = {
       element: document,
@@ -384,12 +376,6 @@ class TagManager {
         // Change to a darker color
         tagButton.style.background = ColorUtils.setAlphaToColor(ColorUtils.colorFromString(tagButton.style.backgroundColor), 0.6)
       }
-    }
-  }
-
-  modeChangeHandler (event) {
-    if (event.detail.mode === ModeManager.modes.evidencing) {
-      this.showEvidencingTagsContainer()
     }
   }
 

@@ -487,7 +487,7 @@ class CustomCriteriasManager {
                               })
                             } else {
                               let callback = () => {
-                                window.open(chrome.extension.getURL('pages/options.html'))
+                                window.open(chrome.runtime.getURL('pages/options.html'))
                               }
                               Alerts.infoAlert({
                                 text: 'Please, configure your LLM.',

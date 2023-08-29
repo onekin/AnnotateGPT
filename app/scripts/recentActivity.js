@@ -1,6 +1,5 @@
 /* eslint-disable */
 const ChromeStorage = require('./utils/ChromeStorage')
-const HypothesisClientManager = require('./storage/hypothesis/HypothesisClientManager')
 const LocalStorageManager = require('./storage/local/LocalStorageManager')
 
 let storageManager
@@ -61,14 +60,8 @@ let callback = () => {
     })
   })
 }
-let initStorage = (storage) => {
-  if (storage === 'hypothesis') {
-    // Hypothesis
-    storageManager = new HypothesisClientManager()
-  } else {
-    // Local storage
-    storageManager = new LocalStorageManager()
-  }
+let initStorage = () => {
+  storageManager = new LocalStorageManager()
   storageManager.init((err) => {
     if (_.isFunction(callback)) {
       if (err) {

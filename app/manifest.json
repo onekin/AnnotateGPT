@@ -3,15 +3,13 @@
   "short_name": "__MSG_appShortName__",
   "description": "__MSG_appDescription__",
   "version": "0.0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "default_locale": "en",
   "icons": {
     "256": "images/icon-512.png"
   },
   "background": {
-    "scripts": [
-      "scripts/background.js"
-    ]
+    "service_worker": "scripts/background.js"
   },
   "content_scripts": [
     {
@@ -22,23 +20,33 @@
       "all_frames": false
     }
   ],
-  "page_action": {
+  "action": {
     "default_icon": "images/icon-38-bw.png",
     "default_title": "__MSG_browserActionTitle__"
   },
   "options_page": "pages/options.html",
   "options_ui": {
     "page": "pages/options.html",
-    "chrome_style": false,
     "open_in_tab": true
   },
   "permissions": [
-    "https://hypothes.is/",
     "storage",
     "tabs",
-    "file://*/*",
     "unlimitedStorage"
   ],
-  "web_accessible_resources": ["pages/*.html", "content/*", "images/*"],
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyxi8M+JFR2oEdi+LrIIpaUNu1B/Rmb8RRRvyJL7FUoh8ytg0G3a3Jq7Y6CpIaCU6bdrfSAGXteLTJJMerc3nFzLLTp0ylbzfFeEucPbSzZrQHXgiqW6DKc/TmvlcajS5ycfXwLUM2sDRy+BgD0FwEQ6bsR/6rWz1YbCB4BqKyVM/vXBy2qSOo3QVUvQeY+KURZyYsjD+91Lw/hMZdc2sYYf7MO+73UKtRyTZ5bqFceIHl0PHEjbHQa6WZ6gTx7xBo2jmtwhpQlUXkhEzM9rsKWrQ0HnaNpePJuvShOzt+ab61Q06clnnLTY42RwyqTCZhzZx+NzrGTFysOPzVRfcGwIDAQAB"
+  "host_permissions": [
+    "file://*/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "pages/*.html",
+        "content/*",
+        "images/*"
+      ],
+      "matches": [
+        "file://*/*"
+      ]
+    }
+  ]
 }

@@ -5,7 +5,6 @@ const ContentTypeManager = require('./ContentTypeManager')
 const Sidebar = require('./Sidebar')
 const TagManager = require('./TagManager')
 const Events = require('./Events')
-const ModeManager = require('./ModeManager')
 const RolesManager = require('./RolesManager')
 const GroupSelector = require('./GroupSelector')
 const LocalStorageManager = require('../storage/local/LocalStorageManager')
@@ -112,18 +111,6 @@ class ContentScriptManager {
     }
     window.abwa.rolesManager = new RolesManager()
     window.abwa.rolesManager.init(() => {
-      if (_.isFunction(callback)) {
-        callback()
-      }
-    })
-  }
-
-  reloadModeManager (callback) {
-    if (window.abwa.modeManager) {
-      window.abwa.modeManager.destroy()
-    }
-    window.abwa.modeManager = new ModeManager()
-    window.abwa.modeManager.init(() => {
       if (_.isFunction(callback)) {
         callback()
       }
