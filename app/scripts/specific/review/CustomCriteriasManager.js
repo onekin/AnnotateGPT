@@ -414,8 +414,8 @@ class CustomCriteriasManager {
                     if (llm && llm !== '') {
                       let selectedLLM = llm
                       Alerts.confirmAlert({
-                        title: criterion + ' assessment',
-                        text: 'Do you want to assess this criterion using ' + llm + '?',
+                        title: 'Find annotations for ' + criterion,
+                        text: 'Do you want to create new annotations for this criterion using ' + llm + '?',
                         cancelButtonText: 'Cancel',
                         callback: async () => {
                           let documents = []
@@ -506,9 +506,142 @@ class CustomCriteriasManager {
                   })
                 }
               } else if (key === 'llmResume') {
-                this.modifyCriteriaHandler(currentTagGroup)
+                if (description.length < 20) {
+                  Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
+                } else {
+                  // this.modifyCriteriaHandler(currentTagGroup)
+                  chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
+                    if (llm === '') {
+                      llm = Config.review.defaultLLM
+                    }
+                    if (llm && llm !== '') {
+                      let selectedLLM = llm
+                      Alerts.confirmAlert({
+                        title: criterion + ' assessment',
+                        text: 'Do you want to assess this criterion using ' + llm + '?',
+                        cancelButtonText: 'Cancel',
+                        callback: async () => {
+                          let documents = []
+                          documents = await LLMTextUtils.loadDocument()
+                          chrome.runtime.sendMessage({
+                            scope: 'llm',
+                            cmd: 'getAPIKEY',
+                            data: selectedLLM
+                          }, ({ apiKey }) => {
+                            let callback = (json) => {
+                              let comment = json.comment
+                              let sentiment = json.sentiment
+                              Alerts.infoAlert({
+                                title: 'The criterion ' + criterion + ' is ' + sentiment,
+                                text: comment,
+                                confirmButtonText: 'OK',
+                                showCancelButton: false,
+                                callback: () => {
+                                  console.log('Save annotation')
+                                }
+                              })
+                            }
+                            if (apiKey && apiKey !== '') {
+                              let resumeQuery = Config.review.resumeQuery
+                              resumeQuery = resumeQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion)
+                              let params = {
+                                criterion: criterion,
+                                description: description,
+                                apiKey: apiKey,
+                                documents: documents,
+                                callback: callback,
+                                criterionQuery: resumeQuery
+                              }
+                              if (selectedLLM === 'anthropic') {
+                                AnthropicManager.askCriteria(params)
+                              } else if (selectedLLM === 'openAI') {
+                                console.log('OpenAIQuestion')
+                                OpenAIManager.askCriteria(params)
+                              }
+                            } else {
+                              let callback = () => {
+                                window.open(chrome.runtime.getURL('pages/options.html'))
+                              }
+                              Alerts.infoAlert({
+                                text: 'Please, configure your LLM.',
+                                title: 'Please select a LLM and provide your API key',
+                                callback: callback()
+                              })
+                            }
+                          })
+                        }
+                      })
+                    }
+                  })
+                }
               } else if (key === 'llmAlternative') {
-                this.modifyCriteriaHandler(currentTagGroup)
+                if (description.length < 20) {
+                  Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
+                } else {
+                  // this.modifyCriteriaHandler(currentTagGroup)
+                  chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
+                    if (llm === '') {
+                      llm = Config.review.defaultLLM
+                    }
+                    if (llm && llm !== '') {
+                      let selectedLLM = llm
+                      Alerts.confirmAlert({
+                        title: criterion + ' assessment',
+                        text: 'Do you want to generate alternative view points for this criterion using ' + llm + '?',
+                        cancelButtonText: 'Cancel',
+                        callback: async () => {
+                          let documents = []
+                          documents = await LLMTextUtils.loadDocument()
+                          chrome.runtime.sendMessage({
+                            scope: 'llm',
+                            cmd: 'getAPIKEY',
+                            data: selectedLLM
+                          }, ({ apiKey }) => {
+                            let callback = (json) => {
+                              let comment = json.answer
+                              Alerts.infoAlert({
+                                title: 'These are the alternative viewpoint for ' + criterion,
+                                text: comment,
+                                confirmButtonText: 'OK',
+                                showCancelButton: false,
+                                callback: () => {
+                                  console.log('Save annotation')
+                                }
+                              })
+                            }
+                            if (apiKey && apiKey !== '') {
+                              let alternativeQuery = Config.review.alternativeQuery
+                              alternativeQuery = alternativeQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion)
+                              let params = {
+                                criterion: criterion,
+                                description: description,
+                                apiKey: apiKey,
+                                documents: documents,
+                                callback: callback,
+                                criterionQuery: alternativeQuery
+                              }
+                              if (selectedLLM === 'anthropic') {
+                                AnthropicManager.askCriteria(params)
+                              } else if (selectedLLM === 'openAI') {
+                                console.log('OpenAIQuestion')
+                                OpenAIManager.askCriteria(params)
+                              }
+                            } else {
+                              let callback = () => {
+                                window.open(chrome.runtime.getURL('pages/options.html'))
+                              }
+                              Alerts.infoAlert({
+                                text: 'Please, configure your LLM.',
+                                title: 'Please select a LLM and provide your API key',
+                                callback: callback()
+                              })
+                            }
+                          })
+                        }
+                      })
+                    }
+                  })
+                }
               }
             },
             items: items
