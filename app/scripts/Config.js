@@ -9,7 +9,7 @@ const Config = {
       ' Met, Partially met, or Not met. Then, you have to explain  why it is met or not met and finally provide three' +
       ' text fragments as pieces of evidence from the provided article that supports the decision of the result. You have to provide the response in JSON format with' +
       ' the following keys: -name (contains the criteria name), -sentiment (met, partially met or not met), -comment (the reason of the results),' +
-      ' -paragraphs (an array with the THREE text fragments written in the same way as in the article that support the result)',
+      ' -paragraphs (an array with the THREE text fragments at most written in the same way as in the article that support the result)',
     tags: { // Defined tags for the domain
       grouped: { // Grouped annotations
         group: 'criteria',

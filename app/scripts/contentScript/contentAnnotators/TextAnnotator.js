@@ -17,8 +17,8 @@ const Alerts = require('../../utils/Alerts')
 const ANNOTATION_OBSERVER_INTERVAL_IN_SECONDS = 3
 const ANNOTATIONS_UPDATE_INTERVAL_IN_SECONDS = 60
 
+const swal = require('sweetalert2')
 const Config = require('../../Config')
-let swal = require('sweetalert2')
 
 class TextAnnotator extends ContentAnnotator {
   constructor (config) {
@@ -273,10 +273,10 @@ class TextAnnotator extends ContentAnnotator {
       text: '',
       uri: window.abwa.contentTypeManager.getDocumentURIToSaveInStorage()
     }
-    if (commentData.comment) {
+    if (commentData && commentData.comment) {
       data.text = JSON.stringify({comment: commentData.comment, suggestedLiterature: []})
     }
-    if (commentData.sentiment) {
+    if (commentData && commentData.sentiment) {
       let tag = TextAnnotator.findTagForSentiment(commentData.sentiment)
       data.tags.push(tag)
     }
@@ -662,9 +662,9 @@ class TextAnnotator extends ContentAnnotator {
         poleChoiceRadio += ' <span class="swal2-label" style="margin-right:5%;" title="\'+e+\'">' + e + '</span>'
       })
       poleChoiceRadio += '</div>'
-
-      swal({
-        html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<textarea id="swal-textarea" class="swal2-textarea" placeholder="Type your feedback here...">' + form.comment + '</textarea>' + '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
+      let criterionQuestion = '<div class="askDiv"><input placeholder="Clarify by LLM" class="swal2-input askImage" id="swal-criterionQuestion" ><img width="9%" class="askImage askImageHover" alt="Ask" src="' + chrome.runtime.getURL('images/ask.png') + '"/></div>'
+      swal.fire({
+        html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<textarea id="swal-textarea" class="swal2-textarea" placeholder="Type your feedback here...">' + form.comment + '</textarea>' + criterionQuestion + '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
         showLoaderOnConfirm: true,
         width: '40em',
         preConfirm: () => {

@@ -70,7 +70,6 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "chai": "^4.2.0",
-    "chromereload": "0.x.x",
     "debounce": "^1.2.0",
     "del": "3.x.x",
     "dotenv": "^5.0.1",

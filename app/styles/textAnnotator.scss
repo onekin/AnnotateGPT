@@ -29,3 +29,34 @@
 .poleRadio + .poleImage:hover{
   opacity:1;
 }
+
+#swal-criterionQuestion{
+  width: 88%;
+}
+
+.askDiv{
+  display: inline-block;
+  vertical-align: center; /* Align elements at the top */
+  width: 100%;
+  /* box-sizing: border-box; /* Include padding and border in width */
+  /* height: 100px; Set the desired height */
+  /* border: 1px solid #ccc; Optional: Add borders for visual separation */
+  text-align: center; /* Optional: Center content horizontally */
+  line-height: 100px; /* Optional: Vertically center content */
+  /* font-size: 16px; /* Optional: Restore font size */
+}
+
+.askImage{
+  justify-content: center;
+  align-items: center;
+}
+
+
+.askImageHover{
+  opacity:0.4;
+  vertical-align:middle;
+}
+.askImageHover:hover{
+  opacity:1;
+}
+

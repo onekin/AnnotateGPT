@@ -1,12 +1,12 @@
 // Enable chromereload by uncommenting this line:
-import 'chromereload/devonly'
+// import 'chromereload/devonly'
 
 chrome.runtime.onInstalled.addListener((details) => {
   console.log('previousVersion', details.previousVersion)
 })
 
 chrome.tabs.onUpdated.addListener((tabId) => {
-  chrome.action.show(tabId)
+  // chrome.action.show(tabId)
 })
 
 chrome.tabs.onCreated.addListener(() => {
@@ -16,7 +16,6 @@ chrome.tabs.onCreated.addListener(() => {
 const LLMManager = require('./background/LLM_Manager')
 const Popup = require('./popup/Popup')
 const _ = require('lodash')
-
 const RecentActivity = require('./background/RecentActivity')
 
 class Background {
@@ -29,7 +28,6 @@ class Background {
     // Initialize LLM manager
     this.llmManager = new LLMManager()
     this.llmManager.init()
-
     this.recentActivity = new RecentActivity()
 
     // Initialize page_action event handler
