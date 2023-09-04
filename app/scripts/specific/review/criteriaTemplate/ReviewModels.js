@@ -1,22 +1,17 @@
 const ReviewModels = {
   reviews: {
     general: {
-      name: 'General standard',
-      fileName: 'general.json'
+      name: 'General standard'
     },
     engineering: {
-      name: 'Engineering research',
-      fileName: 'general.json'
+      name: 'Engineering research'
     },
     actionResearch: {
-      name: 'Action research',
-      fileName: 'general.json'
+      name: 'Action research'
     },
     caise: {
-      name: 'CAiSE Standard',
-      fileName: 'general.json'
+      name: 'CAiSE Standard'
     }
-
   }
 }
 

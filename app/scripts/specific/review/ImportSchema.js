@@ -1,5 +1,9 @@
 const Alerts = require('../../utils/Alerts')
 const FileUtils = require('../../utils/FileUtils')
+const general = require('./criteriaTemplate/general.json')
+const engineering = require('./criteriaTemplate/general.json')
+const caise = require('./criteriaTemplate/caise.json')
+const actionResearch = require('./criteriaTemplate/caise.json')
 
 class ImportSchema {
   static createConfigurationAnnotationsFromReview ({review, callback}) {
@@ -67,9 +71,10 @@ class ImportSchema {
       let selectFrom = document.createElement('select')
       selectFrom.id = 'selectedReview'
       Object.keys(reviewSchemas).forEach(review => {
+        let reviewItem = reviewSchemas[review]
         let option = document.createElement('option')
-        option.text = review.name
-        option.value = review.fileName
+        option.text = reviewItem.name
+        option.value = reviewItem.name
         selectFrom.add(option)
       })
       html += 'Selected model:' + selectFrom.outerHTML + '<br>'
@@ -83,10 +88,16 @@ class ImportSchema {
         },
         showCancelButton: true,
         callback: (err) => {
-          let filePath = './criteriaTemplate/' + reviewFile
-          filePath = './criteriaTemplate/general.json'
-          const jsonObject = require(filePath)
-          console.log(jsonObject)
+          let jsonObject
+          if (reviewFile === 'General standard') {
+            jsonObject = general
+          } else if (reviewFile === 'Engineering research') {
+            jsonObject = engineering
+          } else if (reviewFile === 'Action research') {
+            jsonObject = actionResearch
+          } else if (reviewFile === 'CAiSE standard') {
+            jsonObject = caise
+          }
           if (err) {
             callback(new Error('Unable to read json file: ' + err.message))
           } else {

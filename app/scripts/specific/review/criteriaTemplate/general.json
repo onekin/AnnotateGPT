@@ -84,19 +84,19 @@
       "group": "Essential",
       "name": "Data collection",
       "description": "describes in detail what, where, when and how data were collected (see the Sampling Supplement)",      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
+      {
+        "name": "Strength",
+        "description": ""
+      },
+      {
+        "name": "Minor weakness",
+        "description": ""
+      },
+      {
+        "name": "Major weakness",
+        "description": ""
+      }
+    ],
       "custom": true
     },
     {
