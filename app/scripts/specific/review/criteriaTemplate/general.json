@@ -1,9 +1,9 @@
 {
   "criteria": [
     {
-      "name": "Artifact description",
       "group": "Essential",
-      "description": "describes the proposed artifact in adequate detail",
+      "name": "Research purpose",
+      "description": "states a purpose, problem, objective, or research question",
       "levels": [
         {
           "name": "Strength",
@@ -21,9 +21,9 @@
       "custom": true
     },
     {
-      "name": "Justification",
       "group": "Essential",
-      "description": "justifies the need for, usefulness of, or relevance of the proposed artifact",
+      "name": "Motivation",
+      "description": "explains why the problem, objective, or research question is important (motivation)",
       "levels": [
         {
           "name": "Strength",
@@ -41,9 +41,9 @@
       "custom": true
     },
     {
-      "name": "Limitations",
       "group": "Essential",
-      "description": "conceptually evaluates the artifact; discusses its strengths, weaknesses and limitations",
+      "name": "Definitions",
+      "description": "defines jargon, acronyms and key concepts",
       "levels": [
         {
           "name": "Strength",
@@ -61,9 +61,9 @@
       "custom": true
     },
     {
-      "name": "State-of-art",
       "group": "Essential",
-      "description": "EITHER: discusses state-of-art alternatives (and their strengths, weaknesses and limitations)\nOR: explains why no state-of-art alternatives exist\nOR: provides compelling argument that direct comparisons are impractical",
+      "name": "Methodology",
+      "description": "methodology is appropriate (not necessarily optimal) for stated purpose or questions",
       "levels": [
         {
           "name": "Strength",
@@ -81,9 +81,28 @@
       "custom": true
     },
     {
-      "name": "Evaluation",
       "group": "Essential",
-      "description": "Empirically evaluates the proposed artifact using:\naction research, in which the researchers intervene a real organization using the artifact,\na case study in which a real organization uses the artifact without researcher intervention,\na controlled experiment in which human participants use the artifact,\na simulation in which the artifact is used in an artificial environment, or\nanother method for which a clear and convincing rationale is provided",
+      "name": "Data collection",
+      "description": "describes in detail what, where, when and how data were collected (see the Sampling Supplement)",      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Essential",
+      "name": "Data analysis description",
+      "description": "describes in detail how the data were analyzed",
       "levels": [
         {
           "name": "Strength",
@@ -101,9 +120,9 @@
       "custom": true
     },
     {
-      "name": "Methodology description",
       "group": "Essential",
-      "description": "clearly indicates the empirical methodology being used (e.g. action research, controlled experiment)",
+      "name": "Statistical assumptions",
+      "description": "discusses and validates assumptions of any statistical tests used",
       "levels": [
         {
           "name": "Strength",
@@ -121,9 +140,9 @@
       "custom": true
     },
     {
-      "name": "Comparison",
       "group": "Essential",
-      "description": "EITHER: empirically compares the artifact to one or more state-of-the-art alternative artifacts\nOR: empirically compares the artifact to one or more state-of-the-art benchmarks\nOR: provides a clear and convincing rationale for why comparative evaluation is impractical",
+      "name": "Result presentation",
+      "description": "present results",
       "levels": [
         {
           "name": "Strength",
@@ -141,9 +160,9 @@
       "custom": true
     },
     {
-      "name": "Assumptions",
       "group": "Essential",
-      "description": "assumptions (if any) are explicit; do not contradict each other or the contribution’s goals; plausibly\nhold for the evaluation subjects",
+      "name": "Result addressing research",
+      "description": "results directly address research questions",
       "levels": [
         {
           "name": "Strength",
@@ -161,9 +180,9 @@
       "custom": true
     },
     {
-      "name": "Notation",
       "group": "Essential",
-      "description": "uses notation consistently (if any notation is used)",
+      "name": "Supported claims",
+      "description": "supports main claims or conclusions with explicit evidence (data/observations) or arguments",
       "levels": [
         {
           "name": "Strength",
@@ -181,9 +200,129 @@
       "custom": true
     },
     {
-      "name": "Theoretical basis",
+      "group": "Essential",
+      "name": "Results implications",
+      "description": "discusses implications of the results",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Essential",
+      "name": "Study limitations",
+      "description": "discusses the study's limitations and threats to validity",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "name": "Contribution to BoK",
+      "description": "contributes in some way to the collective body of knowledge",
+      "group": "Essential",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Essential",
+      "name": "Language misleading",
+      "description": "language is not misleading; any grammatical problems do not substantially hinder understanding",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "name": "Benefit risk balance",
+      "description": "balances the study's anticipated benefits with its potential risks or harms, minimizing risk or harm wherever possible (see the ethics supplements for studies with Human Participants or Secondary Data)",
+      "group": "Essential",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Essential",
+      "name": "Visualizations",
+      "description": "visualizations/graphs are not misleading (see the Information Visualization Supplement)",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
       "group": "Desirable",
-      "description": "reviews the theoretical basis of the artifact",
+      "name": "Related work synthesis",
+      "description": "summarizes and synthesizes a reasonable selection of related work",
       "levels": [
         {
           "name": "Strength",
@@ -201,9 +340,9 @@
       "custom": true
     },
     {
-      "name": "Arguments",
       "group": "Desirable",
-      "description": "provides correctness arguments of the key analytical and theoretical contributions (e.g. theorems,\ncomplexity analyses, mathematical proofs)",
+      "name": "Relation with related work",
+      "description": "clearly describes relationship between contribution(s) and related work",
       "levels": [
         {
           "name": "Strength",
@@ -221,9 +360,9 @@
       "custom": true
     },
     {
-      "name": "Running example",
       "group": "Desirable",
-      "description": "includes one or more running examples to elucidate the artifact",
+      "name": "Epistemological stance",
+      "description": "states epistemological stance (e.g. post-positivism, interpretivism, critical realism)",
       "levels": [
         {
           "name": "Strength",
@@ -241,9 +380,9 @@
       "custom": true
     },
     {
-      "name": "Industrial evaluation",
       "group": "Desirable",
-      "description": "",
+      "name": "Statistical power/saturation",
+      "description": "appropriate statistical power (for quantitative work) or saturation (for qualitative work)",
       "levels": [
         {
           "name": "Strength",
@@ -261,9 +400,9 @@
       "custom": true
     },
     {
-      "name": "Replication package",
       "group": "Desirable",
-      "description": "provides a replication package including datasets and analytical scripts and EITHER a\ncomprehensive description of the artifact OR source code if artifact is virtual",
+      "name": "Limitations mitigation",
+      "description": "reasonable attempts to investigate or mitigate limitations",
       "levels": [
         {
           "name": "Strength",
@@ -281,9 +420,9 @@
       "custom": true
     },
     {
-      "name": "Replication justification",
       "group": "Desirable",
-      "description": "justifies any items missing from replication package based on practical or ethical grounds.",
+      "name": "Study realism",
+      "description": "discusses study’s realism, assumptions and sensitivity of the results to its realism/assumptions",
       "levels": [
         {
           "name": "Strength",
@@ -301,9 +440,149 @@
       "custom": true
     },
     {
-      "name": "Contribution",
+      "group": "Desirable",
+      "name": "Recommendation providing",
+      "description": "provides plausibly useful interpretations or recommendations for practice, education or research",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Desirable",
+      "name": "Open sharing",
+      "description": "openly shares data and materials to the extent possible within practical and ethical limits (see the Open Science Supplement)",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Desirable",
+      "name": "Presentation",
+      "description": "concise, precise, well-organized and easy-to-read presentation",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Desirable",
+      "name": "Visualizations for argumentation",
+      "description": "visualizations (e.g. graphs, diagrams, tables) advance the paper’s arguments or contribution",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Desirable",
+      "name": "Researchers roles",
+      "description": "clarifies the roles and responsibilities of the researchers (i.e. who did what?)",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Desirable",
+      "name": "Auto-reflection",
+      "description": "provides an auto-reflection or assessment of the authors’ own work (e.g. lessons learned)",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Desirable",
+      "name": "Multiple raters use",
+      "description": "uses multiple raters for any subjective judgments (see the IRR/IRA Supplement)",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
       "group": "Extraordinary",
-      "description": "contributes to our collective understanding of design practices or principles",
+      "name": "Multiple data collection",
+      "description": "applies two or more data collection or analysis strategies to the same research question (see the Multimethodology Standard)",
       "levels": [
         {
           "name": "Strength",
@@ -319,11 +598,29 @@
         }
       ],
       "custom": true
-    },
-    {
-      "name": "Innovation",
+    },{
       "group": "Extraordinary",
-      "description": "the paper presents ground-breaking innovations with obvious real-world benefits",
+      "name": "Multiple epistemological perspectives",
+      "description": "approaches the same research question(s) from multiple epistemological perspectives",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },{
+      "group": "Extraordinary",
+      "name": "Research methodology innovation",
+      "description": "innovates on research methodology while completing an empirical study",
       "levels": [
         {
           "name": "Strength",

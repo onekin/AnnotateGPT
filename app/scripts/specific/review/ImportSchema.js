@@ -35,7 +35,7 @@ class ImportSchema {
     // Ask user to upload the file
     Alerts.inputTextAlert({
       title: 'Upload your configuration file',
-      html: 'Here you can upload your json file with the configuration for the Review&Go highlighter.',
+      html: 'Here you can upload your json file with the configuration for the CoReviewer highlighter.',
       input: 'file',
       callback: (err, file) => {
         if (err) {
@@ -52,6 +52,50 @@ class ImportSchema {
         }
       }
     })
+  }
+
+  /**
+   * Ask user for a review model and it returns a javascript object with the configuration
+   * @param callback
+   */
+  static askUserForStandardConfigurationSchema (callback) {
+    const ReviewModels = require('./criteriaTemplate/ReviewModels')
+    let reviewSchemas = ReviewModels.reviews
+    let showForm = () => {
+      // Create form
+      let html = ''
+      let selectFrom = document.createElement('select')
+      selectFrom.id = 'selectedReview'
+      Object.keys(reviewSchemas).forEach(review => {
+        let option = document.createElement('option')
+        option.text = review.name
+        option.value = review.fileName
+        selectFrom.add(option)
+      })
+      html += 'Selected model:' + selectFrom.outerHTML + '<br>'
+      let reviewFile
+      Alerts.multipleInputAlert({
+        title: 'Please, select one of the review models',
+        html: html,
+        // position: Alerts.position.bottom, // TODO Must be check if it is better to show in bottom or not
+        preConfirm: () => {
+          reviewFile = document.querySelector('#selectedReview').value
+        },
+        showCancelButton: true,
+        callback: (err) => {
+          let filePath = './criteriaTemplate/' + reviewFile
+          filePath = './criteriaTemplate/general.json'
+          const jsonObject = require(filePath)
+          console.log(jsonObject)
+          if (err) {
+            callback(new Error('Unable to read json file: ' + err.message))
+          } else {
+            callback(null, jsonObject)
+          }
+        }
+      })
+    }
+    showForm()
   }
 }
 

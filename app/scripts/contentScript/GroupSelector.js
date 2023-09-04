@@ -10,6 +10,7 @@ const Events = require('./Events')
 const TagManager = require('./TagManager')
 
 const LocalStorageManager = require('../storage/local/LocalStorageManager')
+const swal = require('sweetalert2')
 
 class GroupSelector {
   constructor () {
@@ -242,6 +243,13 @@ class GroupSelector {
     importGroupButton.id = 'importReviewModelButton'
     importGroupButton.addEventListener('click', this.createImportGroupButtonEventHandler())
     groupsContainer.appendChild(importGroupButton)
+    // Import button
+    let importStandardGroupButton = document.createElement('div')
+    importStandardGroupButton.className = 'groupSelectorButton'
+    importStandardGroupButton.innerText = 'Standard review models'
+    importStandardGroupButton.id = 'importStandardModelButton'
+    importStandardGroupButton.addEventListener('click', this.createImportStandardGroupButtonEventHandler())
+    groupsContainer.appendChild(importStandardGroupButton)
   }
 
   createGroupSelectorRenameOptionEventHandler (group) {
@@ -446,8 +454,71 @@ class GroupSelector {
     }
   }
 
+  createImportStandardGroupButtonEventHandler () {
+    return (e) => {
+      this.importStandardModelConfiguration()
+    }
+  }
+
   importCriteriaConfiguration () {
     ImportSchema.askUserForConfigurationSchema((err, jsonObject) => {
+      if (err) {
+        Alerts.errorAlert({text: 'Unable to parse json file. Error:<br/>' + err.message})
+      } else {
+        Alerts.inputTextAlert({
+          alertType: Alerts.alertType.warning,
+          title: 'Give a name to your imported review model',
+          text: 'When the configuration is imported a new highlighter is created. You can return to your other review models using the sidebar.',
+          inputPlaceholder: 'Type here the name of your review model...',
+          preConfirm: (groupName) => {
+            if (_.isString(groupName)) {
+              if (groupName.length <= 0) {
+                const swal = require('sweetalert2')
+                swal.showValidationMessage('Name cannot be empty.')
+              } else if (groupName.length > 25) {
+                const swal = require('sweetalert2')
+                swal.showValidationMessage('The review model name cannot be higher than 25 characters.')
+              } else {
+                return groupName
+              }
+            }
+          },
+          callback: (err, reviewName) => {
+            if (err) {
+              window.alert('Unable to load alert. Unexpected error, please contact developer.')
+            } else {
+              window.abwa.storageManager.client.createNewGroup({name: reviewName}, (err, newGroup) => {
+                if (err) {
+                  Alerts.errorAlert({text: 'Unable to create a new annotation group. Error: ' + err.message})
+                } else {
+                  let review = ReviewSchema.fromCriterias(jsonObject.criteria)
+                  review.storageGroup = newGroup
+                  Alerts.loadingAlert({title: 'Configuration in progress', text: 'We are configuring everything to start reviewing.', position: Alerts.position.center})
+                  ImportSchema.createConfigurationAnnotationsFromReview({
+                    review,
+                    callback: (err, annotations) => {
+                      if (err) {
+                        Alerts.errorAlert({ text: 'There was an error when configuring Review&Go highlighter' })
+                      } else {
+                        Alerts.closeAlert()
+                        // Update groups from storage
+                        this.retrieveGroups(() => {
+                          this.setCurrentGroup(review.storageGroup.id)
+                        })
+                      }
+                    }
+                  })
+                }
+              })
+            }
+          }
+        })
+      }
+    })
+  }
+
+  importStandardModelConfiguration () {
+    ImportSchema.askUserForStandardConfigurationSchema((err, jsonObject) => {
       if (err) {
         Alerts.errorAlert({text: 'Unable to parse json file. Error:<br/>' + err.message})
       } else {
