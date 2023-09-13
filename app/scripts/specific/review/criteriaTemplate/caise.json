@@ -1,309 +1,9 @@
 {
   "criteria": [
     {
-      "name": "Artifact description",
-      "group": "Essential",
-      "description": "describes the proposed artifact in adequate detail",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Justification",
-      "group": "Essential",
-      "description": "justifies the need for, usefulness of, or relevance of the proposed artifact",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Limitations",
-      "group": "Essential",
-      "description": "conceptually evaluates the artifact; discusses its strengths, weaknesses and limitations",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "State-of-art",
-      "group": "Essential",
-      "description": "EITHER: discusses state-of-art alternatives (and their strengths, weaknesses and limitations)\nOR: explains why no state-of-art alternatives exist\nOR: provides compelling argument that direct comparisons are impractical",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Evaluation",
-      "group": "Essential",
-      "description": "Empirically evaluates the proposed artifact using:\naction research, in which the researchers intervene a real organization using the artifact,\na case study in which a real organization uses the artifact without researcher intervention,\na controlled experiment in which human participants use the artifact,\na simulation in which the artifact is used in an artificial environment, or\nanother method for which a clear and convincing rationale is provided",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Methodology description",
-      "group": "Essential",
-      "description": "clearly indicates the empirical methodology being used (e.g. action research, controlled experiment)",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Comparison",
-      "group": "Essential",
-      "description": "EITHER: empirically compares the artifact to one or more state-of-the-art alternative artifacts\nOR: empirically compares the artifact to one or more state-of-the-art benchmarks\nOR: provides a clear and convincing rationale for why comparative evaluation is impractical",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Assumptions",
-      "group": "Essential",
-      "description": "assumptions (if any) are explicit; do not contradict each other or the contribution’s goals; plausibly\nhold for the evaluation subjects",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Notation",
-      "group": "Essential",
-      "description": "uses notation consistently (if any notation is used)",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Theoretical basis",
-      "group": "Desirable",
-      "description": "reviews the theoretical basis of the artifact",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Arguments",
-      "group": "Desirable",
-      "description": "provides correctness arguments of the key analytical and theoretical contributions (e.g. theorems,\ncomplexity analyses, mathematical proofs)",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Running example",
-      "group": "Desirable",
-      "description": "includes one or more running examples to elucidate the artifact",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Industrial evaluation",
-      "group": "Desirable",
-      "description": "",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Replication package",
-      "group": "Desirable",
-      "description": "provides a replication package including datasets and analytical scripts and EITHER a\ncomprehensive description of the artifact OR source code if artifact is virtual",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
-      "name": "Replication justification",
-      "group": "Desirable",
-      "description": "justifies any items missing from replication package based on practical or ethical grounds.",
-      "levels": [
-        {
-          "name": "Strength",
-          "description": ""
-        },
-        {
-          "name": "Minor weakness",
-          "description": ""
-        },
-        {
-          "name": "Major weakness",
-          "description": ""
-        }
-      ],
-      "custom": true
-    },
-    {
       "name": "Contribution",
-      "group": "Extraordinary",
-      "description": "contributes to our collective understanding of design practices or principles",
+      "group": "Criteria",
+      "description": "contribution of the paper being reviewed to the collective body of knowledge",
       "levels": [
         {
           "name": "Strength",
@@ -321,9 +21,49 @@
       "custom": true
     },
     {
-      "name": "Innovation",
-      "group": "Extraordinary",
-      "description": "the paper presents ground-breaking innovations with obvious real-world benefits",
+      "name": "Paper's strengths",
+      "group": "Criteria",
+      "description": "the strengths of the paper being reviewed",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "name": "Paper's weaknesses",
+      "group": "Criteria",
+      "description": "the weaknesses of the paper being reviewed",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "name": "Overall evaluation",
+      "group": "Criteria",
+      "description": "a general assessment of the paper being reviewed",
       "levels": [
         {
           "name": "Strength",

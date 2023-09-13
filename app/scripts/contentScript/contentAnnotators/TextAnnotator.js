@@ -1,24 +1,29 @@
 // const ReviewAssistant = require('../../specific/review/ReviewAssistant')
-const ContentAnnotator = require('./ContentAnnotator')
-const ContentTypeManager = require('../ContentTypeManager')
-const Tag = require('../Tag')
-const TagGroup = require('../TagGroup')
-const Events = require('../Events')
-const RolesManager = require('../RolesManager')
-const DOMTextUtils = require('../../utils/DOMTextUtils')
-const PDFTextUtils = require('../../utils/PDFTextUtils')
-const LanguageUtils = require('../../utils/LanguageUtils')
-const $ = require('jquery')
-require('jquery-contextmenu/dist/jquery.contextMenu')
-const _ = require('lodash')
+import ContentAnnotator from './ContentAnnotator'
+import ContentTypeManager from '../ContentTypeManager'
+import Tag from '../Tag'
+import TagGroup from '../TagGroup'
+import Events from '../Events'
+import RolesManager from '../RolesManager'
+import DOMTextUtils from '../../utils/DOMTextUtils'
+import PDFTextUtils from '../../utils/PDFTextUtils'
+import LanguageUtils from '../../utils/LanguageUtils'
+import $ from 'jquery'
+import _ from 'lodash'
+import Alerts from '../../utils/Alerts'
+import LLMTextUtils from '../../utils/LLMTextUtils'
+import Config from '../../Config'
+import AnthropicManager from '../../llm/anthropic/AnthropicManager'
+import OpenAIManager from '../../llm/openAI/OpenAIManager'
 require('components-jqueryui')
-const Alerts = require('../../utils/Alerts')
+require('jquery-contextmenu/dist/jquery.contextMenu')
+let swal = null
+if (document && document.head) {
+  swal = require('sweetalert2')
+}
 
 const ANNOTATION_OBSERVER_INTERVAL_IN_SECONDS = 3
 const ANNOTATIONS_UPDATE_INTERVAL_IN_SECONDS = 60
-
-const swal = require('sweetalert2')
-const Config = require('../../Config')
 
 class TextAnnotator extends ContentAnnotator {
   constructor (config) {
@@ -274,7 +279,11 @@ class TextAnnotator extends ContentAnnotator {
       uri: window.abwa.contentTypeManager.getDocumentURIToSaveInStorage()
     }
     if (commentData && commentData.comment) {
-      data.text = JSON.stringify({comment: commentData.comment, suggestedLiterature: []})
+      if (commentData.llm) {
+        data.text = JSON.stringify({comment: commentData.comment, suggestedLiterature: [], llm: commentData.llm})
+      } else {
+        data.text = JSON.stringify({comment: commentData.comment, suggestedLiterature: []})
+      }
     }
     if (commentData && commentData.sentiment) {
       let tag = TextAnnotator.findTagForSentiment(commentData.sentiment)
@@ -640,7 +649,12 @@ class TextAnnotator extends ContentAnnotator {
       }
 
       let groupTag = window.abwa.tagManager.getGroupFromAnnotation(annotation)
-      let criterionName = groupTag.config.name
+      let criterionName
+      if (form.llm) {
+        criterionName = groupTag.config.name + ' [highlighted by ' + form.llm + ']'
+      } else {
+        criterionName = groupTag.config.name
+      }
       let poles = groupTag.tags.map((e) => { return e.name })
       // let poleChoiceRadio = poles.length>0 ? '<h3>Pole</h3>' : ''
       let poleChoiceRadio = '<div>'
@@ -662,61 +676,73 @@ class TextAnnotator extends ContentAnnotator {
         poleChoiceRadio += ' <span class="swal2-label" style="margin-right:5%;" title="\'+e+\'">' + e + '</span>'
       })
       poleChoiceRadio += '</div>'
-      let selectors = annotation.target[0].selector
+      // let selectors = annotation.target[0].selector
       let fragmentText
-      let fragmentTextSelector
-      if (selectors) {
+      // let fragmentTextSelector
+      /* if (selectors) {
         fragmentTextSelector = selectors.find((selector) => {
           return selector.type === 'TextQuoteSelector'
         })
       }
-      fragmentText = fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '')
-      let criterionQuestion = '<div class="askDiv"><input placeholder="Clarify by LLM" class="swal2-input askImage" id="swal-criterionQuestion" ><img width="9%" class="askImage askImageHover" alt="Ask" src="' + chrome.runtime.getURL('images/ask.png') + '"/></div>'
-      swal.fire({
-        html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Text excerpt:</span><br/>' + '<textarea rows="10" cols="40" readonly id="swal-textarea">' + fragmentText + '</textarea>' + criterionQuestion + '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
-        showLoaderOnConfirm: true,
-        width: '40em',
-        preConfirm: () => {
-          let newComment = $('#swal-textarea').val()
-          let suggestedLiterature = Array.from($('#literatureList li span')).map((e) => { return $(e).attr('title') })
-          let level = $('.poleRadio:checked') != null && $('.poleRadio:checked').length === 1 ? $('.poleRadio:checked')[0].value : null
-          if (newComment !== null && newComment !== '') {
-            $.ajax('http://text-processing.com/api/sentiment/', {
-              method: 'POST',
-              data: {text: newComment}
-            }).done(function (ret) {
-              if (ret.label === 'neg' && ret.probability.neg > 0.55) {
-                swal({
-                  type: 'warning',
-                  text: 'The message may be ofensive. Please modify it.',
-                  showCancelButton: true,
-                  cancelButtonText: 'Modify comment',
-                  confirmButtonText: 'Save as it is',
-                  reverseButtons: true
-                }).then((result) => {
-                  if (result.value) {
-                    updateAnnotation(newComment, suggestedLiterature, level)
-                  } else if (result.dismiss === swal.DismissReason.cancel) {
-                    showAlert({comment: newComment, suggestedLiterature: suggestedLiterature})
-                  }
-                })
-              } else {
-                // Update annotation
-                updateAnnotation(newComment, suggestedLiterature, level)
-              }
-            })
-          } else {
-            // Update annotation
-            updateAnnotation('', suggestedLiterature, level)
-          }
-        },
-        onOpen: () => {
-          $('.removeReference').on('click', function () {
-            $(this).closest('li').remove()
-          })
-        }
-      })
+      fragmentText = fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '') */
+      fragmentText = form.comment
 
+      let criterionQuestion = '<div class="askDiv"><input placeholder="Clarify by LLM" class="swal2-input askImage" id="swal-criterionQuestion" ><img width="9%" id="clarifyByLLM" class="askImage askImageHover" alt="Ask" src="' + chrome.runtime.getURL('images/ask.png') + '"/></div>'
+      TextAnnotator.tryToLoadSwal()
+      if (_.isNull(swal)) {
+        console.log('Unable to load swal')
+      } else {
+        swal.fire({
+          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Highlighted text:</span><br/>' + '<textarea rows="10" cols="40" readonly id="swal-textarea">' + fragmentText + '</textarea>' + criterionQuestion + '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
+          showLoaderOnConfirm: true,
+          width: '40em',
+          preConfirm: () => {
+            let newComment = $('#swal-textarea').val()
+            let suggestedLiterature = Array.from($('#literatureList li span')).map((e) => { return $(e).attr('title') })
+            let level = $('.poleRadio:checked') != null && $('.poleRadio:checked').length === 1 ? $('.poleRadio:checked')[0].value : null
+            if (newComment !== null && newComment !== '') {
+              $.ajax('http://text-processing.com/api/sentiment/', {
+                method: 'POST',
+                data: { text: newComment }
+              }).done(function (ret) {
+                if (ret.label === 'neg' && ret.probability.neg > 0.55) {
+                  swal({
+                    type: 'warning',
+                    text: 'The message may be ofensive. Please modify it.',
+                    showCancelButton: true,
+                    cancelButtonText: 'Modify comment',
+                    confirmButtonText: 'Save as it is',
+                    reverseButtons: true
+                  }).then((result) => {
+                    if (result.value) {
+                      updateAnnotation(newComment, suggestedLiterature, level)
+                    } else if (result.dismiss === swal.DismissReason.cancel) {
+                      showAlert({ comment: newComment, suggestedLiterature: suggestedLiterature })
+                    }
+                  })
+                } else {
+                  // Update annotation
+                  updateAnnotation(newComment, suggestedLiterature, level)
+                }
+              })
+            } else {
+              // Update annotation
+              updateAnnotation('', suggestedLiterature, level)
+            }
+          },
+          onOpen: () => {
+            $('.removeReference').on('click', function () {
+              $(this).closest('li').remove()
+            })
+            const image = document.getElementById('clarifyByLLM')
+            image.addEventListener('click', () => {
+              let paragraph = form.comment
+              let question = document.querySelector('#swal-criterionQuestion').value
+              this.askQuestion(paragraph, question, criterionName)
+            })
+          }
+        })
+      }
       $('.poleRadio + img').on('click', function () {
         $(this).prev('.poleRadio').prop('checked', true)
       })
@@ -781,6 +807,71 @@ class TextAnnotator extends ContentAnnotator {
     } else {
       showAlert(JSON.parse(annotation.text))
     }
+  }
+
+  askQuestion (paragraph, question, criterion) {
+    console.log(paragraph + question)
+    chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
+      if (llm === '') {
+        llm = Config.review.defaultLLM
+      }
+      if (llm && llm !== '') {
+        let selectedLLM = llm
+        let clarificationQuery = Config.review.clarificationQuery
+        clarificationQuery = clarificationQuery.replaceAll('[C_TEXT]', paragraph).replaceAll('[C_NAME]', criterion).replaceAll('[C_QUESTION]', question)
+        Alerts.confirmAlert({
+          title: 'Clarification',
+          text: 'You are going to ask the following question: ' + clarificationQuery,
+          cancelButtonText: 'Cancel',
+          callback: async () => {
+            let documents = []
+            documents = await LLMTextUtils.loadDocument()
+            chrome.runtime.sendMessage({
+              scope: 'llm',
+              cmd: 'getAPIKEY',
+              data: selectedLLM
+            }, ({ apiKey }) => {
+              let callback = (json) => {
+                let comment = json.answer
+                Alerts.infoAlert({
+                  title: 'This is the answer:',
+                  text: comment,
+                  confirmButtonText: 'OK',
+                  showCancelButton: false,
+                  callback: () => {
+                    console.log('Save annotation')
+                  }
+                })
+              }
+              if (apiKey && apiKey !== '') {
+                let params = {
+                  criterion: criterion,
+                  apiKey: apiKey,
+                  documents: documents,
+                  callback: callback,
+                  criterionQuery: clarificationQuery
+                }
+                if (selectedLLM === 'anthropic') {
+                  AnthropicManager.askCriteria(params)
+                } else if (selectedLLM === 'openAI') {
+                  console.log('OpenAIQuestion')
+                  OpenAIManager.askCriteria(params)
+                }
+              } else {
+                let callback = () => {
+                  window.open(chrome.runtime.getURL('pages/options.html'))
+                }
+                Alerts.infoAlert({
+                  text: 'Please, configure your LLM.',
+                  title: 'Please select a LLM and provide your API key',
+                  callback: callback()
+                })
+              }
+            })
+          }
+        })
+      }
+    })
   }
 
   retrieveHighlightClassName () {
@@ -1018,6 +1109,16 @@ class TextAnnotator extends ContentAnnotator {
       return 'review:level:Strength'
     }
   }
+
+  static tryToLoadSwal () {
+    if (_.isNull(swal)) {
+      try {
+        swal = require('sweetalert2')
+      } catch (e) {
+        swal = null
+      }
+    }
+  }
 }
 
-module.exports = TextAnnotator
+export default TextAnnotator

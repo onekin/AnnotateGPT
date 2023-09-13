@@ -17,4 +17,4 @@ class RecentActivity {
   }
 }
 
-module.exports = RecentActivity
+export default RecentActivity

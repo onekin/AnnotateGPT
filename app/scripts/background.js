@@ -1,3 +1,8 @@
+import LLMManager from './background/LLM_Manager'
+import Popup from './popup/Popup'
+import _ from 'lodash'
+import RecentActivity from './background/RecentActivity'
+
 // Enable chromereload by uncommenting this line:
 // import 'chromereload/devonly'
 
@@ -12,11 +17,6 @@ chrome.tabs.onUpdated.addListener((tabId) => {
 chrome.tabs.onCreated.addListener(() => {
 
 })
-
-const LLMManager = require('./background/LLM_Manager')
-const Popup = require('./popup/Popup')
-const _ = require('lodash')
-const RecentActivity = require('./background/RecentActivity')
 
 class Background {
   constructor () {

@@ -1,9 +1,9 @@
 const Alerts = require('../../utils/Alerts')
 const FileUtils = require('../../utils/FileUtils')
 const general = require('./criteriaTemplate/general.json')
-const engineering = require('./criteriaTemplate/general.json')
+const engineering = require('./criteriaTemplate/engineering.json')
 const caise = require('./criteriaTemplate/caise.json')
-const actionResearch = require('./criteriaTemplate/caise.json')
+const actionResearch = require('./criteriaTemplate/actionResearch.json')
 
 class ImportSchema {
   static createConfigurationAnnotationsFromReview ({review, callback}) {
@@ -95,7 +95,7 @@ class ImportSchema {
             jsonObject = engineering
           } else if (reviewFile === 'Action research') {
             jsonObject = actionResearch
-          } else if (reviewFile === 'CAiSE standard') {
+          } else if (reviewFile === 'CAiSE Standard') {
             jsonObject = caise
           }
           if (err) {

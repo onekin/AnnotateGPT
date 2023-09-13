@@ -267,4 +267,4 @@ ContentTypeManager.documentTypes = {
   }
 }
 
-module.exports = ContentTypeManager
+export default ContentTypeManager

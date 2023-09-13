@@ -1,17 +1,17 @@
-const _ = require('lodash')
-const $ = require('jquery')
-const jsYaml = require('js-yaml')
-const LanguageUtils = require('../utils/LanguageUtils')
-const ColorUtils = require('../utils/ColorUtils')
-const Events = require('./Events')
-const Config = require('../Config')
-const Tag = require('./Tag')
-const TagGroup = require('./TagGroup')
-const Alerts = require('../utils/Alerts')
-const AnnotationUtils = require('../utils/AnnotationUtils')
-const ImportSchema = require('../specific/review/ImportSchema')
-const DefaultCriteria = require('../specific/review/DefaultCriteria')
-const Review = require('../model/schema/Review')
+import _ from 'lodash'
+import $ from 'jquery'
+import jsYaml from 'js-yaml'
+import LanguageUtils from '../utils/LanguageUtils'
+import ColorUtils from '../utils/ColorUtils'
+import Events from './Events'
+import Config from '../Config'
+import Tag from './Tag'
+import TagGroup from './TagGroup'
+import Alerts from '../utils/Alerts'
+import AnnotationUtils from '../utils/AnnotationUtils'
+import ImportSchema from '../specific/review/ImportSchema'
+import DefaultCriteria from '../specific/review/DefaultCriteria'
+import Review from '../model/schema/Review'
 
 class TagManager {
   constructor (namespace, config) {
@@ -462,4 +462,4 @@ class TagManager {
   }
 }
 
-module.exports = TagManager
+export default TagManager

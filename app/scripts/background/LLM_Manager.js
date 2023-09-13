@@ -1,5 +1,5 @@
-const ChromeStorage = require('../utils/ChromeStorage')
-const Config = require('../Config')
+import ChromeStorage from '../utils/ChromeStorage'
+import Config from '../Config'
 class LLMManager {
   init () {
     // Initialize replier for requests related to storage
@@ -85,4 +85,4 @@ class LLMManager {
   }
 }
 
-module.exports = LLMManager
+export default LLMManager

@@ -8,9 +8,7 @@ const ExportSchema = require('../specific/review/ExportSchema')
 const ReviewSchema = require('../model/schema/Review')
 const Events = require('./Events')
 const TagManager = require('./TagManager')
-
 const LocalStorageManager = require('../storage/local/LocalStorageManager')
-const swal = require('sweetalert2')
 
 class GroupSelector {
   constructor () {

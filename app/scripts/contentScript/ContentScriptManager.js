@@ -1,15 +1,16 @@
 import ReviewContentScript from '../specific/review/ReviewContentScript'
 import AnnotationBasedInitializer from './AnnotationBasedInitializer'
-const _ = require('lodash')
-const ContentTypeManager = require('./ContentTypeManager')
-const Sidebar = require('./Sidebar')
-const TagManager = require('./TagManager')
-const Events = require('./Events')
-const RolesManager = require('./RolesManager')
-const GroupSelector = require('./GroupSelector')
-const LocalStorageManager = require('../storage/local/LocalStorageManager')
-const Config = require('../Config')
-const Alerts = require('../utils/Alerts')
+import _ from 'lodash'
+import ContentTypeManager from './ContentTypeManager'
+import Sidebar from './Sidebar'
+import TagManager from './TagManager'
+import Events from './Events'
+import GroupSelector from './GroupSelector'
+import LocalStorageManager from '../storage/local/LocalStorageManager'
+import Config from '../Config'
+import Alerts from '../utils/Alerts'
+import RolesManager from './RolesManager'
+import TextAnnotator from './contentAnnotators/TextAnnotator'
 
 class ContentScriptManager {
   constructor () {
@@ -133,7 +134,6 @@ class ContentScriptManager {
     if (window.abwa.contentAnnotator) {
       window.abwa.contentAnnotator.destroy()
     }
-    const TextAnnotator = require('./contentAnnotators/TextAnnotator')
     window.abwa.contentAnnotator = new TextAnnotator(Config.review)
     window.abwa.contentAnnotator.init(() => {
       if (_.isFunction(callback)) {
