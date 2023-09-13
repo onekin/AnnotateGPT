@@ -686,14 +686,16 @@ class TextAnnotator extends ContentAnnotator {
       }
       fragmentText = fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '') */
       fragmentText = form.comment
-
-      let criterionQuestion = '<div class="askDiv"><input placeholder="Clarify by LLM" class="swal2-input askImage" id="swal-criterionQuestion" ><img width="9%" id="clarifyByLLM" class="askImage askImageHover" alt="Ask" src="' + chrome.runtime.getURL('images/ask.png') + '"/></div>'
+      let criterionQuestion = '<div class="askDiv class="notMargin"><input placeholder="Clarify by LLM" class="swal2-input askImage notMargin" id="swal-criterionQuestion" ><img width="9%" id="clarifyByLLM" class="askImage askImageHover" alt="Ask" src="' + chrome.runtime.getURL('images/ask.png') + '"/></div>'
+      let factCheckingButton = '</br><button id="btnFactChecking" class="btnFragment">Fact checking</button>'
+      let socialJudge = '<button id="btnSocialJudge" class="btnFragment">Social judge</button></br>'
       TextAnnotator.tryToLoadSwal()
       if (_.isNull(swal)) {
         console.log('Unable to load swal')
       } else {
         swal.fire({
-          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Highlighted text:</span><br/>' + '<textarea rows="10" cols="40" readonly id="swal-textarea">' + fragmentText + '</textarea>' + criterionQuestion + '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
+          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Highlighted text:</span><br/>' + '<textarea rows="10" cols="40" readonly id="swal-textarea">' + fragmentText + '</textarea>' + factCheckingButton + socialJudge + criterionQuestion +
+            '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input notMargin"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
           showLoaderOnConfirm: true,
           width: '40em',
           preConfirm: () => {
