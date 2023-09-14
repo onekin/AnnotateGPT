@@ -415,14 +415,10 @@ class CustomCriteriasManager {
                       let selectedLLM = llm
                       Alerts.confirmAlert({
                         title: 'Find annotations for ' + criterion,
-                        text: 'Do you want to create new annotations for this criterion using ' + llm + '?',
+                        text: 'Do you want to create new annotations for this criterion using ' + llm.charAt(0).toUpperCase() + llm.slice(1) + '?',
                         cancelButtonText: 'Cancel',
                         callback: async () => {
                           let documents = []
-                          let model = window.abwa.tagManager.model
-                          let tags = [
-                            model.namespace + ':' + model.config.grouped.relation + ':' + criterion
-                          ]
                           documents = await LLMTextUtils.loadDocument()
                           chrome.runtime.sendMessage({
                             scope: 'llm',
@@ -431,39 +427,57 @@ class CustomCriteriasManager {
                           }, ({ apiKey }) => {
                             let callback = (json) => {
                               // let comment = json.comment
-                              let sentiment = json.sentiment
+                              // let sentiment = json.sentiment
+                              let annotations = []
+                              for (let i = 0; i < json.paragraphs.length; i += 1) {
+                                let paragraphElement = json.paragraphs[i]
+                                let paragraph = ''
+                                if (paragraphElement && paragraphElement.text) {
+                                  paragraph = paragraphElement.text
+                                }
+                                let sentiment = 'not met'
+                                if (paragraphElement && paragraphElement.sentiment) {
+                                  sentiment = paragraphElement.sentiment.toLowerCase()
+                                }
+                                let selectors = this.getSelectorsFromLLM(paragraph, documents)
+                                let annotation = {
+                                  paragraph: paragraph,
+                                  selectors: selectors
+                                }
+                                annotations.push(annotation)
+                                if (selectors.length > 0) {
+                                  let commentData = {
+                                    comment: paragraph,
+                                    sentiment: sentiment,
+                                    llm: llm
+                                  }
+                                  let model = window.abwa.tagManager.model
+                                  let tag = [
+                                    model.namespace + ':' + model.config.grouped.relation + ':' + criterion
+                                  ]
+                                  LanguageUtils.dispatchCustomEvent(Events.annotateByLLM, {
+                                    tags: tag,
+                                    selectors: selectors,
+                                    commentData: commentData
+                                  })
+                                }
+                              }
+                              let noCreatedAnnotations = annotations.filter((annotation) => annotation.selectors.length === 0)
+                              let createdAnnotations = annotations.filter((annotation) => annotation.selectors.length === 3)
+                              console.log('Created: ' + createdAnnotations.length)
+                              console.log('No created: ' + noCreatedAnnotations.length)
+                              let info
+                              if (createdAnnotations && createdAnnotations.length > 0) {
+                                info = ' has createad ' + createdAnnotations.length + ' annotations.'
+                              } else {
+                                info = ' did not annotate fragments.'
+                              }
                               Alerts.infoAlert({
                                 title: 'The criterion ' + criterion + ' has been highlighted ',
-                                text: llm + ' has created new annotations',
+                                text: llm.charAt(0).toUpperCase() + llm.slice(1) + info,
                                 confirmButtonText: 'OK',
                                 showCancelButton: false,
                                 callback: () => {
-                                  let annotations = []
-                                  for (let i = 0; i < json.paragraphs.length; i += 1) {
-                                    let paragraph = json.paragraphs[i]
-                                    let selectors = this.getSelectorsFromLLM(paragraph, documents)
-                                    let annotation = {
-                                      paragraph: paragraph,
-                                      selectors: selectors
-                                    }
-                                    annotations.push(annotation)
-                                    if (selectors.length > 0) {
-                                      let commentData = {
-                                        comment: paragraph,
-                                        sentiment: sentiment,
-                                        llm: llm
-                                      }
-                                      LanguageUtils.dispatchCustomEvent(Events.annotateByLLM, {
-                                        tags: tags,
-                                        selectors: selectors,
-                                        commentData: commentData
-                                      })
-                                    }
-                                  }
-                                  let noCreatedAnnotations = annotations.filter((annotation) => annotation.selectors.length === 0)
-                                  let createdAnnotations = annotations.filter((annotation) => annotation.selectors.length === 3)
-                                  console.log('Created: ' + createdAnnotations.length)
-                                  console.log('No created: ' + noCreatedAnnotations.length)
                                   if (createdAnnotations.length > 0) {
                                     CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations)
                                   } else if (noCreatedAnnotations.length > 0) {
@@ -675,8 +689,10 @@ class CustomCriteriasManager {
 
   static showAnnotatedParagraphs (createdAnnotations, noCreatedAnnotations) {
     if (createdAnnotations.length > 0) {
+      // let annotation =
       let annotation = createdAnnotations.pop()
-      let buttonText
+      console.log(annotation)
+      /* let buttonText
       if (createdAnnotations.length > 0 || noCreatedAnnotations.length > 0) {
         buttonText = 'Next'
       } else {
@@ -694,7 +710,12 @@ class CustomCriteriasManager {
             CustomCriteriasManager.showParagraphs(noCreatedAnnotations)
           }
         }
-      })
+      }) */
+      if (createdAnnotations.length > 0) {
+        CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations)
+      } else if (noCreatedAnnotations.length > 0) {
+        CustomCriteriasManager.showParagraphs(noCreatedAnnotations)
+      }
     }
   }
 

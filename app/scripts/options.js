@@ -1,7 +1,7 @@
 // Enable chromereload by uncommenting this line:
 // import 'chromereload/devonly'
 
-const Options = require('./options/Options')
+import Options from './options/Options'
 
 window.addEventListener('load', (event) => {
   window.options = new Options()

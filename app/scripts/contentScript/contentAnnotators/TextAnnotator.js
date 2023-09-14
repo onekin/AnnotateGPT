@@ -198,10 +198,10 @@ class TextAnnotator extends ContentAnnotator {
   createAnnotationByLLMEventHandler () {
     return (event) => {
       let selectors = event.detail.selectors
-      let tags = event.detail.tags
+      let newTags = event.detail.tags
       // Construct the annotation to send to storage
       let commentData = event.detail.commentData
-      let annotation = TextAnnotator.constructAnnotation(selectors, tags, commentData)
+      let annotation = TextAnnotator.constructAnnotation(selectors, newTags, commentData)
       window.abwa.storageManager.client.createNewAnnotation(annotation, (err, annotation) => {
         if (err) {
           Alerts.errorAlert({text: 'Unexpected error, unable to create annotation'})
@@ -679,12 +679,6 @@ class TextAnnotator extends ContentAnnotator {
       // let selectors = annotation.target[0].selector
       let fragmentText
       // let fragmentTextSelector
-      /* if (selectors) {
-        fragmentTextSelector = selectors.find((selector) => {
-          return selector.type === 'TextQuoteSelector'
-        })
-      }
-      fragmentText = fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '') */
       fragmentText = form.comment
       let criterionQuestion = '<div class="askDiv class="notMargin"><input placeholder="Clarify by LLM" class="swal2-input askImage notMargin" id="swal-criterionQuestion" ><img width="9%" id="clarifyByLLM" class="askImage askImageHover" alt="Ask" src="' + chrome.runtime.getURL('images/ask.png') + '"/></div>'
       let factCheckingButton = '</br><button id="btnFactChecking" class="btnFragment">Fact checking</button>'
@@ -740,14 +734,32 @@ class TextAnnotator extends ContentAnnotator {
             image.addEventListener('click', () => {
               let paragraph = form.comment
               let question = document.querySelector('#swal-criterionQuestion').value
-              this.askQuestion(paragraph, question, criterionName)
+              if (question.length < 20) {
+                Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
+              } else {
+                this.askQuestionClarify(paragraph, question, criterionName)
+              }
+            })
+            const btnFactChecking = document.getElementById('btnFactChecking')
+            btnFactChecking.addEventListener('click', () => {
+              let paragraph = form.comment
+              let question = document.querySelector('#swal-criterionQuestion').value
+              this.askQuestionFactChecking(paragraph, question, criterionName)
+            })
+            const btnSocialJudge = document.getElementById('btnSocialJudge')
+            btnSocialJudge.addEventListener('click', () => {
+              let paragraph = form.comment
+              let question = document.querySelector('#swal-criterionQuestion').value
+              this.askQuestionSocialJudge(paragraph, question, criterionName)
             })
           }
         })
       }
-      $('.poleRadio + img').on('click', function () {
-        $(this).prev('.poleRadio').prop('checked', true)
-      })
+      if (!form.llm) {
+        $('.poleRadio + img').on('click', function () {
+          $(this).prev('.poleRadio').prop('checked', true)
+        })
+      }
 
       $('#swal-input1').autocomplete({
         source: function (request, response) {
@@ -811,8 +823,7 @@ class TextAnnotator extends ContentAnnotator {
     }
   }
 
-  askQuestion (paragraph, question, criterion) {
-    console.log(paragraph + question)
+  askQuestionClarify (paragraph, question, criterion) {
     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
       if (llm === '') {
         llm = Config.review.defaultLLM
@@ -852,6 +863,134 @@ class TextAnnotator extends ContentAnnotator {
                   documents: documents,
                   callback: callback,
                   criterionQuery: clarificationQuery
+                }
+                if (selectedLLM === 'anthropic') {
+                  AnthropicManager.askCriteria(params)
+                } else if (selectedLLM === 'openAI') {
+                  console.log('OpenAIQuestion')
+                  OpenAIManager.askCriteria(params)
+                }
+              } else {
+                let callback = () => {
+                  window.open(chrome.runtime.getURL('pages/options.html'))
+                }
+                Alerts.infoAlert({
+                  text: 'Please, configure your LLM.',
+                  title: 'Please select a LLM and provide your API key',
+                  callback: callback()
+                })
+              }
+            })
+          }
+        })
+      }
+    })
+  }
+
+  askQuestionFactChecking (paragraph, question, criterion) {
+    chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
+      if (llm === '') {
+        llm = Config.review.defaultLLM
+      }
+      if (llm && llm !== '') {
+        let selectedLLM = llm
+        let factCheckingQuery = Config.review.factCheckingQuery
+        factCheckingQuery = factCheckingQuery.replaceAll('[C_TEXT]', paragraph)
+        Alerts.confirmAlert({
+          title: 'Fact Checking',
+          text: 'You are going to ask the following question: ' + factCheckingQuery,
+          cancelButtonText: 'Cancel',
+          callback: async () => {
+            let documents = []
+            documents = await LLMTextUtils.loadDocument()
+            chrome.runtime.sendMessage({
+              scope: 'llm',
+              cmd: 'getAPIKEY',
+              data: selectedLLM
+            }, ({ apiKey }) => {
+              let callback = (json) => {
+                let comment = json.answer
+                Alerts.infoAlert({
+                  title: 'This is the answer:',
+                  text: comment,
+                  confirmButtonText: 'OK',
+                  showCancelButton: false,
+                  callback: () => {
+                    console.log('Save annotation')
+                  }
+                })
+              }
+              if (apiKey && apiKey !== '') {
+                let params = {
+                  criterion: criterion,
+                  apiKey: apiKey,
+                  documents: documents,
+                  callback: callback,
+                  criterionQuery: factCheckingQuery
+                }
+                if (selectedLLM === 'anthropic') {
+                  AnthropicManager.askCriteria(params)
+                } else if (selectedLLM === 'openAI') {
+                  console.log('OpenAIQuestion')
+                  OpenAIManager.askCriteria(params)
+                }
+              } else {
+                let callback = () => {
+                  window.open(chrome.runtime.getURL('pages/options.html'))
+                }
+                Alerts.infoAlert({
+                  text: 'Please, configure your LLM.',
+                  title: 'Please select a LLM and provide your API key',
+                  callback: callback()
+                })
+              }
+            })
+          }
+        })
+      }
+    })
+  }
+
+  askQuestionSocialJudge (paragraph, question, criterion) {
+    chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
+      if (llm === '') {
+        llm = Config.review.defaultLLM
+      }
+      if (llm && llm !== '') {
+        let selectedLLM = llm
+        let socialJudgeQuery = Config.review.socialJudgeQuery
+        socialJudgeQuery = socialJudgeQuery.replaceAll('[C_TEXT]', paragraph)
+        Alerts.confirmAlert({
+          title: 'Social Judge',
+          text: 'You are going to ask the following question: ' + socialJudgeQuery,
+          cancelButtonText: 'Cancel',
+          callback: async () => {
+            let documents = []
+            documents = await LLMTextUtils.loadDocument()
+            chrome.runtime.sendMessage({
+              scope: 'llm',
+              cmd: 'getAPIKEY',
+              data: selectedLLM
+            }, ({ apiKey }) => {
+              let callback = (json) => {
+                let comment = json.answer
+                Alerts.infoAlert({
+                  title: 'This is the answer:',
+                  text: comment,
+                  confirmButtonText: 'OK',
+                  showCancelButton: false,
+                  callback: () => {
+                    console.log('Save annotation')
+                  }
+                })
+              }
+              if (apiKey && apiKey !== '') {
+                let params = {
+                  criterion: criterion,
+                  apiKey: apiKey,
+                  documents: documents,
+                  callback: callback,
+                  criterionQuery: socialJudgeQuery
                 }
                 if (selectedLLM === 'anthropic') {
                   AnthropicManager.askCriteria(params)

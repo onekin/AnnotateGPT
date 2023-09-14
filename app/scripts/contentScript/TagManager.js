@@ -357,6 +357,7 @@ class TagManager {
     let tagButtons = document.querySelectorAll('.tagButton')
     for (let i = 0; i < tagButtons.length; i++) {
       let tagButton = tagButtons[i]
+      tagButton.innerText = tagButton.innerText.replace(/\([^)]*\)|^\s/, '')
       tagButton.dataset.chosen = 'false'
       tagButton.style.background = ColorUtils.setAlphaToColor(ColorUtils.colorFromString(tagButton.style.backgroundColor), 0.3)
     }
@@ -370,9 +371,15 @@ class TagManager {
       annotatedTagGroups = _.uniq(annotatedTagGroups)
       // Mark as chosen annotated tags
       for (let i = 0; i < annotatedTagGroups.length; i++) {
+        let model = window.abwa.tagManager.model
         let tagGroup = annotatedTagGroups[i]
+        let tag = model.namespace + ':' + model.config.grouped.relation + ':' + tagGroup.config.name
+        let numberOfAnnotations = annotations.filter((annotation) => {
+          return AnnotationUtils.hasATag(annotation, tag)
+        })
         let tagButton = this.tagsContainer.evidencing.querySelector('.tagButton[data-mark="' + tagGroup.config.name + '"]')
         tagButton.dataset.chosen = 'true'
+        tagButton.innerText = '(' + numberOfAnnotations.length + ') ' + tagGroup.config.name
         // Change to a darker color
         tagButton.style.background = ColorUtils.setAlphaToColor(ColorUtils.colorFromString(tagButton.style.backgroundColor), 0.6)
       }

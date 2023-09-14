@@ -1,9 +1,9 @@
-const Alerts = require('../utils/Alerts')
-const FileUtils = require('../utils/FileUtils')
-const LocalStorageManager = require('../storage/local/LocalStorageManager')
-const FileSaver = require('file-saver')
-const _ = require('lodash')
-const Config = require('../Config')
+import Alerts from '../utils/Alerts'
+import FileUtils from '../utils/FileUtils'
+import LocalStorageManager from '../storage/local/LocalStorageManager'
+import FileSaver from 'file-saver'
+import _ from 'lodash'
+import Config from '../Config'
 
 class Options {
   init () {
@@ -221,4 +221,4 @@ class Options {
   }
 }
 
-module.exports = Options
+export default Options

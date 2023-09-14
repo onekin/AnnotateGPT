@@ -1,6 +1,8 @@
 /* eslint-disable */
 import AnnotationExporter from './AnnotationExporter'
 import AnnotationImporter from './AnnotationImporter'
+import Config from '../../Config'
+
 const ReviewSchema = require('../../model/schema/Review')
 const ImportSchema = require('./ImportSchema')
 const axios = require('axios')
@@ -13,7 +15,6 @@ require('jquery-contextmenu/dist/jquery.contextMenu')
 
 const {Review, Mark, MajorConcern, MinorConcern, Strength, Annotation} = require('../../exporter/reviewModel.js')
 
-const Config = require('../../Config')
 const FileSaver = require('file-saver')
 
 const Events = require('../../contentScript/Events')
