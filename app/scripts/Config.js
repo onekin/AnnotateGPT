@@ -27,8 +27,9 @@ const Config = {
       ' You have to provide the response in JSON format with' +
       ' the following keys: -name (contains the criteria name), -answer (the answer to the question. all the content must be specified in the answer key, without creating keys inside),',
     clarificationQuery: 'I asked you to assess the following criterion for the provided research paper: [C_NAME] and your considered the text excerpt found in triple quoted text ```[C_TEXT]``` as important. Therefore, now i would like to ask you [C_QUESTION]?' +
-      ' You have to provide the response in JSON format with' +
-      ' the following keys: -name (contains the criteria name), -answer (the answer to the question. all the content must be specified in the answer key, without creating keys inside),',
+      ' You have to provide the response only in JSON format with a single key, which is answer' +
+      ' the following keys: -answer (the answer to the question. all the content must be specified in the answer key, without creating keys inside),' +
+      ' do not add more text to your answer apart from the json with the answer in the "answer key"',
     tags: { // Defined tags for the domain
       grouped: { // Grouped annotations
         group: 'criteria',

@@ -734,8 +734,8 @@ class TextAnnotator extends ContentAnnotator {
             image.addEventListener('click', () => {
               let paragraph = form.comment
               let question = document.querySelector('#swal-criterionQuestion').value
-              if (question.length < 20) {
-                Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
+              if (question.length < 10) {
+                Alerts.infoAlert({ text: 'You have to provide a longer question' })
               } else {
                 this.askQuestionClarify(paragraph, question, criterionName)
               }
@@ -831,6 +831,7 @@ class TextAnnotator extends ContentAnnotator {
       if (llm && llm !== '') {
         let selectedLLM = llm
         let clarificationQuery = Config.review.clarificationQuery
+        criterion = criterion.replace(/\[.*?\]/g, '')
         clarificationQuery = clarificationQuery.replaceAll('[C_TEXT]', paragraph).replaceAll('[C_NAME]', criterion).replaceAll('[C_QUESTION]', question)
         Alerts.confirmAlert({
           title: 'Clarification',
@@ -845,15 +846,9 @@ class TextAnnotator extends ContentAnnotator {
               data: selectedLLM
             }, ({ apiKey }) => {
               let callback = (json) => {
-                let comment = json.answer
-                Alerts.infoAlert({
-                  title: 'This is the answer:',
-                  text: comment,
-                  confirmButtonText: 'OK',
-                  showCancelButton: false,
-                  callback: () => {
-                    console.log('Save annotation')
-                  }
+                let answer = json.answer
+                Alerts.answerAlert({
+                  answer: answer
                 })
               }
               if (apiKey && apiKey !== '') {
@@ -909,15 +904,9 @@ class TextAnnotator extends ContentAnnotator {
               data: selectedLLM
             }, ({ apiKey }) => {
               let callback = (json) => {
-                let comment = json.answer
-                Alerts.infoAlert({
-                  title: 'This is the answer:',
-                  text: comment,
-                  confirmButtonText: 'OK',
-                  showCancelButton: false,
-                  callback: () => {
-                    console.log('Save annotation')
-                  }
+                let answer = json.answer
+                Alerts.answerAlert({
+                  answer: answer
                 })
               }
               if (apiKey && apiKey !== '') {
@@ -973,15 +962,9 @@ class TextAnnotator extends ContentAnnotator {
               data: selectedLLM
             }, ({ apiKey }) => {
               let callback = (json) => {
-                let comment = json.answer
-                Alerts.infoAlert({
-                  title: 'This is the answer:',
-                  text: comment,
-                  confirmButtonText: 'OK',
-                  showCancelButton: false,
-                  callback: () => {
-                    console.log('Save annotation')
-                  }
+                let answer = json.answer
+                Alerts.answerAlert({
+                  answer: answer
                 })
               }
               if (apiKey && apiKey !== '') {

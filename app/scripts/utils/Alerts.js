@@ -16,7 +16,7 @@ class Alerts {
       swal.fire({
         title: title,
         html: text,
-        type: alertType,
+        icon: alertType,
         showCancelButton: showCancelButton,
         cancelButtonText: cancelButtonText,
         confirmButtonText: confirmButtonText
@@ -116,7 +116,7 @@ class Alerts {
     } else {
       swal.fire({
         position: position,
-        type: type,
+        icon: type,
         title: title, // TODO i18n
         html: text,
         showConfirmButton: false,
@@ -182,6 +182,39 @@ class Alerts {
           if (_.isFunction(cancelCallback)) {
             cancelCallback()
           }
+        }
+      })
+    }
+  }
+
+  static answerAlert ({title = 'This is the answer', answer = ''}) {
+    Alerts.tryToLoadSwal()
+    if (_.isNull(swal)) {
+
+    } else {
+      const buttons = '<button id="llmAnswerOKButton" >Ok</button></br><button id="copyButton" class="llmAnswerButton">Copy to clipboard</brbutton><button id="summaryButton" class="llmAnswerButton">Copy to Summary</button>'
+      swal.fire({
+        title: title,
+        html: '<div>' + answer + '</div></br>' + buttons,
+        showCancelButton: false,
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+          // Add event listeners to the buttons after they are rendered
+          document.getElementById('llmAnswerOKButton').addEventListener('click', () => {
+            swal.close()
+            console.log('OK')
+          })
+
+          document.getElementById('copyButton').addEventListener('click', () => {
+            // swal.close()
+            console.log('Copy')
+            navigator.clipboard.writeText(answer)
+          })
+
+          document.getElementById('summaryButton').addEventListener('click', () => {
+            // swal.close()
+            console.log('Copy to Summary')
+          })
         }
       })
     }

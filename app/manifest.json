@@ -32,7 +32,8 @@
   "permissions": [
     "storage",
     "tabs",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "clipboardWrite"
   ],
   "host_permissions": [
     "file://*/*"
