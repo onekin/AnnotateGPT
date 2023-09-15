@@ -661,10 +661,10 @@ class CustomCriteriasManager {
                   for (let i = 0; i < json.paragraphs.length; i += 1) {
                     let paragraphElement = json.paragraphs[i]
                     let paragraph = ''
+                    let sentiment = 'not met'
                     if (paragraphElement && paragraphElement.text) {
                       paragraph = paragraphElement.text
                     }
-                    let sentiment = 'not met'
                     if (paragraphElement && paragraphElement.sentiment) {
                       sentiment = paragraphElement.sentiment.toLowerCase()
                     }
@@ -676,9 +676,10 @@ class CustomCriteriasManager {
                     annotations.push(annotation)
                     if (selectors.length > 0) {
                       let commentData = {
-                        comment: paragraph,
+                        comment: '',
                         sentiment: sentiment,
-                        llm: llm
+                        llm: llm,
+                        paragraph: paragraph
                       }
                       let model = window.abwa.tagManager.model
                       let tag = [

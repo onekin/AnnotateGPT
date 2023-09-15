@@ -2,12 +2,13 @@
 import AnnotationExporter from './AnnotationExporter'
 import AnnotationImporter from './AnnotationImporter'
 import Config from '../../Config'
+import Alerts from '../../utils/Alerts'
+
 
 const ReviewSchema = require('../../model/schema/Review')
 const ImportSchema = require('./ImportSchema')
 const axios = require('axios')
 const _ = require('lodash')
-const Alerts = require('../../utils/Alerts')
 const LanguageUtils = require('../../utils/LanguageUtils')
 const Screenshots = require('./Screenshots')
 const $ = require('jquery')

@@ -1,4 +1,7 @@
-const _ = require('lodash')
+import _ from 'lodash'
+import TextAnnotator from '../contentScript/contentAnnotators/TextAnnotator'
+import LanguageUtils from './LanguageUtils'
+import Events from '../contentScript/Events'
 
 let swal = null
 if (document && document.head) {
@@ -187,6 +190,110 @@ class Alerts {
     }
   }
 
+  /* static answerCriterionAlert ({title = 'This is the answer', answer = '', paragraph = '', question = '', criterion = '', type = ''}) {
+    Alerts.tryToLoadSwal()
+    if (_.isNull(swal)) {
+
+    } else {
+      const buttons = '<button id="llmAnswerOKButton" >Ok</button></br><button id="redoButton" class="llmAnswerButton">Copy to clipboard</brbutton><button id="summaryButton" class="llmAnswerButton">Copy to Summary</button>'
+      swal.fire({
+        title: title,
+        html: '<div>' + answer + '</div></br>' + buttons,
+        showCancelButton: false,
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+          // Add event listeners to the buttons after they are rendered
+          document.getElementById('llmAnswerOKButton').addEventListener('click', () => {
+            swal.close()
+            console.log('OK')
+          })
+
+          document.getElementById('redoButton').addEventListener('click', () => {
+            console.log('Redo question')
+            swal.close()
+            if (type === 'clarification') {
+              TextAnnotator.askQuestionClarify(paragraph, question, criterion)
+            } else if (type === 'socialJudge') {
+              TextAnnotator.askQuestionSocialJudge(paragraph, question, criterion)
+            } else if (type === 'factChecking') {
+              TextAnnotator.askQuestionFactChecking(paragraph, question, criterion)
+            }
+          })
+
+          document.getElementById('summaryButton').addEventListener('click', () => {
+            // swal.close()
+            console.log('Save answer')
+          })
+        }
+      })
+    }
+  } */
+
+  static answerTextFragmentAlert ({title = 'This is the answer', answer = '', paragraph = '', question = '', criterion = '', type, annotation}) {
+    Alerts.tryToLoadSwal()
+    if (_.isNull(swal)) {
+
+    } else {
+      const buttons = '<button id="llmAnswerOKButton" >Ok</button></br><button id="redoButton" class="llmAnswerButton">Redo</brbutton><button id="summaryButton" class="llmAnswerButton">Save answer</button>'
+      swal.fire({
+        title: title,
+        html: '<div>' + answer + '</div></br>' + buttons,
+        showCancelButton: false,
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+          // Add event listeners to the buttons after they are rendered
+          document.getElementById('llmAnswerOKButton').addEventListener('click', () => {
+            swal.close()
+            console.log('OK')
+          })
+
+          document.getElementById('redoButton').addEventListener('click', () => {
+            console.log('Redo question')
+            swal.close()
+            if (type === 'clarification') {
+              TextAnnotator.askQuestionClarify(paragraph, question, criterion)
+            } else if (type === 'socialJudge') {
+              TextAnnotator.askQuestionSocialJudge(paragraph, question, criterion)
+            } else if (type === 'factChecking') {
+              TextAnnotator.askQuestionFactChecking(paragraph, question, criterion)
+            }
+          })
+
+          document.getElementById('summaryButton').addEventListener('click', () => {
+            console.log(annotation)
+            let data
+            if (annotation.text) {
+              data = JSON.parse(annotation.text)
+              if (data.comment !== '') {
+                data.comment += '\n\n'
+              } if (type === 'clarification') {
+                data.comment += question + ': ' + answer
+              } else if (type === 'socialJudge') {
+                data.comment += 'Social judge: ' + answer
+              } else if (type === 'factChecking') {
+                data.comment += 'Fact checking: ' + answer
+              }
+            } else {
+              data = {
+                comment: ''
+              }
+              if (type === 'clarification') {
+                data.comment += question + ': ' + answer
+              } else if (type === 'socialJudge') {
+                data.comment += 'Social judge: ' + answer
+              } else if (type === 'factChecking') {
+                data.comment += 'Fact checking: ' + answer
+              }
+            }
+            annotation.text = JSON.stringify(data)
+            LanguageUtils.dispatchCustomEvent(Events.updateAnnotation, {annotation: annotation})
+            swal.close()
+          })
+        }
+      })
+    }
+  }
+
   static answerAlert ({title = 'This is the answer', answer = ''}) {
     Alerts.tryToLoadSwal()
     if (_.isNull(swal)) {
@@ -295,4 +402,4 @@ Alerts.position = {
   bottomEnd: 'bottom-end'
 }
 
-module.exports = Alerts
+export default Alerts

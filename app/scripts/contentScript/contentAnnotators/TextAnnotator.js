@@ -63,14 +63,16 @@ class TextAnnotator extends ContentAnnotator {
     this.initSelectionEvents(() => {
       this.initAnnotateEvent(() => {
         this.initAnnotateByLLMEvent(() => {
-          this.initReloadAnnotationsEvent(() => {
-            this.initDeleteAllAnnotationsEvent(() => {
-              this.initDocumentURLChangeEvent(() => {
-                this.initTagsUpdatedEvent(() => {
-                  // Reload annotations periodically
-                  if (_.isFunction(callback)) {
-                    callback()
-                  }
+          this.initUpdateAnnotationEvent(() => {
+            this.initReloadAnnotationsEvent(() => {
+              this.initDeleteAllAnnotationsEvent(() => {
+                this.initDocumentURLChangeEvent(() => {
+                  this.initTagsUpdatedEvent(() => {
+                    // Reload annotations periodically
+                    if (_.isFunction(callback)) {
+                      callback()
+                    }
+                  })
                 })
               })
             })
@@ -150,6 +152,14 @@ class TextAnnotator extends ContentAnnotator {
   initAnnotateByLLMEvent (callback) {
     this.events.annotateByLLMEvent = {element: document, event: Events.annotateByLLM, handler: this.createAnnotationByLLMEventHandler()}
     this.events.annotateByLLMEvent.element.addEventListener(this.events.annotateByLLMEvent.event, this.events.annotateByLLMEvent.handler, false)
+    if (_.isFunction(callback)) {
+      callback()
+    }
+  }
+
+  initUpdateAnnotationEvent (callback) {
+    this.events.updateAnnotationEvent = { element: document, event: Events.updateAnnotation, handler: this.updateAnnotationEventHandler() }
+    this.events.updateAnnotationEvent.element.addEventListener(this.events.updateAnnotationEvent.event, this.events.updateAnnotationEvent.handler, false)
     if (_.isFunction(callback)) {
       callback()
     }
@@ -278,12 +288,8 @@ class TextAnnotator extends ContentAnnotator {
       text: '',
       uri: window.abwa.contentTypeManager.getDocumentURIToSaveInStorage()
     }
-    if (commentData && commentData.comment) {
-      if (commentData.llm) {
-        data.text = JSON.stringify({comment: commentData.comment, suggestedLiterature: [], llm: commentData.llm})
-      } else {
-        data.text = JSON.stringify({comment: commentData.comment, suggestedLiterature: []})
-      }
+    if (commentData && commentData.llm) {
+      data.text = JSON.stringify({comment: commentData.comment, suggestedLiterature: [], llm: commentData.llm, paragraph: commentData.paragraph})
     }
     if (commentData && commentData.sentiment) {
       let tag = TextAnnotator.findTagForSentiment(commentData.sentiment)
@@ -592,7 +598,7 @@ class TextAnnotator extends ContentAnnotator {
     let isSidebarOpened = window.abwa.sidebar.isOpened()
     this.closeSidebar()
     // Open sweetalert
-    let that = this
+    // let that = this
 
     let updateAnnotation = (comment, literature, level) => {
       annotation.text = JSON.stringify({comment: comment, suggestedLiterature: literature})
@@ -604,34 +610,10 @@ class TextAnnotator extends ContentAnnotator {
         annotation.tags = pole.tags
       }
 
-      window.abwa.storageManager.client.updateAnnotation(
-        annotation.id,
-        annotation,
-        (err, annotation) => {
-          if (err) {
-            // Show error message
-            Alerts.errorAlert({text: chrome.i18n.getMessage('errorUpdatingAnnotationComment')})
-          } else {
-            // Update current annotations
-            let currentIndex = _.findIndex(that.allAnnotations, (currentAnnotation) => { return annotation.id === currentAnnotation.id })
-            that.allAnnotations.splice(currentIndex, 1, annotation)
-            // Update all annotations
-            let allIndex = _.findIndex(that.allAnnotations, (currentAnnotation) => { return annotation.id === currentAnnotation.id })
-            that.allAnnotations.splice(allIndex, 1, annotation)
-            // Dispatch updated annotations events
-            LanguageUtils.dispatchCustomEvent(Events.updatedAllAnnotations, {annotations: that.allAnnotations})
+      LanguageUtils.dispatchCustomEvent(Events.updateAnnotation, {annotation: annotation})
 
-            // Not sure if this goes here
-            LanguageUtils.dispatchCustomEvent(Events.comment, {annotation: annotation})
-
-            // Redraw annotations
-            DOMTextUtils.unHighlightElements([...document.querySelectorAll('[data-annotation-id="' + annotation.id + '"]')])
-            that.highlightAnnotation(annotation)
-            // ReviewAssistant.checkBalanced()
-          }
-        })
       if (isSidebarOpened) {
-        that.openSidebar()
+        window.abwa.contentAnnotator.openSidebar()
       }
     }
     let showAlert = (form) => {
@@ -679,6 +661,11 @@ class TextAnnotator extends ContentAnnotator {
       let fragmentText = ''
       if (form.comment) {
         fragmentText = form.comment
+      }
+      // retrieve underlined text
+      let paragraph = ''
+      if (form.paragraph) {
+        paragraph = form.paragraph
       } else {
         let selectors = annotation.target[0].selector
         let fragmentTextSelector
@@ -688,7 +675,7 @@ class TextAnnotator extends ContentAnnotator {
           })
         }
         if (fragmentTextSelector) {
-          fragmentText = fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '')
+          paragraph = fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '')
         }
       }
       let criterionQuestion = '<div class="askDiv class="notMargin"><input placeholder="Clarify by LLM" class="swal2-input askImage notMargin" id="swal-criterionQuestion" ><img width="9%" id="clarifyByLLM" class="askImage askImageHover" alt="Ask" src="' + chrome.runtime.getURL('images/ask.png') + '"/></div>'
@@ -699,7 +686,7 @@ class TextAnnotator extends ContentAnnotator {
         console.log('Unable to load swal')
       } else {
         swal.fire({
-          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Highlighted text:</span><br/>' + '<textarea rows="10" cols="40" readonly id="swal-textarea">' + fragmentText + '</textarea>' + factCheckingButton + socialJudge + criterionQuestion +
+          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Highlighted text:</span><br/>' + '<textarea rows="10" cols="40" id="swal-textarea">' + fragmentText + '</textarea>' + factCheckingButton + socialJudge + criterionQuestion +
             '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input notMargin"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
           showLoaderOnConfirm: true,
           width: '40em',
@@ -747,18 +734,18 @@ class TextAnnotator extends ContentAnnotator {
               if (question.length < 10) {
                 Alerts.infoAlert({ text: 'You have to provide a longer question' })
               } else {
-                this.askQuestionClarify(fragmentText, question, criterionName)
+                TextAnnotator.askQuestionClarify(paragraph, question, criterionName, annotation)
               }
             })
             const btnFactChecking = document.getElementById('btnFactChecking')
             btnFactChecking.addEventListener('click', () => {
               let question = document.querySelector('#swal-criterionQuestion').value
-              this.askQuestionFactChecking(fragmentText, question, criterionName)
+              TextAnnotator.askQuestionFactChecking(paragraph, question, criterionName, annotation)
             })
             const btnSocialJudge = document.getElementById('btnSocialJudge')
             btnSocialJudge.addEventListener('click', () => {
               let question = document.querySelector('#swal-criterionQuestion').value
-              this.askQuestionSocialJudge(fragmentText, question, criterionName)
+              TextAnnotator.askQuestionSocialJudge(paragraph, question, criterionName, annotation)
             })
           }
         })
@@ -831,7 +818,7 @@ class TextAnnotator extends ContentAnnotator {
     }
   }
 
-  askQuestionClarify (paragraph, question, criterion) {
+  static askQuestionClarify (paragraph, question, criterion, annotation) {
     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
       if (llm === '') {
         llm = Config.review.defaultLLM
@@ -855,8 +842,13 @@ class TextAnnotator extends ContentAnnotator {
             }, ({ apiKey }) => {
               let callback = (json) => {
                 let answer = json.answer
-                Alerts.answerAlert({
-                  answer: answer
+                Alerts.answerTextFragmentAlert({
+                  answer: answer,
+                  paragraph: paragraph,
+                  question: question,
+                  criterion: criterion,
+                  type: 'clarification',
+                  annotation: annotation
                 })
               }
               if (apiKey && apiKey !== '') {
@@ -890,7 +882,7 @@ class TextAnnotator extends ContentAnnotator {
     })
   }
 
-  askQuestionFactChecking (paragraph, question, criterion) {
+  static askQuestionFactChecking (paragraph, question, criterion, annotation) {
     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
       if (llm === '') {
         llm = Config.review.defaultLLM
@@ -913,8 +905,13 @@ class TextAnnotator extends ContentAnnotator {
             }, ({ apiKey }) => {
               let callback = (json) => {
                 let answer = json.answer
-                Alerts.answerAlert({
-                  answer: answer
+                Alerts.answerTextFragmentAlert({
+                  answer: answer,
+                  paragraph: paragraph,
+                  question: question,
+                  criterion: criterion,
+                  type: 'factChecking',
+                  annotation: annotation
                 })
               }
               if (apiKey && apiKey !== '') {
@@ -948,7 +945,7 @@ class TextAnnotator extends ContentAnnotator {
     })
   }
 
-  askQuestionSocialJudge (paragraph, question, criterion) {
+  static askQuestionSocialJudge (paragraph, question, criterion, annotation) {
     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
       if (llm === '') {
         llm = Config.review.defaultLLM
@@ -971,8 +968,13 @@ class TextAnnotator extends ContentAnnotator {
             }, ({ apiKey }) => {
               let callback = (json) => {
                 let answer = json.answer
-                Alerts.answerAlert({
-                  answer: answer
+                Alerts.answerTextFragmentAlert({
+                  answer: answer,
+                  paragraph: paragraph,
+                  question: question,
+                  criterion: criterion,
+                  type: 'socialJudge',
+                  annotation: annotation
                 })
               }
               if (apiKey && apiKey !== '') {
@@ -1249,6 +1251,37 @@ class TextAnnotator extends ContentAnnotator {
       } catch (e) {
         swal = null
       }
+    }
+  }
+
+  updateAnnotationEventHandler () {
+    return (event) => {
+      // Get annotation to update
+      const annotation = event.detail.annotation
+      // Send updated annotation to the server
+      window.abwa.storageManager.client.updateAnnotation(
+        annotation.id,
+        annotation,
+        (err, annotation) => {
+          if (err) {
+            // Show error message
+            Alerts.errorAlert({text: chrome.i18n.getMessage('errorUpdatingAnnotationComment')})
+          } else {
+            // Update current annotations
+            let currentIndex = _.findIndex(window.abwa.contentAnnotator.allAnnotations, (currentAnnotation) => { return annotation.id === currentAnnotation.id })
+            window.abwa.contentAnnotator.allAnnotations.splice(currentIndex, 1, annotation)
+            // Update all annotations
+            let allIndex = _.findIndex(window.abwa.contentAnnotator.allAnnotations, (currentAnnotation) => { return annotation.id === currentAnnotation.id })
+            window.abwa.contentAnnotator.allAnnotations.splice(allIndex, 1, annotation)
+            // Dispatch updated annotations events
+            LanguageUtils.dispatchCustomEvent(Events.updatedAllAnnotations, {annotations: window.abwa.contentAnnotator.allAnnotations})
+
+            LanguageUtils.dispatchCustomEvent(Events.comment, {annotation: annotation})
+
+            DOMTextUtils.unHighlightElements([...document.querySelectorAll('[data-annotation-id="' + annotation.id + '"]')])
+            window.abwa.contentAnnotator.highlightAnnotation(annotation)
+          }
+        })
     }
   }
 }
