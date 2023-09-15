@@ -676,10 +676,21 @@ class TextAnnotator extends ContentAnnotator {
         poleChoiceRadio += ' <span class="swal2-label" style="margin-right:5%;" title="\'+e+\'">' + e + '</span>'
       })
       poleChoiceRadio += '</div>'
-      // let selectors = annotation.target[0].selector
-      let fragmentText
-      // let fragmentTextSelector
-      fragmentText = form.comment
+      let fragmentText = ''
+      if (form.comment) {
+        fragmentText = form.comment
+      } else {
+        let selectors = annotation.target[0].selector
+        let fragmentTextSelector
+        if (selectors) {
+          fragmentTextSelector = selectors.find((selector) => {
+            return selector.type === 'TextQuoteSelector'
+          })
+        }
+        if (fragmentTextSelector) {
+          fragmentText = fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '')
+        }
+      }
       let criterionQuestion = '<div class="askDiv class="notMargin"><input placeholder="Clarify by LLM" class="swal2-input askImage notMargin" id="swal-criterionQuestion" ><img width="9%" id="clarifyByLLM" class="askImage askImageHover" alt="Ask" src="' + chrome.runtime.getURL('images/ask.png') + '"/></div>'
       let factCheckingButton = '</br><button id="btnFactChecking" class="btnFragment">Fact checking</button>'
       let socialJudge = '<button id="btnSocialJudge" class="btnFragment">Social judge</button></br>'
@@ -726,31 +737,28 @@ class TextAnnotator extends ContentAnnotator {
               updateAnnotation('', suggestedLiterature, level)
             }
           },
-          onOpen: () => {
+          didOpen: () => {
             $('.removeReference').on('click', function () {
               $(this).closest('li').remove()
             })
             const image = document.getElementById('clarifyByLLM')
             image.addEventListener('click', () => {
-              let paragraph = form.comment
               let question = document.querySelector('#swal-criterionQuestion').value
               if (question.length < 10) {
                 Alerts.infoAlert({ text: 'You have to provide a longer question' })
               } else {
-                this.askQuestionClarify(paragraph, question, criterionName)
+                this.askQuestionClarify(fragmentText, question, criterionName)
               }
             })
             const btnFactChecking = document.getElementById('btnFactChecking')
             btnFactChecking.addEventListener('click', () => {
-              let paragraph = form.comment
               let question = document.querySelector('#swal-criterionQuestion').value
-              this.askQuestionFactChecking(paragraph, question, criterionName)
+              this.askQuestionFactChecking(fragmentText, question, criterionName)
             })
             const btnSocialJudge = document.getElementById('btnSocialJudge')
             btnSocialJudge.addEventListener('click', () => {
-              let paragraph = form.comment
               let question = document.querySelector('#swal-criterionQuestion').value
-              this.askQuestionSocialJudge(paragraph, question, criterionName)
+              this.askQuestionSocialJudge(fragmentText, question, criterionName)
             })
           }
         })
