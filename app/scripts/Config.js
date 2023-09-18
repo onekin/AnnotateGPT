@@ -13,9 +13,10 @@ const Config = {
       'The sentiment key only has to include one of the last three values, but it can be different for each object',
     resumeQuery: 'I will provide you the content of a research paper. Then, you have to act as an academic reviewer and assess ' +
       ' the [C_NAME] criterion which description is separated by triple backticks ```[C_DESCRIPTION]```. For the criterion, you have to assess if it is met considering these possible results:' +
-      ' Met, Partially met, or Not met. Then, you have to explain  why it is met or not met' +
+      ' Met, Partially met, or Not met. Then, you have to explain  why it is met or not met.' +
+      ' Based your opinion mainly in the following paragraphs: [C_PARAGRAPHS]' +
       ' You have to provide the response in JSON format with' +
-      ' the following keys: -name (contains the criteria name), -sentiment (met, partially met or not met), -comment (the reason of the results),',
+      ' the following keys: -name (contains the criteria name), -sentiment (met, partially met or not met), -comment (the reason of the results, if you mention one of the paragraphs in your comment reference the full paragraphs instead of the paragraph number),',
     alternativeQuery: 'I will provide you the content of a research paper. Then, you have to act as an academic reviewer and generate ' +
       ' alternative view points for the [C_NAME] criterion which description is separated by triple backticks ```[C_DESCRIPTION]```.' +
       ' You have to provide the response in JSON format with' +

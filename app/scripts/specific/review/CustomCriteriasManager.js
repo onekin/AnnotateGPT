@@ -71,7 +71,7 @@ class CustomCriteriasManager {
   createCustomTheme () {
     return () => {
       Alerts.inputTextAlert({
-        title: 'Creating new factor',
+        title: 'Creating new review category',
         text: 'You can give a name to the factor that you want to review.',
         input: 'text',
         preConfirm: (themeName) => {
@@ -117,7 +117,7 @@ class CustomCriteriasManager {
       let criteriaName
       let criteriaDescription
       Alerts.multipleInputAlert({
-        title: 'Creating a new criterion for factor ' + groupName,
+        title: 'Creating a new criterion for category ' + groupName,
         html: '<div>' +
           '<input id="criteriaName" class="swal2-input customizeInput" placeholder="Type your criteria name..."/>' +
           '</div>' +
@@ -405,7 +405,46 @@ class CustomCriteriasManager {
               } else if (key === 'llmHighlight') {
                 this.highlightByLLMHandler(criterion, description)
               } else if (key === 'llmResume') {
-                this.resumeByLLMHandler(criterion, description)
+                let tagGroupAnnotations
+                if (window.abwa.contentAnnotator) {
+                  let annotations = window.abwa.contentAnnotator.allAnnotations
+                  // Mark as chosen annotated tags
+                  for (let i = 0; i < annotations.length; i++) {
+                    let model = window.abwa.tagManager.model
+                    let tag = model.namespace + ':' + model.config.grouped.relation + ':' + criterion
+                    tagGroupAnnotations = annotations.filter((annotation) => {
+                      return AnnotationUtils.hasATag(annotation, tag)
+                    })
+                  }
+                }
+                if (tagGroupAnnotations.length) {
+                  let paragraphs = ''
+                  for (let i = 0; i < tagGroupAnnotations.length; i++) {
+                    let annotation = tagGroupAnnotations[i]
+                    if (annotation.text) {
+                      let body = JSON.parse(annotation.text)
+                      if (body.paragraph) {
+                        let paragraphNumber = i + 1
+                        paragraphs += 'paragraph' + paragraphNumber + ': ' + body.paragraph.replace(/(\r\n|\n|\r)/gm, '') + '\n'
+                      }
+                    } else {
+                      let selectors = annotation.target[0].selector
+                      let fragmentTextSelector
+                      if (selectors) {
+                        fragmentTextSelector = selectors.find((selector) => {
+                          return selector.type === 'TextQuoteSelector'
+                        })
+                      }
+                      if (fragmentTextSelector) {
+                        let paragraphNumber = i + 1
+                        paragraphs += 'paragraph' + paragraphNumber + ': ' + fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '') + '\n'
+                      }
+                    }
+                  }
+                  this.resumeByLLMHandler(criterion, description, paragraphs)
+                } else {
+                  Alerts.errorAlert({ title: 'There are not annotations', text: 'Please, highlight some paragraphs to assess the ' + criterion + ' criterion' })
+                }
               } else if (key === 'llmAlternative') {
                 this.alternativeByLLMHandler(criterion, description)
               }
@@ -752,7 +791,7 @@ class CustomCriteriasManager {
     }
   }
 
-  resumeByLLMHandler (criterion, description) {
+  resumeByLLMHandler (criterion, description, paragraphs) {
     if (description.length < 20) {
       Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
     } else {
@@ -785,7 +824,7 @@ class CustomCriteriasManager {
                 }
                 if (apiKey && apiKey !== '') {
                   let resumeQuery = Config.review.resumeQuery
-                  resumeQuery = resumeQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion)
+                  resumeQuery = resumeQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion).replaceAll('[C_PARAGRAPHS]', paragraphs)
                   let params = {
                     criterion: criterion,
                     description: description,
