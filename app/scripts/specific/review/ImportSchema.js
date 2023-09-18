@@ -1,9 +1,9 @@
-const Alerts = require('../../utils/Alerts')
-const FileUtils = require('../../utils/FileUtils')
-const general = require('./criteriaTemplate/general.json')
-const engineering = require('./criteriaTemplate/engineering.json')
-const caise = require('./criteriaTemplate/caise.json')
-const actionResearch = require('./criteriaTemplate/actionResearch.json')
+import Alerts from '../../utils/Alerts'
+import FileUtils from '../../utils/FileUtils'
+import general from './criteriaTemplate/general.json'
+import engineering from './criteriaTemplate/engineering.json'
+import caise from './criteriaTemplate/caise.json'
+import actionResearch from './criteriaTemplate/actionResearch.json'
 
 class ImportSchema {
   static createConfigurationAnnotationsFromReview ({review, callback}) {
@@ -110,4 +110,4 @@ class ImportSchema {
   }
 }
 
-module.exports = ImportSchema
+export default ImportSchema

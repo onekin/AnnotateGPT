@@ -64,14 +64,16 @@ class TextAnnotator extends ContentAnnotator {
       this.initAnnotateEvent(() => {
         this.initAnnotateByLLMEvent(() => {
           this.initUpdateAnnotationEvent(() => {
-            this.initReloadAnnotationsEvent(() => {
-              this.initDeleteAllAnnotationsEvent(() => {
-                this.initDocumentURLChangeEvent(() => {
-                  this.initTagsUpdatedEvent(() => {
-                    // Reload annotations periodically
-                    if (_.isFunction(callback)) {
-                      callback()
-                    }
+            this.initUpdateTagAnnotationEvent(() => {
+              this.initReloadAnnotationsEvent(() => {
+                this.initDeleteAllAnnotationsEvent(() => {
+                  this.initDocumentURLChangeEvent(() => {
+                    this.initTagsUpdatedEvent(() => {
+                      // Reload annotations periodically
+                      if (_.isFunction(callback)) {
+                        callback()
+                      }
+                    })
                   })
                 })
               })
@@ -160,6 +162,14 @@ class TextAnnotator extends ContentAnnotator {
   initUpdateAnnotationEvent (callback) {
     this.events.updateAnnotationEvent = { element: document, event: Events.updateAnnotation, handler: this.updateAnnotationEventHandler() }
     this.events.updateAnnotationEvent.element.addEventListener(this.events.updateAnnotationEvent.event, this.events.updateAnnotationEvent.handler, false)
+    if (_.isFunction(callback)) {
+      callback()
+    }
+  }
+
+  initUpdateTagAnnotationEvent (callback) {
+    this.events.updateTagAnnotationEvent = { element: document, event: Events.updateTagAnnotation, handler: this.updateTagAnnotationEventHandler() }
+    this.events.updateTagAnnotationEvent.element.addEventListener(this.events.updateTagAnnotationEvent.event, this.events.updateTagAnnotationEvent.handler, false)
     if (_.isFunction(callback)) {
       callback()
     }
@@ -1265,7 +1275,7 @@ class TextAnnotator extends ContentAnnotator {
         (err, annotation) => {
           if (err) {
             // Show error message
-            Alerts.errorAlert({text: chrome.i18n.getMessage('errorUpdatingAnnotationComment')})
+            Alerts.errorAlert({ text: chrome.i18n.getMessage('errorUpdatingAnnotationComment') })
           } else {
             // Update current annotations
             let currentIndex = _.findIndex(window.abwa.contentAnnotator.allAnnotations, (currentAnnotation) => { return annotation.id === currentAnnotation.id })
@@ -1274,12 +1284,33 @@ class TextAnnotator extends ContentAnnotator {
             let allIndex = _.findIndex(window.abwa.contentAnnotator.allAnnotations, (currentAnnotation) => { return annotation.id === currentAnnotation.id })
             window.abwa.contentAnnotator.allAnnotations.splice(allIndex, 1, annotation)
             // Dispatch updated annotations events
-            LanguageUtils.dispatchCustomEvent(Events.updatedAllAnnotations, {annotations: window.abwa.contentAnnotator.allAnnotations})
+            LanguageUtils.dispatchCustomEvent(Events.updatedAllAnnotations, { annotations: window.abwa.contentAnnotator.allAnnotations })
 
-            LanguageUtils.dispatchCustomEvent(Events.comment, {annotation: annotation})
+            LanguageUtils.dispatchCustomEvent(Events.comment, { annotation: annotation })
 
             DOMTextUtils.unHighlightElements([...document.querySelectorAll('[data-annotation-id="' + annotation.id + '"]')])
             window.abwa.contentAnnotator.highlightAnnotation(annotation)
+          }
+        })
+    }
+  }
+
+  updateTagAnnotationEventHandler () {
+    return (event) => {
+      // Get annotation to update
+      const annotation = event.detail.annotation
+      // Send updated annotation to the server
+      window.abwa.storageManager.client.updateAnnotation(
+        annotation.id,
+        annotation,
+        (err, annotation) => {
+          if (err) {
+            // Show error message
+            Alerts.errorAlert({text: chrome.i18n.getMessage('errorUpdatingAnnotationComment')})
+          } else {
+            // Dispatch updated annotations events
+            // LanguageUtils.dispatchCustomEvent(Events.updatedAllAnnotations, {annotations: window.abwa.contentAnnotator.allAnnotations})
+            window.abwa.tagManager.reloadTags()
           }
         })
     }

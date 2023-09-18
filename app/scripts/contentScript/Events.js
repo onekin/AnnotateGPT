@@ -12,6 +12,7 @@ const Events = {
   updatedDocumentURL: 'updatedDocumentURL',
   comment: 'annotationComment',
   updateAnnotation: 'updateAnnotation',
+  updateTagAnnotation: 'updateTagAnnotation',
   reply: 'reply',
   tagsUpdated: 'tagsUpdated',
   deleteAllAnnotations: 'deleteAllAnnotations',

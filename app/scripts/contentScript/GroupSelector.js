@@ -1,14 +1,14 @@
-const _ = require('lodash')
-const $ = require('jquery')
-const Alerts = require('../utils/Alerts')
-const ChromeStorage = require('../utils/ChromeStorage')
-const LanguageUtils = require('../utils/LanguageUtils')
-const ImportSchema = require('../specific/review/ImportSchema')
-const ExportSchema = require('../specific/review/ExportSchema')
-const ReviewSchema = require('../model/schema/Review')
-const Events = require('./Events')
-const TagManager = require('./TagManager')
-const LocalStorageManager = require('../storage/local/LocalStorageManager')
+import _ from 'lodash'
+import $ from 'jquery'
+import Alerts from '../utils/Alerts'
+import ChromeStorage from '../utils/ChromeStorage'
+import LanguageUtils from '../utils/LanguageUtils'
+import ImportSchema from '../specific/review/ImportSchema'
+import ExportSchema from '../specific/review/ExportSchema'
+import ReviewSchema from '../model/schema/Review'
+import Events from './Events'
+import TagManager from './TagManager'
+import LocalStorageManager from '../storage/local/LocalStorageManager'
 
 class GroupSelector {
   constructor () {
@@ -623,4 +623,4 @@ class GroupSelector {
   }
 }
 
-module.exports = GroupSelector
+export default GroupSelector

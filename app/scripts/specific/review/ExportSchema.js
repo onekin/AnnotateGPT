@@ -24,15 +24,23 @@ class ExportSchema {
         let description = ''
         let group = 'Other'
         let custom = false
+        let resume = ''
+        let alternative = ''
         try {
           let config = jsYaml.load(annotation.text)
           description = config.description
           group = config.group
           custom = config.custom
+          if (config.resume) {
+            resume = config.resume
+          }
+          if (config.alternative) {
+            alternative = config.alternative
+          }
         } catch (e) {
           console.debug('Unable to parse criteria from schema annotation:\n' + e.message)
         }
-        return new Criteria({name: name, description: description, group: group, custom: custom})
+        return new Criteria({name: name, description: description, group: group, custom: custom, alternative: alternative, resume: resume})
       } else {
         return null
       }

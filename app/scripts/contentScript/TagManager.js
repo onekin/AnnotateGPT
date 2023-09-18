@@ -207,6 +207,7 @@ class TagManager {
       return tagGroup
     })
     // Hash to array
+    tagGroupsAnnotations = _.orderBy(tagGroupsAnnotations, ['config.name'], ['asc']) // 'asc' for ascending order
     return _.sortBy(tagGroupsAnnotations, (tagGroupAnnotation) => { return _.get(tagGroupAnnotation, 'config.options.group').toLowerCase() })
   }
 

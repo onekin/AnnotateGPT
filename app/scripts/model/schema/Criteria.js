@@ -1,17 +1,22 @@
 const GuideElement = require('./GuideElement')
 const jsYaml = require('js-yaml')
-const _ = require('lodash')
 const Level = require('./Level')
 const LanguageUtils = require('../../utils/LanguageUtils')
 
 class Criteria extends GuideElement {
-  constructor ({name, color, review, group = 'Other', description, custom = false}) {
+  constructor ({name, color, review, group = 'Other', description, custom = false, resume, alternative}) {
     super({name, color, parentElement: review})
     this.levels = this.childElements
     this.group = group
     this.review = this.parentElement
     this.description = description
     this.custom = custom
+    if (resume) {
+      this.resume = resume
+    }
+    if (alternative) {
+      this.alternative = alternative
+    }
   }
 
   toAnnotations () {
@@ -27,6 +32,18 @@ class Criteria extends GuideElement {
 
   toAnnotation () {
     let review = this.getAncestor()
+    let resume
+    if (this.resume) {
+      resume = this.resume
+    } else {
+      resume = ''
+    }
+    let alternative
+    if (this.alternative) {
+      alternative = this.alternative
+    } else {
+      alternative = ''
+    }
     return {
       group: review.storageGroup.id,
       permissions: {
@@ -38,31 +55,11 @@ class Criteria extends GuideElement {
       text: jsYaml.dump({
         description: this.description,
         group: this.group,
-        custom: this.custom
+        custom: this.custom,
+        alternative: alternative,
+        resume: resume
       }),
       uri: review.storageGroup.links ? review.storageGroup.links.html : review.storageGroup.url // Compatibility with both group representations getGroups and userProfile
-    }
-  }
-
-  static fromAnnotations (annotations) {
-
-  }
-
-  static fromAnnotation (annotation, rubric = {}) {
-    let criteriaTag = _.find(annotation.tags, (tag) => {
-      return tag.includes('exam:criteria:')
-    })
-    if (_.isString(criteriaTag)) {
-      let name = criteriaTag.replace('exam:criteria:', '')
-      let config = jsYaml.load(annotation.text)
-      if (_.isObject(config)) {
-        let criteriaId = config.criteriaId
-        return new Criteria({name, criteriaId, rubric})
-      } else {
-
-      }
-    } else {
-      console.error('Unable to retrieve criteria from annotation')
     }
   }
 

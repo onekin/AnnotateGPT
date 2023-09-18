@@ -37,7 +37,7 @@ class Review extends AnnotationGuide {
   static fromCriterias (criterias) {
     let review = new Review({reviewId: ''})
     for (let i = 0; i < criterias.length; i++) {
-      let criteria = new Criteria({name: criterias[i].name, description: criterias[i].description, custom: criterias[i].custom, group: criterias[i].group, review})
+      let criteria = new Criteria({name: criterias[i].name, description: criterias[i].description, custom: criterias[i].custom, group: criterias[i].group, resume: criterias[i].resume, alternative: criterias[i].alternative, review})
       criteria.levels = []
       for (let j = 0; j < criterias[i].levels.length; j++) {
         let level = new Level({name: criterias[i].levels[j].name, criteria: criteria})

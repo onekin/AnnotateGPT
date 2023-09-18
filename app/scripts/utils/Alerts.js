@@ -2,6 +2,8 @@ import _ from 'lodash'
 import TextAnnotator from '../contentScript/contentAnnotators/TextAnnotator'
 import LanguageUtils from './LanguageUtils'
 import Events from '../contentScript/Events'
+import CustomCriteriasManager from '../specific/review/CustomCriteriasManager'
+import jsYaml from 'js-yaml'
 
 let swal = null
 if (document && document.head) {
@@ -190,12 +192,12 @@ class Alerts {
     }
   }
 
-  /* static answerCriterionAlert ({title = 'This is the answer', answer = '', paragraph = '', question = '', criterion = '', type = ''}) {
+  static answerCriterionAlert ({ title = 'This is the answer', answer = '', paragraphs = '', description = '', annotation = '', type, criterion = '' }) {
     Alerts.tryToLoadSwal()
     if (_.isNull(swal)) {
 
     } else {
-      const buttons = '<button id="llmAnswerOKButton" >Ok</button></br><button id="redoButton" class="llmAnswerButton">Copy to clipboard</brbutton><button id="summaryButton" class="llmAnswerButton">Copy to Summary</button>'
+      const buttons = '<button id="llmAnswerOKButton" >Ok</button></br><button id="redoButton" class="llmAnswerButton">Redo</brbutton><button id="summaryButton" class="llmAnswerButton">Save answer</button>'
       swal.fire({
         title: title,
         html: '<div>' + answer + '</div></br>' + buttons,
@@ -207,27 +209,34 @@ class Alerts {
             swal.close()
             console.log('OK')
           })
-
           document.getElementById('redoButton').addEventListener('click', () => {
             console.log('Redo question')
             swal.close()
-            if (type === 'clarification') {
-              TextAnnotator.askQuestionClarify(paragraph, question, criterion)
-            } else if (type === 'socialJudge') {
-              TextAnnotator.askQuestionSocialJudge(paragraph, question, criterion)
-            } else if (type === 'factChecking') {
-              TextAnnotator.askQuestionFactChecking(paragraph, question, criterion)
+            if (type === 'resume') {
+              CustomCriteriasManager.resumeByLLMHandler(criterion, description, paragraphs)
+            } else if (type === 'alternative') {
+              CustomCriteriasManager.alternativeByLLMHandler(criterion, description)
             }
           })
-
           document.getElementById('summaryButton').addEventListener('click', () => {
-            // swal.close()
-            console.log('Save answer')
+            let data
+            if (annotation.text) {
+              data = jsYaml.load(annotation.text)
+              if (type === 'resume') {
+                data.resume = answer
+              } else if (type === 'alternative') {
+                data.alternative = answer
+              }
+            }
+            annotation.text = jsYaml.dump(data)
+            LanguageUtils.dispatchCustomEvent(Events.updateTagAnnotation, {annotation: annotation})
+            Alerts.successAlert({title: 'Saved', text: 'the paragraph has been saved in the report'})
+            swal.close()
           })
         }
       })
     }
-  } */
+  }
 
   static answerTextFragmentAlert ({title = 'This is the answer', answer = '', paragraph = '', question = '', criterion = '', type, annotation}) {
     Alerts.tryToLoadSwal()

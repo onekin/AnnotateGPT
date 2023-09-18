@@ -139,7 +139,7 @@ class CustomCriteriasManager {
         },
         callback: (err) => {
           if (err) {
-            Alerts.errorAlert({text: 'Unable to create this custom criteria, try it again.'})
+            Alerts.errorAlert({ text: 'Unable to create this custom criteria, try it again.' })
           } else {
             // Check if not selected cancel or esc
             if (criteriaName) {
@@ -158,22 +158,25 @@ class CustomCriteriasManager {
     }
   }
 
-  createNewCustomCriteria ({name, description = 'Custom criteria', group, callback}) {
-    let review = new Review({reviewId: ''})
+  createNewCustomCriteria ({ name, description = 'Custom criteria', group, callback }) {
+    let review = new Review({ reviewId: '' })
     review.storageGroup = window.abwa.groupSelector.currentGroup
-    let criteria = new Criteria({name, description, review, group: group, custom: true})
+    let criteria = new Criteria({ name, description, review, group: group, custom: true })
     // Create levels for the criteria
     let levels = DefaultCriteria.defaultLevels
     criteria.levels = []
     for (let j = 0; j < levels.length; j++) {
-      let level = new Level({name: levels[j].name, criteria: criteria})
+      let level = new Level({ name: levels[j].name, criteria: criteria })
       criteria.levels.push(level)
     }
     let annotations = criteria.toAnnotations()
     // Push annotations to storage
     window.abwa.storageManager.client.createNewAnnotations(annotations, (err) => {
       if (err) {
-        Alerts.errorAlert({title: 'Unable to create a custom category', text: 'Error when trying to create a new custom category. Please try again.'})
+        Alerts.errorAlert({
+          title: 'Unable to create a custom category',
+          text: 'Error when trying to create a new custom category. Please try again.'
+        })
         callback(err)
       } else {
         // Reload sidebar
@@ -222,7 +225,7 @@ class CustomCriteriasManager {
         }
         // When all the annotations are deleted
         Promise.all(promises).catch(() => {
-          Alerts.errorAlert({text: 'There was an error when trying to delete all the annotations for this tag, please reload and try it again.'})
+          Alerts.errorAlert({ text: 'There was an error when trying to delete all the annotations for this tag, please reload and try it again.' })
         }).then(() => {
           if (_.isFunction(callback)) {
             callback()
@@ -314,7 +317,7 @@ class CustomCriteriasManager {
               }))
             }
             Promise.all(promises).catch(() => {
-              Alerts.errorAlert({text: 'Unable to modify criteria group name.'})
+              Alerts.errorAlert({ text: 'Unable to modify criteria group name.' })
             }).then(() => {
               window.abwa.tagManager.reloadTags(() => {
                 window.abwa.contentAnnotator.updateAllAnnotations(() => {
@@ -355,7 +358,7 @@ class CustomCriteriasManager {
             }))
           }
           Promise.all(promises).catch((err) => {
-            Alerts.errorAlert({text: 'Error when deleting criteria group. Error:<br/>' + err})
+            Alerts.errorAlert({ text: 'Error when deleting criteria group. Error:<br/>' + err })
           }).then(() => {
             window.abwa.tagManager.reloadTags(() => {
               window.abwa.contentAnnotator.updateAllAnnotations(() => {
@@ -391,6 +394,8 @@ class CustomCriteriasManager {
       items['llmResume'] = { name: 'Resume by LLM' }
       // Find alternative viewpoints by LLM
       items['llmAlternative'] = { name: 'Alternative by LLM' }
+      // Find alternative viewpoints by LLM
+      items['showAssessment'] = { name: 'Show current assessment' }
       $.contextMenu({
         selector: '[data-mark="' + tagGroup.config.name + '"]',
         build: () => {
@@ -405,6 +410,7 @@ class CustomCriteriasManager {
               } else if (key === 'llmHighlight') {
                 this.highlightByLLMHandler(criterion, description)
               } else if (key === 'llmResume') {
+                let tagGroupAnnotation = currentTagGroup.config.annotation
                 let tagGroupAnnotations
                 if (window.abwa.contentAnnotator) {
                   let annotations = window.abwa.contentAnnotator.allAnnotations
@@ -441,12 +447,18 @@ class CustomCriteriasManager {
                       }
                     }
                   }
-                  this.resumeByLLMHandler(criterion, description, paragraphs)
+                  CustomCriteriasManager.resumeByLLMHandler(criterion, description, paragraphs, tagGroupAnnotation)
                 } else {
-                  Alerts.errorAlert({ title: 'There are not annotations', text: 'Please, highlight some paragraphs to assess the ' + criterion + ' criterion' })
+                  Alerts.errorAlert({
+                    title: 'There are not annotations',
+                    text: 'Please, highlight some paragraphs to assess the ' + criterion + ' criterion'
+                  })
                 }
               } else if (key === 'llmAlternative') {
-                this.alternativeByLLMHandler(criterion, description)
+                let tagGroupAnnotation = currentTagGroup.config.annotation
+                CustomCriteriasManager.alternativeByLLMHandler(criterion, description, tagGroupAnnotation)
+              } else if (key === 'showAssessment') {
+                CustomCriteriasManager.showAssessment(currentTagGroup)
               }
             },
             items: items
@@ -562,7 +574,7 @@ class CustomCriteriasManager {
             custom,
             callback: (err) => {
               if (err) {
-                Alerts.errorAlert({text: 'Unable to update criteria. Error:<br/>' + err.message})
+                Alerts.errorAlert({ text: 'Unable to update criteria. Error:<br/>' + err.message })
               } else {
                 window.abwa.tagManager.reloadTags(() => {
                   window.abwa.contentAnnotator.updateAllAnnotations(() => {
@@ -577,7 +589,7 @@ class CustomCriteriasManager {
     })
   }
 
-  modifyCriteria ({tagGroup, name, description, custom = true, group, callback}) {
+  modifyCriteria ({ tagGroup, name, description, custom = true, group, callback }) {
     // Check if name has changed
     if (name === tagGroup.config.name || _.isUndefined(name)) {
       // Check if description has changed
@@ -587,9 +599,15 @@ class CustomCriteriasManager {
         // Update annotation description
         let oldAnnotation = tagGroup.config.annotation
         // Create new annotation
-        let review = new Review({reviewId: ''})
+        let review = new Review({ reviewId: '' })
         review.storageGroup = window.abwa.groupSelector.currentGroup
-        let criteria = new Criteria({name, description, group: group || tagGroup.config.options.group, review, custom: custom})
+        let criteria = new Criteria({
+          name,
+          description,
+          group: group || tagGroup.config.options.group,
+          review,
+          custom: custom
+        })
         let annotation = criteria.toAnnotation()
         window.abwa.storageManager.client.updateAnnotation(oldAnnotation.id, annotation, (err, annotation) => {
           if (err) {
@@ -623,7 +641,7 @@ class CustomCriteriasManager {
         }, (err, annotationsToUpdateTag) => {
           if (err) {
             // Unable to update
-            Alerts.errorAlert({text: 'Unable to update criteria.'})
+            Alerts.errorAlert({ text: 'Unable to update criteria.' })
           } else {
             let oldTag = Config.review.namespace + ':' + Config.review.tags.grouped.relation + ':' + tagGroup.config.name
             let newTag = Config.review.namespace + ':' + Config.review.tags.grouped.relation + ':' + name
@@ -649,14 +667,20 @@ class CustomCriteriasManager {
               // TODO Some annotations where unable to update
             }).then(() => {
               // Update tagGroup annotation
-              let review = new Review({reviewId: ''})
+              let review = new Review({ reviewId: '' })
               review.storageGroup = window.abwa.groupSelector.currentGroup
-              let criteria = new Criteria({name, description, group: tagGroup.config.options.group, review, custom: custom})
+              let criteria = new Criteria({
+                name,
+                description,
+                group: tagGroup.config.options.group,
+                review,
+                custom: custom
+              })
               let annotation = criteria.toAnnotation()
               let oldAnnotation = tagGroup.config.annotation
               window.abwa.storageManager.client.updateAnnotation(oldAnnotation.id, annotation, (err, annotation) => {
                 if (err) {
-                  Alerts.errorAlert({text: 'Unable to update criteria. Error: ' + err.message})
+                  Alerts.errorAlert({ text: 'Unable to update criteria. Error: ' + err.message })
                 } else {
                   if (_.isFunction(callback)) {
                     callback()
@@ -791,7 +815,7 @@ class CustomCriteriasManager {
     }
   }
 
-  resumeByLLMHandler (criterion, description, paragraphs) {
+  static resumeByLLMHandler (criterion, description, paragraphs, annotation) {
     if (description.length < 20) {
       Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
     } else {
@@ -817,9 +841,14 @@ class CustomCriteriasManager {
                 let callback = (json) => {
                   let sentiment = json.sentiment
                   let answer = json.comment
-                  Alerts.answerAlert({
+                  Alerts.answerCriterionAlert({
                     title: 'The criterion ' + criterion + ' is ' + sentiment,
-                    answer: answer
+                    answer: answer,
+                    paragraphs: paragraphs,
+                    description: description,
+                    criterion: criterion,
+                    annotation: annotation,
+                    type: 'resume'
                   })
                 }
                 if (apiKey && apiKey !== '') {
@@ -857,7 +886,7 @@ class CustomCriteriasManager {
     }
   }
 
-  alternativeByLLMHandler (criterion, description) {
+  static alternativeByLLMHandler (criterion, description, annotation) {
     if (description.length < 20) {
       Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
     } else {
@@ -881,9 +910,13 @@ class CustomCriteriasManager {
               }, ({ apiKey }) => {
                 let callback = (json) => {
                   let answer = json.answer
-                  Alerts.answerAlert({
+                  Alerts.answerCriterionAlert({
                     title: 'These are the alternative viewpoint for ' + criterion,
-                    answer: answer
+                    answer: answer,
+                    description: description,
+                    criterion: criterion,
+                    annotation: annotation,
+                    type: 'alternative'
                   })
                 }
                 if (apiKey && apiKey !== '') {
@@ -959,6 +992,67 @@ class CustomCriteriasManager {
       selectors.push(textQuoteSelector)
     }
     return selectors
+  }
+
+  static showAssessment (currentTagGroup) {
+    let criterion = currentTagGroup.config.name
+    let tagGroupAnnotations
+    let paragraphs = []
+    if (window.abwa.contentAnnotator) {
+      let annotations = window.abwa.contentAnnotator.allAnnotations
+      // Mark as chosen annotated tags
+      for (let i = 0; i < annotations.length; i++) {
+        let model = window.abwa.tagManager.model
+        let tag = model.namespace + ':' + model.config.grouped.relation + ':' + criterion
+        tagGroupAnnotations = annotations.filter((annotation) => {
+          return AnnotationUtils.hasATag(annotation, tag)
+        })
+      }
+    }
+    if (tagGroupAnnotations.length) {
+      for (let i = 0; i < tagGroupAnnotations.length; i++) {
+        let annotation = tagGroupAnnotations[i]
+        if (annotation.text) {
+          let body = JSON.parse(annotation.text)
+          if (body.paragraph) {
+            paragraphs.push(body.paragraph.replace(/(\r\n|\n|\r)/gm, ''))
+          }
+        } else {
+          let selectors = annotation.target[0].selector
+          let fragmentTextSelector
+          if (selectors) {
+            fragmentTextSelector = selectors.find((selector) => {
+              return selector.type === 'TextQuoteSelector'
+            })
+          }
+          if (fragmentTextSelector) {
+            paragraphs.push(fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, ''))
+          }
+        }
+      }
+    }
+    if (currentTagGroup.config.options.resume || currentTagGroup.config.options.alternative || paragraphs.length > 0) {
+      let html = ''
+      if (currentTagGroup.config.options.resume) {
+        html += '<h3>Resume:</h3><div>' + currentTagGroup.config.options.resume + '</div></br>'
+      }
+      if (currentTagGroup.config.options.alternative) {
+        html += '<h3>Alternative view point:</h3><div>' + currentTagGroup.config.options.alternative + '</div></br>'
+      }
+      if (paragraphs.length > 0) {
+        html += '<h3>Highlighted paragraphs:</h3><ul>'
+        for (const item of paragraphs) {
+          html += `<li>${item}</li></br>`
+        }
+        html += '</ul>'
+      }
+      Alerts.infoAlert({ title: 'The assessment for criterion ' + criterion + ' is:', text: html })
+    } else {
+      Alerts.errorAlert({
+        title: 'No assessed',
+        text: 'You must assess this criteria. Highlight, resume or find alternatives for the criterion.'
+      })
+    }
   }
 }
 
