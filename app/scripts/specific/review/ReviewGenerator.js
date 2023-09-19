@@ -6,6 +6,7 @@ import Alerts from '../../utils/Alerts'
 import AnthropicManager from '../../llm/anthropic/AnthropicManager'
 import OpenAIManager from '../../llm/openAI/OpenAIManager'
 import FileUtils from '../../utils/FileUtils'
+import AnnotationUtils from '../../utils/AnnotationUtils'
 
 
 const ReviewSchema = require('../../model/schema/Review')
@@ -17,7 +18,7 @@ const Screenshots = require('./Screenshots')
 const $ = require('jquery')
 require('jquery-contextmenu/dist/jquery.contextMenu')
 
-const {Review, Mark, MajorConcern, MinorConcern, Strength, Annotation} = require('../../exporter/reviewModel.js')
+const {Review, AssessedTag, Annotation} = require('../../exporter/reviewModel.js')
 
 const FileSaver = require('file-saver')
 
@@ -78,6 +79,8 @@ class ReviewGenerator {
     })
   }
   parseAnnotations (annotations){
+    let currentTags = window.abwa.tagManager.currentTags
+    console.log(currentTags)
     const criterionTag = Config.review.namespace + ':' + Config.review.tags.grouped.relation + ':'
     const levelTag = Config.review.namespace + ':' + Config.review.tags.grouped.subgroup + ':'
 
@@ -113,6 +116,32 @@ class ReviewGenerator {
       let suggestedLiterature = annotationText.suggestedLiterature !== null ? annotationText.suggestedLiterature : []
       r.insertAnnotation(new Annotation(annotations[a].id,criterion,level,group,highlightText,pageNumber,comment,suggestedLiterature))
     }
+    currentTags.forEach( (tag) => {
+      let resume = null
+      if (tag.config.options.resume) {
+        resume = tag.config.options.resume
+      }
+      let alternative = null
+      if (tag.config.options.alternative) {
+        alternative = tag.config.options.alternative
+        if (alternative.isArray) {
+          alternative = alternative.join('\n')
+        }
+      }
+      if (resume || alternative) {
+        let data = {}
+        data.criterion = tag.config.name
+        if (resume) {
+          data.resume = resume
+        }
+        if (alternative) {
+          data.alternative = alternative
+        }
+        let assessedTag = new AssessedTag(data)
+        r.insertAssessedCriteria(assessedTag)
+      }
+    })
+    console.log(r)
     return r
   }
 
@@ -736,6 +765,7 @@ class ReviewGenerator {
       Alerts.closeAlert()
     })
   }
+
   deleteAnnotations () {
     // Ask user if they are sure to delete it
     Alerts.confirmAlert({
@@ -756,6 +786,7 @@ class ReviewGenerator {
     })
 
   }
+
   resume (){
     if(window.abwa.contentAnnotator.allAnnotations.length>0) window.abwa.contentAnnotator.goToAnnotation(window.abwa.contentAnnotator.allAnnotations.reduce((max,a) => new Date(a.updated) > new Date(max.updated) ? a : max))
   }

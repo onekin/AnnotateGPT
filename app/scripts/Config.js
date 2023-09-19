@@ -19,8 +19,9 @@ const Config = {
       ' the following keys: -name (contains the criteria name), -sentiment (met, partially met or not met), -comment (the reason of the results, if you mention one of the paragraphs in your comment reference the full paragraphs instead of the paragraph number),',
     alternativeQuery: 'I will provide you the content of a research paper. Then, you have to act as an academic reviewer and generate ' +
       ' alternative view points for the [C_NAME] criterion which description is separated by triple backticks ```[C_DESCRIPTION]```.' +
+      ' Based your opinion mainly in the following paragraphs: [C_PARAGRAPHS]' +
       ' You have to provide the response in JSON format with' +
-      ' the following keys: -name (contains the criteria name), -answer (the different viewpoints in different bullet points with dashes. all the content must be specified in the answer key, without creating keys inside),',
+      ' the following keys: -name (contains the criteria name), -answer (the different viewpoints in different bullet points with dashes. all the content must be specified in the answer key, without creating keys inside, if you mention one of the paragraphs in your answer reference the full paragraphs instead of the paragraph number),',
     factCheckingQuery: 'Fack check the following triple quoted text ```[C_TEXT]``` .' +
       ' You have to provide the response in JSON format with' +
       ' the following key: -answer (the answer to the question. all the content must be specified in the answer key, without creating keys inside),',

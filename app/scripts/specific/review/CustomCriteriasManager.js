@@ -410,53 +410,27 @@ class CustomCriteriasManager {
               } else if (key === 'llmHighlight') {
                 this.highlightByLLMHandler(criterion, description)
               } else if (key === 'llmResume') {
-                let tagGroupAnnotation = currentTagGroup.config.annotation
-                let tagGroupAnnotations
-                if (window.abwa.contentAnnotator) {
-                  let annotations = window.abwa.contentAnnotator.allAnnotations
-                  // Mark as chosen annotated tags
-                  for (let i = 0; i < annotations.length; i++) {
-                    let model = window.abwa.tagManager.model
-                    let tag = model.namespace + ':' + model.config.grouped.relation + ':' + criterion
-                    tagGroupAnnotations = annotations.filter((annotation) => {
-                      return AnnotationUtils.hasATag(annotation, tag)
+                this.getParagraphs(criterion, (paragraphs) => {
+                  if (paragraphs) {
+                    CustomCriteriasManager.resumeByLLMHandler(criterion, description, paragraphs, currentTagGroup.config.annotation)
+                  } else {
+                    Alerts.errorAlert({
+                      title: 'There are not annotations',
+                      text: 'Please, highlight some paragraphs to assess the ' + criterion + ' criterion'
                     })
                   }
-                }
-                if (tagGroupAnnotations.length) {
-                  let paragraphs = ''
-                  for (let i = 0; i < tagGroupAnnotations.length; i++) {
-                    let annotation = tagGroupAnnotations[i]
-                    if (annotation.text) {
-                      let body = JSON.parse(annotation.text)
-                      if (body.paragraph) {
-                        let paragraphNumber = i + 1
-                        paragraphs += 'paragraph' + paragraphNumber + ': ' + body.paragraph.replace(/(\r\n|\n|\r)/gm, '') + '\n'
-                      }
-                    } else {
-                      let selectors = annotation.target[0].selector
-                      let fragmentTextSelector
-                      if (selectors) {
-                        fragmentTextSelector = selectors.find((selector) => {
-                          return selector.type === 'TextQuoteSelector'
-                        })
-                      }
-                      if (fragmentTextSelector) {
-                        let paragraphNumber = i + 1
-                        paragraphs += 'paragraph' + paragraphNumber + ': ' + fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '') + '\n'
-                      }
-                    }
-                  }
-                  CustomCriteriasManager.resumeByLLMHandler(criterion, description, paragraphs, tagGroupAnnotation)
-                } else {
-                  Alerts.errorAlert({
-                    title: 'There are not annotations',
-                    text: 'Please, highlight some paragraphs to assess the ' + criterion + ' criterion'
-                  })
-                }
+                })
               } else if (key === 'llmAlternative') {
-                let tagGroupAnnotation = currentTagGroup.config.annotation
-                CustomCriteriasManager.alternativeByLLMHandler(criterion, description, tagGroupAnnotation)
+                this.getParagraphs(criterion, (paragraphs) => {
+                  if (paragraphs) {
+                    CustomCriteriasManager.alternativeByLLMHandler(criterion, description, paragraphs, currentTagGroup.config.annotation)
+                  } else {
+                    Alerts.errorAlert({
+                      title: 'There are not annotations',
+                      text: 'Please, highlight some paragraphs to assess the ' + criterion + ' criterion'
+                    })
+                  }
+                })
               } else if (key === 'showAssessment') {
                 CustomCriteriasManager.showAssessment(currentTagGroup)
               }
@@ -494,25 +468,6 @@ class CustomCriteriasManager {
       // let annotation =
       let annotation = createdAnnotations.pop()
       console.log(annotation)
-      /* let buttonText
-      if (createdAnnotations.length > 0 || noCreatedAnnotations.length > 0) {
-        buttonText = 'Next'
-      } else {
-        buttonText = 'OK'
-      }
-      Alerts.confirmAlert({
-        title: 'Annotation created!',
-        text: 'The following text has been highlighted: \n' + annotation.paragraph,
-        confirmButtonText: buttonText,
-        showCancelButton: false,
-        callback: () => {
-          if (createdAnnotations.length > 0) {
-            CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations)
-          } else if (noCreatedAnnotations.length > 0) {
-            CustomCriteriasManager.showParagraphs(noCreatedAnnotations)
-          }
-        }
-      }) */
       if (createdAnnotations.length > 0) {
         CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations)
       } else if (noCreatedAnnotations.length > 0) {
@@ -886,7 +841,7 @@ class CustomCriteriasManager {
     }
   }
 
-  static alternativeByLLMHandler (criterion, description, annotation) {
+  static alternativeByLLMHandler (criterion, description, paragraphs, annotation) {
     if (description.length < 20) {
       Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
     } else {
@@ -921,7 +876,7 @@ class CustomCriteriasManager {
                 }
                 if (apiKey && apiKey !== '') {
                   let alternativeQuery = Config.review.alternativeQuery
-                  alternativeQuery = alternativeQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion)
+                  alternativeQuery = alternativeQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion).replaceAll('[C_PARAGRAPHS]', paragraphs)
                   let params = {
                     criterion: criterion,
                     description: description,
@@ -1009,7 +964,7 @@ class CustomCriteriasManager {
         })
       }
     }
-    if (tagGroupAnnotations.length) {
+    if (tagGroupAnnotations) {
       for (let i = 0; i < tagGroupAnnotations.length; i++) {
         let annotation = tagGroupAnnotations[i]
         if (annotation.text) {
@@ -1032,26 +987,71 @@ class CustomCriteriasManager {
       }
     }
     if (currentTagGroup.config.options.resume || currentTagGroup.config.options.alternative || paragraphs.length > 0) {
-      let html = ''
+      let html = '<div width=800px>'
       if (currentTagGroup.config.options.resume) {
-        html += '<h3>Resume:</h3><div>' + currentTagGroup.config.options.resume + '</div></br>'
+        html += '<h3>Resume:</h3><div width=800px>' + currentTagGroup.config.options.resume + '</div></br>'
       }
       if (currentTagGroup.config.options.alternative) {
-        html += '<h3>Alternative view point:</h3><div>' + currentTagGroup.config.options.alternative + '</div></br>'
+        html += '<h3>Alternative view point:</h3><div width=800px>' + currentTagGroup.config.options.alternative + '</div></br>'
       }
       if (paragraphs.length > 0) {
-        html += '<h3>Highlighted paragraphs:</h3><ul>'
+        html += '<h3>Highlighted paragraphs:</h3><div width=800px><ul>'
         for (const item of paragraphs) {
           html += `<li>${item}</li></br>`
         }
-        html += '</ul>'
+        html += '</ul></div>'
       }
-      Alerts.infoAlert({ title: 'The assessment for criterion ' + criterion + ' is:', text: html })
+      html += '</div>'
+      Alerts.criterionInfoAlert({ title: 'The assessment for criterion ' + criterion + ' is:', text: html })
     } else {
       Alerts.errorAlert({
         title: 'No assessed',
         text: 'You must assess this criteria. Highlight, resume or find alternatives for the criterion.'
       })
+    }
+  }
+
+  getParagraphs (criterion, callback) {
+    let tagGroupAnnotations
+    let paragraphs
+    if (window.abwa.contentAnnotator) {
+      let annotations = window.abwa.contentAnnotator.allAnnotations
+      // Mark as chosen annotated tags
+      for (let i = 0; i < annotations.length; i++) {
+        let model = window.abwa.tagManager.model
+        let tag = model.namespace + ':' + model.config.grouped.relation + ':' + criterion
+        tagGroupAnnotations = annotations.filter((annotation) => {
+          return AnnotationUtils.hasATag(annotation, tag)
+        })
+      }
+    }
+    if (tagGroupAnnotations) {
+      paragraphs = ''
+      for (let i = 0; i < tagGroupAnnotations.length; i++) {
+        let annotation = tagGroupAnnotations[i]
+        if (annotation.text) {
+          let body = JSON.parse(annotation.text)
+          if (body.paragraph) {
+            let paragraphNumber = i + 1
+            paragraphs += 'paragraph' + paragraphNumber + ': ' + body.paragraph.replace(/(\r\n|\n|\r)/gm, '') + '\n'
+          }
+        } else {
+          let selectors = annotation.target[0].selector
+          let fragmentTextSelector
+          if (selectors) {
+            fragmentTextSelector = selectors.find((selector) => {
+              return selector.type === 'TextQuoteSelector'
+            })
+          }
+          if (fragmentTextSelector) {
+            let paragraphNumber = i + 1
+            paragraphs += 'paragraph' + paragraphNumber + ': ' + fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '') + '\n'
+          }
+        }
+      }
+    }
+    if (_.isFunction(callback)) {
+      callback(paragraphs)
     }
   }
 }

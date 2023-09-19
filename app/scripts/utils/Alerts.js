@@ -77,6 +77,30 @@ class Alerts {
     }
   }
 
+  static criterionInfoAlert ({text = chrome.i18n.getMessage('expectedInfoMessageNotFound'), title = 'Info', callback, confirmButtonText = 'OK', width}) {
+    Alerts.tryToLoadSwal()
+    if (_.isNull(swal)) {
+      if (_.isFunction(callback)) {
+        callback(new Error('Unable to load swal'))
+      }
+    } else {
+      swal.fire({
+        type: Alerts.alertType.info,
+        title: title,
+        confirmButtonText: confirmButtonText,
+        html: text,
+        onBeforeOpen: () => {
+          let element = document.querySelector('.swal2-popup')
+          element.style.width = '800px'
+        }
+      }).then(() => {
+        if (_.isFunction(callback)) {
+          callback(null)
+        }
+      })
+    }
+  }
+
   static errorAlert ({text = chrome.i18n.getMessage('unexpectedError'), title = 'Oops...', callback, onClose}) {
     Alerts.tryToLoadSwal()
     if (_.isNull(swal)) {
@@ -105,7 +129,7 @@ class Alerts {
       }
     } else {
       swal.fire({
-        type: Alerts.alertType.success,
+        icon: Alerts.alertType.success,
         title: title,
         html: text
       })
@@ -230,8 +254,8 @@ class Alerts {
             }
             annotation.text = jsYaml.dump(data)
             LanguageUtils.dispatchCustomEvent(Events.updateTagAnnotation, {annotation: annotation})
-            Alerts.successAlert({title: 'Saved', text: 'the paragraph has been saved in the report'})
             swal.close()
+            Alerts.successAlert({title: 'Saved', text: 'the text has been saved in the report'})
           })
         }
       })
@@ -297,6 +321,7 @@ class Alerts {
             annotation.text = JSON.stringify(data)
             LanguageUtils.dispatchCustomEvent(Events.updateAnnotation, {annotation: annotation})
             swal.close()
+            Alerts.successAlert({title: 'Saved', text: 'the answer has been saved.'})
           })
         }
       })

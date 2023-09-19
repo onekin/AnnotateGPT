@@ -3,9 +3,14 @@
 export class Review {
   constructor(){
     this._annotations = []
+    this._assessedCriteria = []
   }
   insertAnnotation(annotation){
     this._annotations.push(annotation)
+  }
+
+  insertAssessedCriteria(annotation){
+    this._assessedCriteria.push(annotation)
   }
   get annotations(){
     return this._annotations
@@ -54,6 +59,18 @@ export class Review {
     // Summary of the work
     let t = "<Summarize the work>\r\n\r\n";
 
+    // Criterion Assessment
+    t += "<Criterion assessments>\r\n\r\n";
+    this._assessedCriteria.forEach( (assessedCriteria) => {
+      t+= assessedCriteria.criterion + " assessment:\r\n\r\n";
+      if (assessedCriteria.resume) {
+        t += "-Resume:- "+assessedCriteria.resume+"\r\n\r\n";
+      }
+      if (assessedCriteria.alternative) {
+        t += "-Alternative viewpoints:- "+assessedCriteria.alternative+"\r\n\r\n";
+      }
+      t += "\r\n";
+    })
     // Strengths
     if(this.strengths.length>0){
       t+= "STRENGTHS:\r\n\r\n";
@@ -89,18 +106,6 @@ export class Review {
       }
       t += "\r\n"
     }
-
-    // Typos
-    /*if(this.typos.length>0){
-      t += "TYPOS:\n\n"
-      for(let i=0;i<this.typos.length;i++){
-        t += "\t- "
-        if(this.typos[i].page!=null) t+= '(Page '+this.typos[i].page+'): '
-        t += '"'+this.typos[i].highlightText+'"'
-        if(this.typos[i].comment!=null) t+= '\n\t'+this.typos[i].comment
-        t += '\n'
-      }
-    }*/
 
     // Other comments
     if(this.unsortedAnnotations.length>0){
@@ -176,6 +181,23 @@ export class Annotation {
   }
 }
 
+export class AssessedTag {
+  constructor({ criterion, resume = null, alternative = null }){
+    this._criterion = criterion
+    this._resume = resume
+    this._alternative = alternative
+  }
+  get criterion(){
+    return this._criterion
+  }
+  get resume(){
+    return this._resume
+  }
+  get alternative(){
+    return this._alternative
+  }
+}
+
 export class AnnotationGroup {
   constructor (annotations, review) {
     this._annotations = annotations
@@ -192,8 +214,8 @@ export class AnnotationGroup {
       if (this._annotations[i].highlightText === null) continue
       t += '\r\n\t* '
       if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
-      t += '"' + this._annotations[i].highlightText + '". ';
-      if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t' + this._annotations[i].comment;
+      t += '"' + this._annotations[i].highlightText.replace(/(\r\n|\n|\r)/gm, '') + '". ';
+      if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
     }
     let literature = [].concat.apply([], this._annotations.map((e) => {return e.suggestedLiterature}))
     let reviewReferences = this._review.references
