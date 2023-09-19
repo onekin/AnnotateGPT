@@ -1,3 +1,6 @@
+import LLMTextUtils from './LLMTextUtils'
+import _ from 'lodash'
+
 class FileUtils {
   static readTextFile (file, callback) {
     try {
@@ -28,6 +31,26 @@ class FileUtils {
       }
     })
   }
+
+  static readGuidelinesFromTXT (file, callback) {
+    FileUtils.readTextFile(file, async (err, text) => {
+      if (err) {
+        if (_.isFunction(callback)) {
+          callback(err)
+        }
+      } else {
+        if (_.isFunction(callback)) {
+          let documents = await LLMTextUtils.textToDocument(text)
+          callback(null, documents)
+        }
+      }
+    })
+  }
+
+  static async readGuidelinesFromPDF (file) {
+    let documents = await LLMTextUtils.loadDocument(file)
+    return documents
+  }
 }
 
-module.exports = FileUtils
+export default FileUtils

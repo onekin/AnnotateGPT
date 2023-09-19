@@ -31,6 +31,9 @@ const Config = {
       ' You have to provide the response only in JSON format with a single key, which is answer' +
       ' the following keys: -answer (the answer to the question. all the content must be specified in the answer key, without creating keys inside),' +
       ' do not add more text to your answer apart from the json with the answer in the "answer key"',
+    llmReviewQuery: 'Please rewrite the following review text provided between triple asterisk along the guidelines provided before ***[C_REVIEW]***. ' +
+      'Your answer only has to be provided in JSON format, that is it must start with a { and end with }' +
+      'The JSON only has to contain a single key called "answer": The key named "answer" has to contain the rewritten review based on the provided guidelines the answer to the question.',
     tags: { // Defined tags for the domain
       grouped: { // Grouped annotations
         group: 'criteria',

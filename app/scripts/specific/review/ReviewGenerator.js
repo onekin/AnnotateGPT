@@ -3,6 +3,9 @@ import AnnotationExporter from './AnnotationExporter'
 import AnnotationImporter from './AnnotationImporter'
 import Config from '../../Config'
 import Alerts from '../../utils/Alerts'
+import AnthropicManager from '../../llm/anthropic/AnthropicManager'
+import OpenAIManager from '../../llm/openAI/OpenAIManager'
+import FileUtils from '../../utils/FileUtils'
 
 
 const ReviewSchema = require('../../model/schema/Review')
@@ -21,7 +24,6 @@ const FileSaver = require('file-saver')
 const Events = require('../../contentScript/Events')
 const DefaultCriteria = require('./DefaultCriteria')
 const jsYaml = require('js-yaml')
-const FileUtils = require('../../utils/FileUtils')
 
 let Swal = null
 if (document && document.head) {
@@ -56,13 +58,6 @@ class ReviewGenerator {
       this.overviewImage.addEventListener('click', () => {
         this.generateCanvas()
       })
-      // Set resume image and event
-      /* let resumeImageURL = chrome.extension.getURL('/images/resume.png')
-      this.resumeImage = this.container.querySelector('#resumeButton')
-      this.resumeImage.src = resumeImageURL
-      this.resumeImage.addEventListener('click', () => {
-        this.resume()
-      })*/
       // Set import export image and event
       let importExportImageURL = chrome.runtime.getURL('/images/importExport.png')
       this.importExportImage = this.container.querySelector('#importExportButton')
@@ -129,12 +124,15 @@ class ReviewGenerator {
       build: () => {
         // Create items for context menu
         let items = {}
-        items['report'] = {name: 'Generate report'}
+        items['report'] = {name: 'Generate basic report'}
+        items['llmReport'] = {name: 'Generate guidelines based report'}
         items['screenshot'] = {name: 'Generate annotated PDF'}
         return {
           callback: (key, opt) => {
             if (key === 'report') {
               this.generateReview()
+            } else if (key === 'llmReport') {
+              this.generateLLMReview()
             } else if (key === 'screenshot') {
               this.generateScreenshot()
             }
@@ -318,20 +316,20 @@ class ReviewGenerator {
         'Reviewer: <input id="reviewerName" class="swal2-input" type="text" value="'+reviewerName+'">'
 
       Alerts.multipleInputAlert({title:'Upload reviewers\' annotations',html:html,preConfirm:() => {
-        let file = document.getElementById("annotationsFile")
-        let refereeName = document.getElementById("reviewerName")
-        if(refereeName.value == null || refereeName.value === '') Alerts.errorAlert({text: 'You have to provide a name for the reviewer.'})
-        else {
-          FileUtils.readJSONFile(file.files[0], (err, jsonObject) => {
-            if (err) {
-              Alerts.errorAlert({text: 'Unable to parse json file. Error:<br/>' + err.message})
-            }
-            else{
-              this.importAnnotationsMetaReview(jsonObject,refereeName.value)
-            }
-          })
-        }
-      },showCancelButton:true})
+          let file = document.getElementById("annotationsFile")
+          let refereeName = document.getElementById("reviewerName")
+          if(refereeName.value == null || refereeName.value === '') Alerts.errorAlert({text: 'You have to provide a name for the reviewer.'})
+          else {
+            FileUtils.readJSONFile(file.files[0], (err, jsonObject) => {
+              if (err) {
+                Alerts.errorAlert({text: 'Unable to parse json file. Error:<br/>' + err.message})
+              }
+              else{
+                this.importAnnotationsMetaReview(jsonObject,refereeName.value)
+              }
+            })
+          }
+        },showCancelButton:true})
     })
   }
 
@@ -478,6 +476,98 @@ class ReviewGenerator {
     if(title!=='') docTitle += ' for '+title
     FileSaver.saveAs(blob, docTitle+'.txt')
     Alerts.closeAlert()
+  }
+
+  generateLLMReview () {
+    Alerts.loadingAlert({text: chrome.i18n.getMessage('GeneratingReviewReport')})
+    let review = this.parseAnnotations(window.abwa.contentAnnotator.allAnnotations)
+    let report = review.toString()
+    Alerts.inputTextAlert({
+      title: 'Upload your guidelines file',
+      html: 'Here you can upload your guidelines in the .txt or .pdf format.',
+      input: 'file',
+      callback: async (err, file) => {
+        if (err) {
+          window.alert('An unexpected error happened when trying to load the alert.')
+        } else {
+          // Read file
+          let extension = (file.name.substring(file.name.lastIndexOf('.'))).toLowerCase()
+          if (extension !== '.pdf' && extension !== '.txt') {
+            Alerts.errorAlert({ text:'The file must have a .txt or .pdf extension' })
+          } else {
+            await this.loadGuidelines(file, extension, (err, guidelines) => {
+              if (err) {
+                Alerts.errorAlert({ text: err.message })
+              } else {
+                chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
+                  if (llm === '') {
+                    llm = Config.review.defaultLLM
+                  }
+                  if (llm && llm !== '') {
+                    let selectedLLM = llm
+                    chrome.runtime.sendMessage({
+                      scope: 'llm',
+                      cmd: 'getAPIKEY',
+                      data: selectedLLM
+                    }, ({ apiKey }) => {
+                      let callback = (json) => {
+                        let answer = json.answer
+                        let blob = new Blob([answer], { type: 'text/plain;charset=utf-8' })
+                        let title = window.PDFViewerApplication.baseUrl !== null ? window.PDFViewerApplication.baseUrl.split("/")[window.PDFViewerApplication.baseUrl.split("/").length - 1].replace(/\.pdf/i, "") : ""
+                        let docTitle = 'Review report'
+                        if (title !== '') docTitle += ' for ' + title
+                        FileSaver.saveAs(blob, docTitle + '.txt')
+                        Alerts.closeAlert()
+                      }
+                      if (apiKey && apiKey !== '') {
+                        let params = {
+                          apiKey: apiKey,
+                          report: report,
+                          guidelines: guidelines,
+                          extension: extension,
+                          callback: callback
+                        }
+                        if (selectedLLM === 'anthropic') {
+                          AnthropicManager.createReview(params)
+                        } else if (selectedLLM === 'openAI') {
+                          console.log('OpenAIQuestion')
+                          OpenAIManager.createReview(params)
+                        }
+                      } else {
+                        let callback = () => {
+                          window.open(chrome.runtime.getURL('pages/options.html'))
+                        }
+                        Alerts.infoAlert({
+                          text: 'Please, configure your LLM.',
+                          title: 'Please select a LLM and provide your API key',
+                          callback: callback()
+                        })
+                      }
+                    })
+                  }
+                })
+              }
+            })
+          }
+        }
+      }
+    })
+  }
+
+  async loadGuidelines (file, extension, callback) {
+    let guidelines
+    if (extension === '.pdf') {
+      guidelines = await FileUtils.readGuidelinesFromPDF(file)
+      if (_.isFunction(callback)) {
+        callback(null, guidelines)
+      }
+    } else if (extension === '.txt') {
+      FileUtils.readGuidelinesFromTXT(file, (err, guidelines) => {
+        if (_.isFunction(callback)) {
+          callback(err, guidelines)
+        }
+      })
+    }
   }
 
   generateCanvas () {
@@ -680,7 +770,7 @@ class ReviewGenerator {
     }
   }
 
-   static tryToLoadSwal () {
+  static tryToLoadSwal () {
     if (_.isNull(Swal)) {
       try {
         Swal = require('sweetalert2')

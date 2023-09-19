@@ -2,13 +2,14 @@ import _ from 'lodash'
 import { ChatAnthropic } from 'langchain/chat_models/anthropic'
 import { loadQAStuffChain } from 'langchain/chains'
 import Alerts from '../../utils/Alerts'
+import Config from '../../Config'
 let Swal = null
 if (document && document.head) {
   Swal = require('sweetalert2')
 }
 
 class AnthropicManager {
-  static async askCriteria ({criterion, description, apiKey, documents, callback, criterionQuery}) {
+  static async askCriteria ({description, apiKey, documents, callback, criterionQuery}) {
     let alert = function () {
       AnthropicManager.tryToLoadSwal()
       if (_.isNull(Swal)) {
@@ -69,6 +70,74 @@ class AnthropicManager {
             } catch (err) {
               Alerts.errorAlert({
                 text: 'Please try again. You may need to provide a more accurate criterion description',
+                title: 'Error parsing the answer'
+              })
+            }
+          }
+        })
+      }
+    }
+    alert()
+  }
+
+  static async createReview ({apiKey, report, guidelines, callback}) {
+    let alert = function () {
+      AnthropicManager.tryToLoadSwal()
+      if (_.isNull(Swal)) {
+        if (_.isFunction(callback)) {
+          Alerts.errorAlert({text: 'Unable to load swal'})
+        }
+      } else {
+        Swal.fire({
+          title: 'Asking Anthropic',
+          text: 'Please wait to the response',
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          onOpen: async () => {
+            Swal.showLoading()
+            const b = document.getElementById('swal2-title')
+            console.log('Creating LLM connection')
+            b.innerText = 'Creating LLM connection'
+            // Create LLM
+            // https://docs.anthropic.com/claude/reference/selecting-a-model
+            const model = new ChatAnthropic({
+              temperature: 0.2,
+              anthropicApiKey: apiKey,
+              modelName: 'claude-2.0'
+            })
+            // Document QA
+            let query, res
+            query = Config.review.llmReviewQuery
+            query = query.replaceAll('[C_REVIEW]', report.replace(/(\r\n|\n|\r)/gm, ''))
+            // Create QA chain
+            const chain = loadQAStuffChain(model)
+            console.log('Calling Anthropic')
+            b.innerText = 'Calling Anthropic'
+            res = await chain.call({
+              input_documents: guidelines,
+              question: query
+            })
+            Swal.close()
+            const jsonString = res.text
+            let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
+            let lastIndex = retrievedJSON.lastIndexOf('}')
+            retrievedJSON = retrievedJSON.substring(0, lastIndex)
+            // retrievedJSON = retrievedJSON.replace(/(\r\n|\n|\r)/gm, '')
+            if (!retrievedJSON.startsWith('{')) {
+              retrievedJSON = '{' + retrievedJSON
+            }
+            if (!retrievedJSON.endsWith('}')) {
+              retrievedJSON = retrievedJSON + '}'
+            }
+            console.log(retrievedJSON)
+            try {
+              const jsonObject = JSON.parse(retrievedJSON)
+              if (_.isFunction(callback)) {
+                callback(jsonObject)
+              }
+            } catch (err) {
+              Alerts.errorAlert({
+                text: 'Please try again. You may need to provide more clear guidelines',
                 title: 'Error parsing the answer'
               })
             }

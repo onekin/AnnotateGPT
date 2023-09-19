@@ -1,9 +1,14 @@
 import { Document } from 'langchain/document'
 
 class LLMTextUtils {
-  static async loadDocument () {
+  static async loadDocument (pdfFile) {
     console.log('Loading document')
-    let pdf = window.PDFViewerApplication.pdfDocument
+    let pdf
+    if (pdfFile) {
+      pdf = await LLMTextUtils.fileToPDFDocument(pdfFile)
+    } else {
+      pdf = window.PDFViewerApplication.pdfDocument
+    }
     const meta = await pdf.getMetadata().catch(() => null)
     const documents = []
     for (let i = 1; i <= pdf.numPages; i += 1) {
@@ -31,6 +36,43 @@ class LLMTextUtils {
       }))
     }
     return documents
+  }
+
+  static async textToDocument (text) {
+    const documents = []
+    documents.push(new Document({
+      pageContent: text,
+      metadata: {
+        pdf: {
+          version: undefined,
+          info: {},
+          metadata: null,
+          totalPages: 1
+        },
+        loc: {
+          pageNumber: 1
+        }
+      }
+    }))
+    return documents
+  }
+
+  static async fileToPDFDocument (file) {
+    const pdfjsLib = window['pdfjs-dist/build/pdf']
+
+    // Create a blob URL for the uploaded file
+    const pdfUrl = URL.createObjectURL(file)
+
+    // Load the PDF file
+    const loadingTask = pdfjsLib.getDocument(pdfUrl)
+
+    try {
+      // Wait for the PDF to load
+      const pdf = await loadingTask.promise
+      return pdf
+    } catch (e) {
+      return null
+    }
   }
 
   static compressText (text) {
