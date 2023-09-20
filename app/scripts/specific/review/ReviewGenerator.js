@@ -6,8 +6,6 @@ import Alerts from '../../utils/Alerts'
 import AnthropicManager from '../../llm/anthropic/AnthropicManager'
 import OpenAIManager from '../../llm/openAI/OpenAIManager'
 import FileUtils from '../../utils/FileUtils'
-import AnnotationUtils from '../../utils/AnnotationUtils'
-
 
 const ReviewSchema = require('../../model/schema/Review')
 const ImportSchema = require('./ImportSchema')
@@ -21,9 +19,7 @@ require('jquery-contextmenu/dist/jquery.contextMenu')
 const {Review, AssessedTag, Annotation} = require('../../exporter/reviewModel.js')
 
 const FileSaver = require('file-saver')
-
 const Events = require('../../contentScript/Events')
-const DefaultCriteria = require('./DefaultCriteria')
 const jsYaml = require('js-yaml')
 
 let Swal = null
@@ -113,7 +109,7 @@ class ReviewGenerator {
       let annotationText = annotations[a].text!==null&&annotations[a].text!=='' ? JSON.parse(annotations[a].text) : {comment:'',suggestedLiterature:[]}
       let comment = annotationText.comment !== null ? annotationText.comment : null
       let suggestedLiterature = annotationText.suggestedLiterature !== null ? annotationText.suggestedLiterature : []
-      r.insertAnnotation(new Annotation(annotations[a].id,criterion,level,group,highlightText,pageNumber,comment,suggestedLiterature))
+      r.insertAnnotation(new Annotation(annotations[a].id,criterion,level,group,highlightText.replace(/(\r\n|\n|\r)/gm, ''),pageNumber,comment,suggestedLiterature))
     }
     currentTags.forEach( (tag) => {
       let resume = null

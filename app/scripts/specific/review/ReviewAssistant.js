@@ -1,8 +1,6 @@
 /* eslint-disable */
-const Alerts = require('../../utils/Alerts')
 const Config = require('../../Config')
-//const {Review, Mark, MajorConcern, MinorConcern, Strength, Annotation} = require('../../exporter/reviewModel.js')
-import {Review,Annotation,AnnotationGroup} from '../../exporter/reviewModel.js'
+import {Review,Annotation} from '../../exporter/reviewModel.js'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 
 class ReviewAssistant {

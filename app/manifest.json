@@ -32,7 +32,7 @@
   "permissions": [
     "storage",
     "tabs",
-    "unlimitedStorage",
+    "unlimitedStorage"
   ],
   "host_permissions": [
     "file://*/*"

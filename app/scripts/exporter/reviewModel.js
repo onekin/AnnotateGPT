@@ -214,7 +214,7 @@ export class AnnotationGroup {
       if (this._annotations[i].highlightText === null) continue
       t += '\r\n\t* '
       if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
-      t += '"' + this._annotations[i].highlightText.replace(/(\r\n|\n|\r)/gm, '') + '". ';
+      t += '"' + this._annotations[i].highlightText + '". ';
       if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
     }
     let literature = [].concat.apply([], this._annotations.map((e) => {return e.suggestedLiterature}))
