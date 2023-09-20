@@ -466,7 +466,7 @@ class CustomCriteriasManager {
   static showAnnotatedParagraphs (createdAnnotations, noCreatedAnnotations) {
     if (createdAnnotations.length > 0) {
       // let annotation =
-      let annotation = createdAnnotations.pop()
+      createdAnnotations.pop()
       if (createdAnnotations.length > 0) {
         CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations)
       } else if (noCreatedAnnotations.length > 0) {

@@ -2,7 +2,7 @@
   "name": "__MSG_appName__",
   "short_name": "__MSG_appShortName__",
   "description": "__MSG_appDescription__",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "manifest_version": 3,
   "default_locale": "en",
   "icons": {
@@ -13,7 +13,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*/*", "file:///*/*"],
+      "matches": ["file:///*/*"],
       "js": ["scripts/contentScript.js"],
       "css": ["styles/contentScript.css"],
       "run_at": "document_start",
