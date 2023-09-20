@@ -467,7 +467,6 @@ class CustomCriteriasManager {
     if (createdAnnotations.length > 0) {
       // let annotation =
       let annotation = createdAnnotations.pop()
-      console.log(annotation)
       if (createdAnnotations.length > 0) {
         CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations)
       } else if (noCreatedAnnotations.length > 0) {
@@ -567,7 +566,6 @@ class CustomCriteriasManager {
         window.abwa.storageManager.client.updateAnnotation(oldAnnotation.id, annotation, (err, annotation) => {
           if (err) {
             // TODO Show err
-            console.error(err)
             if (_.isFunction(callback)) {
               callback(err)
             }
@@ -712,8 +710,6 @@ class CustomCriteriasManager {
                   }
                   let noCreatedAnnotations = annotations.filter((annotation) => annotation.selectors.length === 0)
                   let createdAnnotations = annotations.filter((annotation) => annotation.selectors.length === 3)
-                  console.log('Created: ' + createdAnnotations.length)
-                  console.log('No created: ' + noCreatedAnnotations.length)
                   let info
                   if (createdAnnotations && createdAnnotations.length > 0) {
                     info = ' has createad ' + createdAnnotations.length + ' annotations.'
@@ -748,7 +744,6 @@ class CustomCriteriasManager {
                     if (selectedLLM === 'anthropic') {
                       AnthropicManager.askCriteria(params)
                     } else if (selectedLLM === 'openAI') {
-                      console.log('OpenAIQuestion')
                       OpenAIManager.askCriteria(params)
                     }
                   })
@@ -820,7 +815,6 @@ class CustomCriteriasManager {
                   if (selectedLLM === 'anthropic') {
                     AnthropicManager.askCriteria(params)
                   } else if (selectedLLM === 'openAI') {
-                    console.log('OpenAIQuestion')
                     OpenAIManager.askCriteria(params)
                   }
                 } else {
@@ -888,7 +882,6 @@ class CustomCriteriasManager {
                   if (selectedLLM === 'anthropic') {
                     AnthropicManager.askCriteria(params)
                   } else if (selectedLLM === 'openAI') {
-                    console.log('OpenAIQuestion')
                     OpenAIManager.askCriteria(params)
                   }
                 } else {

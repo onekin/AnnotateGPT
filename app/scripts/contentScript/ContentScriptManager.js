@@ -19,7 +19,6 @@ class ContentScriptManager {
   }
 
   init () {
-    console.debug('Initializing content script manager')
     this.status = ContentScriptManager.status.initializing
     this.loadContentTypeManager(() => {
       this.loadStorage(() => {
@@ -34,7 +33,6 @@ class ContentScriptManager {
                 this.initListenerForGroupChange()
                 // Set status as initialized
                 this.status = ContentScriptManager.status.initialized
-                console.debug('Initialized content script manager')
               })
             })
           })
@@ -57,7 +55,6 @@ class ContentScriptManager {
   }
 
   destroy (callback) {
-    console.debug('Destroying content script manager')
     this.destroyContentTypeManager(() => {
       this.destroyTagsManager()
       this.destroyContentAnnotator()
@@ -68,7 +65,6 @@ class ContentScriptManager {
         window.abwa.sidebar.destroy(() => {
           window.abwa.storageManager.destroy(() => {
             this.status = ContentScriptManager.status.notInitialized
-            console.debug('Correctly destroyed content script manager')
             if (_.isFunction(callback)) {
               callback()
             }

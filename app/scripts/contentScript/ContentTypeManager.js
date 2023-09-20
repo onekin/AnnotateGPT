@@ -129,7 +129,6 @@ class ContentTypeManager {
       try {
         this.doi = document.querySelector('meta[name="citation_doi"]').content
       } catch (e) {
-        console.log('Doi not found for this document')
       }
     }
     // TODO Try to load doi from chrome tab storage
@@ -147,7 +146,6 @@ class ContentTypeManager {
     try {
       this.citationPdf = document.querySelector('meta[name="citation_pdf_url"]').content
     } catch (e) {
-      console.log('citation pdf url not found')
     }
   }
 
@@ -179,7 +177,6 @@ class ContentTypeManager {
     this.urlChangeInterval = setInterval(() => {
       let newUrl = URLUtils.retrieveMainUrl(window.location.href)
       if (newUrl !== this.documentURL) {
-        console.debug('Document URL updated from %s to %s', this.documentURL, newUrl)
         this.documentURL = newUrl
         // Dispatch event
         LanguageUtils.dispatchCustomEvent(Events.updatedDocumentURL, {url: this.documentURL})
@@ -249,7 +246,6 @@ class ContentTypeManager {
             }
           }
         } catch (e) {
-          console.debug('Title not found for this document')
         }
       }
     })

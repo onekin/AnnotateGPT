@@ -129,7 +129,7 @@ class Alerts {
       }
     } else {
       swal.fire({
-        icon: Alerts.alertType.success,
+        icon: 'success',
         title: title,
         html: text
       })
@@ -231,10 +231,8 @@ class Alerts {
           // Add event listeners to the buttons after they are rendered
           document.getElementById('llmAnswerOKButton').addEventListener('click', () => {
             swal.close()
-            console.log('OK')
           })
           document.getElementById('redoButton').addEventListener('click', () => {
-            console.log('Redo question')
             swal.close()
             if (type === 'resume') {
               CustomCriteriasManager.resumeByLLMHandler(criterion, description, paragraphs)
@@ -255,7 +253,7 @@ class Alerts {
             annotation.text = jsYaml.dump(data)
             LanguageUtils.dispatchCustomEvent(Events.updateTagAnnotation, {annotation: annotation})
             swal.close()
-            Alerts.successAlert({title: 'Saved', text: 'the text has been saved in the report'})
+            Alerts.successAlert({title: 'Saved', text: 'The text has been saved in the report'})
           })
         }
       })
@@ -277,11 +275,9 @@ class Alerts {
           // Add event listeners to the buttons after they are rendered
           document.getElementById('llmAnswerOKButton').addEventListener('click', () => {
             swal.close()
-            console.log('OK')
           })
 
           document.getElementById('redoButton').addEventListener('click', () => {
-            console.log('Redo question')
             swal.close()
             if (type === 'clarification') {
               TextAnnotator.askQuestionClarify(paragraph, question, criterion)
@@ -293,7 +289,6 @@ class Alerts {
           })
 
           document.getElementById('summaryButton').addEventListener('click', () => {
-            console.log(annotation)
             let data
             if (annotation.text) {
               data = JSON.parse(annotation.text)
@@ -321,40 +316,7 @@ class Alerts {
             annotation.text = JSON.stringify(data)
             LanguageUtils.dispatchCustomEvent(Events.updateAnnotation, {annotation: annotation})
             swal.close()
-            Alerts.successAlert({title: 'Saved', text: 'the answer has been saved.'})
-          })
-        }
-      })
-    }
-  }
-
-  static answerAlert ({title = 'This is the answer', answer = ''}) {
-    Alerts.tryToLoadSwal()
-    if (_.isNull(swal)) {
-
-    } else {
-      const buttons = '<button id="llmAnswerOKButton" >Ok</button></br><button id="copyButton" class="llmAnswerButton">Copy to clipboard</brbutton><button id="summaryButton" class="llmAnswerButton">Copy to Summary</button>'
-      swal.fire({
-        title: title,
-        html: '<div>' + answer + '</div></br>' + buttons,
-        showCancelButton: false,
-        showConfirmButton: false,
-        onBeforeOpen: () => {
-          // Add event listeners to the buttons after they are rendered
-          document.getElementById('llmAnswerOKButton').addEventListener('click', () => {
-            swal.close()
-            console.log('OK')
-          })
-
-          document.getElementById('copyButton').addEventListener('click', () => {
-            // swal.close()
-            console.log('Copy')
-            navigator.clipboard.writeText(answer)
-          })
-
-          document.getElementById('summaryButton').addEventListener('click', () => {
-            // swal.close()
-            console.log('Copy to Summary')
+            Alerts.successAlert({title: 'Saved', text: 'The answer has been saved.'})
           })
         }
       })

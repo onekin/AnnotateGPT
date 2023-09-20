@@ -80,7 +80,6 @@ class ReviewGenerator {
   }
   parseAnnotations (annotations){
     let currentTags = window.abwa.tagManager.currentTags
-    console.log(currentTags)
     const criterionTag = Config.review.namespace + ':' + Config.review.tags.grouped.relation + ':'
     const levelTag = Config.review.namespace + ':' + Config.review.tags.grouped.subgroup + ':'
 
@@ -141,7 +140,6 @@ class ReviewGenerator {
         r.insertAssessedCriteria(assessedTag)
       }
     })
-    console.log(r)
     return r
   }
 
@@ -559,7 +557,6 @@ class ReviewGenerator {
                         if (selectedLLM === 'anthropic') {
                           AnthropicManager.createReview(params)
                         } else if (selectedLLM === 'openAI') {
-                          console.log('OpenAIQuestion')
                           OpenAIManager.createReview(params)
                         }
                       } else {

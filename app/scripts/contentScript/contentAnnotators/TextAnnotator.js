@@ -111,7 +111,6 @@ class TextAnnotator extends ContentAnnotator {
   createTagsUpdatedEventHandler (callback) {
     return () => {
       this.updateAllAnnotations(() => {
-        console.debug('Updated all the annotations after Tags Updated event')
       })
     }
   }
@@ -119,7 +118,6 @@ class TextAnnotator extends ContentAnnotator {
   createDeleteAllAnnotationsEventHandler (callback) {
     return () => {
       this.deleteAllAnnotations(() => {
-        console.debug('All annotations deleted')
       })
     }
   }
@@ -127,7 +125,6 @@ class TextAnnotator extends ContentAnnotator {
   createDocumentURLChangeEventHandler (callback) {
     return () => {
       this.loadAnnotations(() => {
-        console.debug('annotations updated')
       })
     }
   }
@@ -135,7 +132,6 @@ class TextAnnotator extends ContentAnnotator {
   initReloadAnnotationsEvent (callback) {
     this.reloadInterval = setInterval(() => {
       this.updateAllAnnotations(() => {
-        console.debug('annotations updated')
       })
     }, ANNOTATIONS_UPDATE_INTERVAL_IN_SECONDS * 1000)
     if (_.isFunction(callback)) {
@@ -206,7 +202,6 @@ class TextAnnotator extends ContentAnnotator {
           LanguageUtils.dispatchCustomEvent(Events.updatedAllAnnotations, {annotations: this.allAnnotations})
           // Send event annotation is created
           LanguageUtils.dispatchCustomEvent(Events.annotationCreated, {annotation: annotation})
-          console.debug('Created annotation with ID: ' + annotation.id)
           this.highlightAnnotation(annotation, () => {
             window.getSelection().removeAllRanges()
           })
@@ -231,7 +226,6 @@ class TextAnnotator extends ContentAnnotator {
           LanguageUtils.dispatchCustomEvent(Events.updatedAllAnnotations, {annotations: this.allAnnotations})
           // Send event annotation is created
           LanguageUtils.dispatchCustomEvent(Events.annotationCreated, {annotation: annotation})
-          console.debug('Created annotation with ID: ' + annotation.id)
           this.highlightAnnotation(annotation, () => {
             window.getSelection().removeAllRanges()
           })
@@ -417,7 +411,6 @@ class TextAnnotator extends ContentAnnotator {
     this.updateAllAnnotations((err) => {
       if (err) {
         // TODO Show user no able to load all annotations
-        console.error('Unable to load annotations')
       } else {
         // Current annotations will be
         this.allAnnotations = this.retrieveCurrentAnnotations()
@@ -595,7 +588,6 @@ class TextAnnotator extends ContentAnnotator {
               LanguageUtils.dispatchCustomEvent(Events.annotationDeleted, {annotation: annotation})
               // Unhighlight annotation highlight elements
               DOMTextUtils.unHighlightElements([...document.querySelectorAll('[data-annotation-id="' + annotation.id + '"]')])
-              console.debug('Deleted annotation ' + annotation.id)
             }
           }
         })
@@ -840,7 +832,7 @@ class TextAnnotator extends ContentAnnotator {
         clarificationQuery = clarificationQuery.replaceAll('[C_TEXT]', paragraph).replaceAll('[C_NAME]', criterion).replaceAll('[C_QUESTION]', question)
         Alerts.confirmAlert({
           title: 'Clarification',
-          text: 'You are going to ask the following question: ' + clarificationQuery,
+          text: 'You are going to ask the following question:\n ' + clarificationQuery,
           cancelButtonText: 'Cancel',
           callback: async () => {
             let documents = []
@@ -872,7 +864,6 @@ class TextAnnotator extends ContentAnnotator {
                 if (selectedLLM === 'anthropic') {
                   AnthropicManager.askCriteria(params)
                 } else if (selectedLLM === 'openAI') {
-                  console.log('OpenAIQuestion')
                   OpenAIManager.askCriteria(params)
                 }
               } else {
@@ -903,7 +894,7 @@ class TextAnnotator extends ContentAnnotator {
         factCheckingQuery = factCheckingQuery.replaceAll('[C_TEXT]', paragraph)
         Alerts.confirmAlert({
           title: 'Fact Checking',
-          text: 'You are going to ask the following question: ' + factCheckingQuery,
+          text: 'You are going to ask the following question:\n ' + factCheckingQuery,
           cancelButtonText: 'Cancel',
           callback: async () => {
             let documents = []
@@ -935,7 +926,6 @@ class TextAnnotator extends ContentAnnotator {
                 if (selectedLLM === 'anthropic') {
                   AnthropicManager.askCriteria(params)
                 } else if (selectedLLM === 'openAI') {
-                  console.log('OpenAIQuestion')
                   OpenAIManager.askCriteria(params)
                 }
               } else {
@@ -966,7 +956,7 @@ class TextAnnotator extends ContentAnnotator {
         socialJudgeQuery = socialJudgeQuery.replaceAll('[C_TEXT]', paragraph)
         Alerts.confirmAlert({
           title: 'Social Judge',
-          text: 'You are going to ask the following question: ' + socialJudgeQuery,
+          text: 'You are going to ask the following question:\n ' + socialJudgeQuery,
           cancelButtonText: 'Cancel',
           callback: async () => {
             let documents = []
@@ -998,7 +988,6 @@ class TextAnnotator extends ContentAnnotator {
                 if (selectedLLM === 'anthropic') {
                   AnthropicManager.askCriteria(params)
                 } else if (selectedLLM === 'openAI') {
-                  console.log('OpenAIQuestion')
                   OpenAIManager.askCriteria(params)
                 }
               } else {
@@ -1033,11 +1022,9 @@ class TextAnnotator extends ContentAnnotator {
           this.openSidebar()
         }
       } else {
-        console.debug('Current selection is empty')
         // If selection is child of sidebar, return null
         if ($(event.target).parents('#abwaSidebarWrapper').toArray().length === 0 &&
           event.target.id !== 'context-menu-layer') {
-          console.debug('Current selection is not child of the annotator sidebar')
           this.closeSidebar()
         }
       }
@@ -1080,7 +1067,6 @@ class TextAnnotator extends ContentAnnotator {
       // If go to annotation is done by init annotation and it is not found, wait for some seconds for ajax content to be loaded and try again to go to annotation
       if (!_.isElement(firstElementToScroll) && !_.isNumber(this.initializationTimeout)) { // It is done only once, if timeout does not exist previously (otherwise it won't finish never calling goToAnnotation
         this.initializationTimeout = setTimeout(() => {
-          console.debug('Trying to scroll to init annotation in 2 seconds')
           this.initAnnotatorByAnnotation()
         }, 2000)
       } else {
@@ -1133,7 +1119,6 @@ class TextAnnotator extends ContentAnnotator {
         let firstElementToScroll = document.querySelector('[data-annotation-id="' + initAnnotation.id + '"]')
         if (!_.isElement(firstElementToScroll) && !_.isNumber(this.initializationTimeout)) {
           this.initializationTimeout = setTimeout(() => {
-            console.debug('Trying to scroll to init annotation in 2 seconds')
             this.initAnnotatorByAnnotation()
           }, 2000)
         } else {

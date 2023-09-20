@@ -19,7 +19,6 @@ class GroupSelector {
   }
 
   init (callback) {
-    console.debug('Initializing group selector')
     this.checkIsLoggedIn((err) => {
       if (err) {
         // Stop propagating the rest of the functions, because it is not logged in storage
@@ -34,7 +33,6 @@ class GroupSelector {
           // Define current group
           this.defineCurrentGroup(() => {
             this.reloadGroupsContainer()
-            console.debug('Initialized group selector')
             if (_.isFunction(callback)) {
               callback(null)
             }
@@ -436,7 +434,6 @@ class GroupSelector {
     if (_.isObject(currentGroup)) {
       this.currentGroup = currentGroup
       ChromeStorage.setData(this.selectedGroupNamespace, {data: JSON.stringify(this.currentGroup)}, ChromeStorage.local, () => {
-        console.debug('Group updated. Name: %s id: %s', this.currentGroup.name, this.currentGroup.id)
         // Dispatch event
         LanguageUtils.dispatchCustomEvent(Events.groupChanged, {
           group: this.currentGroup,

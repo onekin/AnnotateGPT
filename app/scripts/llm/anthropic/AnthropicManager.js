@@ -25,7 +25,6 @@ class AnthropicManager {
           onOpen: async () => {
             Swal.showLoading()
             const b = document.getElementById('swal2-title')
-            console.log('Creating LLM connection')
             b.innerText = 'Creating LLM connection'
             // Create LLM
             // https://docs.anthropic.com/claude/reference/selecting-a-model
@@ -48,10 +47,8 @@ class AnthropicManager {
                 '```' + description + '```'
             }
             // Create QA chain
-            console.log('Creating chain')
             b.innerText = 'Creating chain'
             const chain = loadQAStuffChain(model)
-            console.log('Calling Anthropic')
             b.innerText = 'Calling Anthropic'
             let res = await chain.call({
               input_documents: documents,
@@ -62,14 +59,21 @@ class AnthropicManager {
             let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
             let lastIndex = retrievedJSON.lastIndexOf('}')
             retrievedJSON = retrievedJSON.substring(0, lastIndex)
+            retrievedJSON = retrievedJSON.replace(/(\r\n|\n|\r)/gm, '')
+            if (!retrievedJSON.startsWith('{')) {
+              retrievedJSON = '{' + retrievedJSON
+            }
+            if (!retrievedJSON.endsWith('}')) {
+              retrievedJSON = retrievedJSON + '}'
+            }
             try {
-              const jsonObject = JSON.parse('{' + retrievedJSON + '}')
+              const jsonObject = JSON.parse(retrievedJSON)
               if (_.isFunction(callback)) {
                 callback(jsonObject)
               }
             } catch (err) {
               Alerts.errorAlert({
-                text: 'Please try again. You may need to provide a more accurate criterion description',
+                text: 'Please try again. Try to repeat the question. Provide answer has been: ' + retrievedJSON,
                 title: 'Error parsing the answer'
               })
             }
@@ -111,7 +115,6 @@ class AnthropicManager {
             query = query.replaceAll('[C_REVIEW]', report.replace(/(\r\n|\n|\r)/gm, ''))
             // Create QA chain
             const chain = loadQAStuffChain(model)
-            console.log('Calling Anthropic')
             b.innerText = 'Calling Anthropic'
             res = await chain.call({
               input_documents: guidelines,
@@ -122,14 +125,13 @@ class AnthropicManager {
             let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
             let lastIndex = retrievedJSON.lastIndexOf('}')
             retrievedJSON = retrievedJSON.substring(0, lastIndex)
-            // retrievedJSON = retrievedJSON.replace(/(\r\n|\n|\r)/gm, '')
+            retrievedJSON = retrievedJSON.replace(/(\r\n|\n|\r)/gm, '')
             if (!retrievedJSON.startsWith('{')) {
               retrievedJSON = '{' + retrievedJSON
             }
             if (!retrievedJSON.endsWith('}')) {
               retrievedJSON = retrievedJSON + '}'
             }
-            console.log(retrievedJSON)
             try {
               const jsonObject = JSON.parse(retrievedJSON)
               if (_.isFunction(callback)) {

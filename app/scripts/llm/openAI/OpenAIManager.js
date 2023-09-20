@@ -70,8 +70,15 @@ class OpenAIManager {
             let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
             let lastIndex = retrievedJSON.lastIndexOf('}')
             retrievedJSON = retrievedJSON.substring(0, lastIndex)
+            retrievedJSON = retrievedJSON.replace(/(\r\n|\n|\r)/gm, '')
+            if (!retrievedJSON.startsWith('{')) {
+              retrievedJSON = '{' + retrievedJSON
+            }
+            if (!retrievedJSON.endsWith('}')) {
+              retrievedJSON = retrievedJSON + '}'
+            }
             try {
-              const jsonObject = JSON.parse('{' + retrievedJSON + '}')
+              const jsonObject = JSON.parse(retrievedJSON)
               if (_.isFunction(callback)) {
                 callback(jsonObject)
               }
@@ -138,14 +145,13 @@ class OpenAIManager {
             let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
             let lastIndex = retrievedJSON.lastIndexOf('}')
             retrievedJSON = retrievedJSON.substring(0, lastIndex)
-            // retrievedJSON = retrievedJSON.replace(/(\r\n|\n|\r)/gm, '')
+            retrievedJSON = retrievedJSON.replace(/(\r\n|\n|\r)/gm, '')
             if (!retrievedJSON.startsWith('{')) {
               retrievedJSON = '{' + retrievedJSON
             }
             if (!retrievedJSON.endsWith('}')) {
               retrievedJSON = retrievedJSON + '}'
             }
-            console.log(retrievedJSON)
             try {
               const jsonObject = JSON.parse(retrievedJSON)
               if (_.isFunction(callback)) {
