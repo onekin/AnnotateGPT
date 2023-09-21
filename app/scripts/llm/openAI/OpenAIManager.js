@@ -84,7 +84,7 @@ class OpenAIManager {
               }
             } catch (err) {
               Alerts.errorAlert({
-                text: 'Please try again. You may need to provide a more accurate criterion description',
+                text: 'Please try again. Try to repeat the question. Provided answer has been: ' + retrievedJSON,
                 title: 'Error parsing the answer'
               })
             }
@@ -159,7 +159,7 @@ class OpenAIManager {
               }
             } catch (err) {
               Alerts.errorAlert({
-                text: 'Please try again. You may need to provide more clear guidelines',
+                text: 'Please try again. Try to repeat the question. Provided answer has been: ' + retrievedJSON,
                 title: 'Error parsing the answer'
               })
             }

@@ -31,7 +31,8 @@ class AnthropicManager {
             const model = new ChatAnthropic({
               temperature: 0.2,
               anthropicApiKey: apiKey,
-              modelName: 'claude-2.0'
+              modelName: 'claude-2.0',
+              anthropicApiUrl: 'http://ikasten.io:3000/https://api.anthropic.com'
             })
             // Document QA
             let query
@@ -73,7 +74,7 @@ class AnthropicManager {
               }
             } catch (err) {
               Alerts.errorAlert({
-                text: 'Please try again. Try to repeat the question. Provide answer has been: ' + retrievedJSON,
+                text: 'Please try again. Try to repeat the question. Provided answer has been: ' + retrievedJSON,
                 title: 'Error parsing the answer'
               })
             }
@@ -107,7 +108,8 @@ class AnthropicManager {
             const model = new ChatAnthropic({
               temperature: 0.2,
               anthropicApiKey: apiKey,
-              modelName: 'claude-2.0'
+              modelName: 'claude-2.0',
+              anthropicApiUrl: 'http://ikasten.io:3000/https://api.anthropic.com'
             })
             // Document QA
             let query, res
@@ -139,7 +141,7 @@ class AnthropicManager {
               }
             } catch (err) {
               Alerts.errorAlert({
-                text: 'Please try again. You may need to provide more clear guidelines',
+                text: 'Please try again. Try to repeat the question. Provided answer has been: ' + retrievedJSON,
                 title: 'Error parsing the answer'
               })
             }
