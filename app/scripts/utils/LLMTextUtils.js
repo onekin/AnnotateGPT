@@ -2,7 +2,6 @@ import { Document } from 'langchain/document'
 
 class LLMTextUtils {
   static async loadDocument (pdfFile) {
-    console.log('Loading document')
     let pdf
     if (pdfFile) {
       pdf = await LLMTextUtils.fileToPDFDocument(pdfFile)
@@ -84,7 +83,6 @@ class LLMTextUtils {
       let documentText = this.compressText(documents[i].pageContent)
       if (documentText.includes(paragraph)) {
         let pageNumber = documents[i].metadata.loc.pageNumber
-        console.log('FOUND PAGE FOR ' + i + ':' + pageNumber)
         return pageNumber
       }
     }

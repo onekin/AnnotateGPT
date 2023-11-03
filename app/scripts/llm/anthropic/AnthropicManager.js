@@ -51,12 +51,14 @@ class AnthropicManager {
             b.innerText = 'Creating chain'
             const chain = loadQAStuffChain(model)
             b.innerText = 'Calling Anthropic'
+            console.log('QUERY: ' + query)
             let res = await chain.call({
               input_documents: documents,
               question: query
             })
             Swal.close()
             const jsonString = res.text
+            console.log('ANSWER: ' + jsonString)
             let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
             let lastIndex = retrievedJSON.lastIndexOf('}')
             retrievedJSON = retrievedJSON.substring(0, lastIndex)
@@ -118,12 +120,14 @@ class AnthropicManager {
             // Create QA chain
             const chain = loadQAStuffChain(model)
             b.innerText = 'Calling Anthropic'
+            console.log('QUERY: ' + query)
             res = await chain.call({
               input_documents: guidelines,
               question: query
             })
             Swal.close()
             const jsonString = res.text
+            console.log('ANSWER: ' + jsonString)
             let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
             let lastIndex = retrievedJSON.lastIndexOf('}')
             retrievedJSON = retrievedJSON.substring(0, lastIndex)

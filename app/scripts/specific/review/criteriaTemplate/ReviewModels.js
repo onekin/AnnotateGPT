@@ -1,5 +1,8 @@
 const ReviewModels = {
   reviews: {
+    basic: {
+      name: 'Basic example'
+    },
     general: {
       name: 'General standard'
     },

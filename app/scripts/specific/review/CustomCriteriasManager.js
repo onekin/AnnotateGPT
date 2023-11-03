@@ -391,9 +391,9 @@ class CustomCriteriasManager {
       // Highlight criterion by LLM
       items['llmHighlight'] = { name: 'Highlight by LLM' }
       // Assess criterion by LLM
-      items['llmResume'] = { name: 'Resume by LLM' }
+      items['llmResume'] = { name: 'Assess by the LLM' }
       // Find alternative viewpoints by LLM
-      items['llmAlternative'] = { name: 'Alternative by LLM' }
+      items['llmAlternative'] = { name: 'Alternative view points by LLM' }
       // Find alternative viewpoints by LLM
       items['showAssessment'] = { name: 'Show current assessment' }
       $.contextMenu({

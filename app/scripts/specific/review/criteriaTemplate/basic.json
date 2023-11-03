@@ -1,0 +1,278 @@
+{
+  "criteria": [
+    {
+      "group": "Essential",
+      "name": "Research purpose",
+      "description": "states a purpose, problem, objective, or research question",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Essential",
+      "name": "Motivation",
+      "description": "explains why the problem, objective, or research question is important (motivation)",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Essential",
+      "name": "Artifact description",
+      "description": "describes the proposed artifact in adequate detail",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Essential",
+      "name": "Result addressing research",
+      "description": "results directly address research questions",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Essential",
+      "name": "Study limitations",
+      "description": "discusses the study's limitations and threats to validity",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Desirable",
+      "name": "Related work synthesis",
+      "description": "summarizes and synthesizes a reasonable selection of related work",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Desirable",
+      "name": "Relation with related work",
+      "description": "clearly describes relationship between contribution(s) and related work",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Desirable",
+      "name": "Recommendation providing",
+      "description": "provides plausibly useful interpretations or recommendations for practice, education or research",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Desirable",
+      "name": "Open sharing",
+      "description": "openly shares data and materials to the extent possible within practical and ethical limits (see the Open Science Supplement)",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "name": "Contribution",
+      "description": "contributes in some way to the collective body of knowledge",
+      "group": "Extraordinary",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Extraordinary",
+      "name": "Methodology",
+      "description": "methodology is appropriate (not necessarily optimal) for stated purpose or questions",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Extraordinary",
+      "name": "Data analysis description",
+      "description": "describes in detail how the data were analyzed",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
+      "group": "Extraordinary",
+      "name": "Research methodology innovation",
+      "description": "innovates on research methodology while completing an empirical study",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    }
+  ],
+  "defaultLevels": [
+    {
+      "name": "Strength",
+      "description": ""
+    },
+    {
+      "name": "Minor weakness",
+      "description": ""
+    },
+    {
+      "name": "Major weakness",
+      "description": ""
+    }
+  ]
+}

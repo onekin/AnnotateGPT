@@ -3,6 +3,7 @@ import FileUtils from '../../utils/FileUtils'
 import general from './criteriaTemplate/general.json'
 import engineering from './criteriaTemplate/engineering.json'
 import caise from './criteriaTemplate/caise.json'
+import basic from './criteriaTemplate/basic.json'
 import actionResearch from './criteriaTemplate/actionResearch.json'
 
 class ImportSchema {
@@ -93,6 +94,8 @@ class ImportSchema {
             jsonObject = general
           } else if (reviewFile === 'Engineering research') {
             jsonObject = engineering
+          } else if (reviewFile === 'Basic example') {
+            jsonObject = basic
           } else if (reviewFile === 'Action research') {
             jsonObject = actionResearch
           } else if (reviewFile === 'CAiSE Standard') {

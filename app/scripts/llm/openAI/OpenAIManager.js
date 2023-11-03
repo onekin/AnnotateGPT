@@ -61,12 +61,15 @@ class OpenAIManager {
             let results = await docsearch.similaritySearch(query, 6)
             const chainA = loadQAStuffChain(model)
             b.innerText = 'Asking OpenAI'
+            console.log('QUERY: ' + query)
+
             let res = await chainA.call({
               input_documents: results,
               question: query
             })
             Swal.close()
             const jsonString = res.text
+            console.log('ANSWER: ' + jsonString)
             let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
             let lastIndex = retrievedJSON.lastIndexOf('}')
             retrievedJSON = retrievedJSON.substring(0, lastIndex)
@@ -136,12 +139,14 @@ class OpenAIManager {
             let results = await docsearch.similaritySearch(query, 6)
             const chainA = loadQAStuffChain(model)
             b.innerText = 'Asking OpenAI'
+            console.log('QUERY: ' + query)
             let res = await chainA.call({
               input_documents: results,
               question: query
             })
             Swal.close()
             const jsonString = res.text
+            console.log('ANSWER: ' + jsonString)
             let retrievedJSON = jsonString.substring(jsonString.indexOf('{') + 1)
             let lastIndex = retrievedJSON.lastIndexOf('}')
             retrievedJSON = retrievedJSON.substring(0, lastIndex)
