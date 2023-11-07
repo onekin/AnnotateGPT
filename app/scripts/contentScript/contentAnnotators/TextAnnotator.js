@@ -688,7 +688,7 @@ class TextAnnotator extends ContentAnnotator {
         console.log('Unable to load swal')
       } else {
         swal.fire({
-          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Highlighted text:</span><br/>' + '<textarea rows="10" cols="40" id="swal-textarea">' + fragmentText + '</textarea>' + factCheckingButton + socialJudge + criterionQuestion +
+          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Comment:</span><br/>' + '<textarea rows="10" cols="40" id="swal-textarea">' + fragmentText + '</textarea>' + factCheckingButton + socialJudge + criterionQuestion +
             '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input notMargin"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
           showLoaderOnConfirm: true,
           width: '40em',

@@ -197,7 +197,7 @@ class CustomCriteriasManager {
     }
   }
 
-  deleteTag (tagGroup, callback) {
+  static deleteTag (tagGroup, callback) {
     // Get tags used in storage to store this tag or annotations with this tag
     let annotationsToDelete = []
     // Get annotation of the tag group
@@ -303,7 +303,7 @@ class CustomCriteriasManager {
             for (let i = 0; i < arrayOfTagGroups.length; i++) {
               let tagGroup = arrayOfTagGroups[i]
               promises.push(new Promise((resolve, reject) => {
-                this.modifyCriteria({
+                CustomCriteriasManager.modifyCriteria({
                   tagGroup,
                   group: groupName,
                   callback: (err) => {
@@ -382,16 +382,16 @@ class CustomCriteriasManager {
       let criterion = tagGroup.config.name
       let description = tagGroup.config.options.description
       let items = {}
-      // Modify menu element
+      /* // Modify menu element
       items['modify'] = { name: 'Modify' }
       // If custom criteria, it is also possible to delete it
       if (tagGroup.config.options.custom) {
         items['delete'] = { name: 'Delete' }
-      }
+      } */
       // Highlight criterion by LLM
       items['llmHighlight'] = { name: 'Highlight by LLM' }
       // Assess criterion by LLM
-      items['llmResume'] = { name: 'Assess by the LLM' }
+      items['llmResume'] = { name: 'Resume by the LLM' }
       // Find alternative viewpoints by LLM
       items['llmAlternative'] = { name: 'Alternative view points by LLM' }
       // Find alternative viewpoints by LLM
@@ -403,11 +403,11 @@ class CustomCriteriasManager {
             callback: (key) => {
               // Get latest version of tag
               let currentTagGroup = _.find(window.abwa.tagManager.currentTags, currentTag => currentTag.config.annotation.id === tagGroup.config.annotation.id)
-              if (key === 'delete') {
+              /* if (key === 'delete') {
                 this.deleteCriteriaHandler(currentTagGroup)
               } else if (key === 'modify') {
                 this.modifyCriteriaHandler(currentTagGroup)
-              } else if (key === 'llmHighlight') {
+              } else */ if (key === 'llmHighlight') {
                 this.highlightByLLMHandler(criterion, description)
               } else if (key === 'llmResume') {
                 this.getParagraphs(criterion, (paragraphs) => {
@@ -475,7 +475,7 @@ class CustomCriteriasManager {
     }
   }
 
-  deleteCriteriaHandler (tagGroup) {
+  static deleteCriteriaHandler (tagGroup) {
     window.abwa.sidebar.closeSidebar()
     // Ask user if they are sure to delete the current tag
     Alerts.confirmAlert({
@@ -487,7 +487,7 @@ class CustomCriteriasManager {
         if (err) {
           // Nothing to do
         } else {
-          this.deleteTag(tagGroup, () => {
+          CustomCriteriasManager.deleteTag(tagGroup, () => {
             window.abwa.tagManager.reloadTags(() => {
               window.abwa.contentAnnotator.updateAllAnnotations(() => {
                 window.abwa.sidebar.openSidebar()
@@ -499,13 +499,13 @@ class CustomCriteriasManager {
     })
   }
 
-  modifyCriteriaHandler (tagGroup, defaultNameValue = null, defaultDescriptionValue = null) {
+  static modifyCriteriaHandler (tagGroup, defaultNameValue = null, defaultDescriptionValue = null) {
     let criteriaName
     let criteriaDescription
     let formCriteriaNameValue = defaultNameValue || tagGroup.config.name
     let formCriteriaDescriptionValue = defaultDescriptionValue || tagGroup.config.options.description
     let custom = tagGroup.config.options.custom || false
-    Alerts.multipleInputAlert({
+    Alerts.threeOptionsAlert({
       title: 'Modifying name and description for criterion ' + formCriteriaNameValue,
       html: '<div>' +
         '<input id="criteriaName" class="swal2-input customizeInput" value="' + formCriteriaNameValue + '"/>' +
@@ -521,7 +521,7 @@ class CustomCriteriasManager {
       callback: () => {
         // Revise to execute only when OK button is pressed or criteria name and descriptions are not undefined
         if (!_.isUndefined(criteriaName) && !_.isUndefined(criteriaDescription)) {
-          this.modifyCriteria({
+          CustomCriteriasManager.modifyCriteria({
             tagGroup: tagGroup,
             name: criteriaName,
             description: criteriaDescription,
@@ -539,11 +539,16 @@ class CustomCriteriasManager {
             }
           })
         }
+      },
+      denyButtonText: 'Delete',
+      denyButtonColor: '#d33',
+      denyCallback: () => {
+        CustomCriteriasManager.deleteCriteriaHandler(tagGroup)
       }
     })
   }
 
-  modifyCriteria ({ tagGroup, name, description, custom = true, group, callback }) {
+  static modifyCriteria ({ tagGroup, name, description, custom = true, group, callback }) {
     // Check if name has changed
     if (name === tagGroup.config.name || _.isUndefined(name)) {
       // Check if description has changed
@@ -578,7 +583,7 @@ class CustomCriteriasManager {
       }
     } else {
       // If name has changed, check if there is not other criteria with the same value
-      if (this.alreadyExistsThisCriteriaName(name)) {
+      if (CustomCriteriasManager.alreadyExistsThisCriteriaName(name)) {
         // Alert already exists
         Alerts.errorAlert({
           title: 'Criteria already exists',
@@ -907,7 +912,7 @@ class CustomCriteriasManager {
    * @param name
    * @return {boolean}
    */
-  alreadyExistsThisCriteriaName (name) {
+  static alreadyExistsThisCriteriaName (name) {
     return !!_.find(window.abwa.tagManager.currentTags, (tag) => { return tag.config.name === name })
   }
 

@@ -12,6 +12,7 @@ import AnnotationUtils from '../utils/AnnotationUtils'
 import ImportSchema from '../specific/review/ImportSchema'
 import DefaultCriteria from '../specific/review/DefaultCriteria'
 import Review from '../model/schema/Review'
+import CustomCriteriasManager from '../specific/review/CustomCriteriasManager'
 
 class TagManager {
   constructor (namespace, config) {
@@ -251,6 +252,7 @@ class TagManager {
         name: tagGroup.config.name,
         color: ColorUtils.setAlphaToColor(tagGroup.config.color, 0.3),
         description: tagGroup.config.options.description,
+        tagGroup: tagGroup,
         handler: (event) => {
           let tags = [
             this.model.namespace + ':' + this.model.config.grouped.relation + ':' + tagGroup.config.name
@@ -263,7 +265,7 @@ class TagManager {
     }
   }
 
-  static createButton ({name, color = 'grey', description, handler, role}) {
+  static createButton ({name, color = 'grey', description, handler, role, tagGroup}) {
     let tagButtonTemplate = document.querySelector('#tagButtonTemplate')
     let tagButton = $(tagButtonTemplate.content.firstElementChild).clone().get(0)
     tagButton.innerText = name
@@ -284,6 +286,14 @@ class TagManager {
     // TODO It should be better to set it as a CSS property, but currently there is not an option for that
     tagButton.addEventListener('mouseenter', () => {
       tagButton.style.backgroundColor = ColorUtils.setAlphaToColor(ColorUtils.colorFromString(tagButton.dataset.baseColor), 0.7)
+    })
+    // Add a double-click event listener to the button
+    tagButton.addEventListener('dblclick', function () {
+      if (tagGroup) {
+        let currentTagGroup = _.find(window.abwa.tagManager.currentTags, currentTag => currentTag.config.annotation.id === tagGroup.config.annotation.id)
+        CustomCriteriasManager.modifyCriteriaHandler(currentTagGroup)
+        // console.log('this.modifyCriteriaHandler(currentTagGroup)')
+      }
     })
     tagButton.addEventListener('mouseleave', () => {
       if (tagButton.dataset.chosen === 'true') {
@@ -315,6 +325,7 @@ class TagManager {
           color: element.getColor(),
           description: (element.options.description || null),
           handler: buttonHandler,
+          tagGroup: tagGroup,
           role: 'marking'
         })
         tagButtonContainer.append(button)

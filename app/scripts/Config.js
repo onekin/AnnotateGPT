@@ -5,7 +5,7 @@ const Config = {
     urlParamName: 'rag',
     defaultLLM: 'anthropic',
     defaultQuery: 'I will provide you the content of a research paper. ' +
-      'Then, you have to act as an academic reviewer and assess  the criterion <criterion>[C_NAME]</criterion> which description is <description>[C_DESCRIPTION]</description>.' +
+      'Then, you have to act as an academic reviewer and assess  the criterion "[C_NAME]" which description is <description>[C_DESCRIPTION]</description>.' +
       ' For the criterion, you have to provide THREE text fragments as pieces of evidence from the provided article that can help to assess the given criterion.' +
       ' You have to provide the response in JSON format with the following keys: -"name" (contains the criteria name), -"paragraphs" (an array with THREE objects with two keys ("text" and "sentiment").' +
       ' The key "text" provide the text fragment written in the same way as in the article that can be useful to assess the criterion).' +
