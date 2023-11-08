@@ -1,9 +1,9 @@
 # CoReviewer
 [![Build Status](https://travis-ci.com/haritzmedina/reviewAndGo.svg?branch=master)](https://travis-ci.com/haritzmedina/reviewAndGo)
 
-Review&Go is a chrome extension to allow conference and journal reviewers to review papers using annotations. 
+CoReviewer is a chrome extension to allow conference and journal reviewers to review papers using annotations. 
 Main features:
-* Ease to install.  Review&Go is just two-click away. If you have previously installed any browser extension, installing Review&Go is a doddle! Last but not least, Review&Go is being certified by Chrome, before being uploaded to its web store. So, no security leaks.
+* Ease to install.  CoReviewer is just two-click away. If you have previously installed any browser extension, installing Review&Go is a doddle! Last but not least, Review&Go is being certified by Chrome, before being uploaded to its web store. So, no security leaks.
 * Color-coding highlighting. You define a  Review Model (e.g., originality, legibility and so on), each model’s attribute is mapped to a colour to be used during highlighting at review time,
 * Qualify highlighting. Highlights can be associated with comments, grades (strengths and weaknesses) or references to the literature. Your comments would undertake a sentiment analysis to avoid offensive wordings.
 * Canvas view. Have a global picture of the review so far. The canvas is plotted along with the attributes of the review model. Gradations and highlights are shown within each plot.
