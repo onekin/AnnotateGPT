@@ -1,4 +1,4 @@
-# Review&Go
+# CoReviewer
 [![Build Status](https://travis-ci.com/haritzmedina/reviewAndGo.svg?branch=master)](https://travis-ci.com/haritzmedina/reviewAndGo)
 
 Review&Go is a chrome extension to allow conference and journal reviewers to review papers using annotations. 
@@ -9,17 +9,6 @@ Main features:
 * Canvas view. Have a global picture of the review so far. The canvas is plotted along with the attributes of the review model. Gradations and highlights are shown within each plot.
 * Review-draft generation. A first text draft is generated as a review head-start. Comments are placed by the manuscript quotes for authors to easily spot the rationales for the reviewer comments. 
 * Sharing. Data is stored locally. Yet, it can be exported as a JSON file and emailed to colleagues who can then import it into their Review&Go installations. On loading the manuscript, your colleagues will see the very same view as you. 
-
-
-# For End-users
-
-The extension can be downloaded from [Chrome Store](https://rebrand.ly/reviewAndGo). Optionaly annotations can be shared using [Hypothes.is](https://hypothes.is) web annotation server, what requires an to [register as a user](https://hypothes.is/signup). This can be set in options page after installing the extension.
-
-# For developers
-
-
-# For contributors
-
 
 ## Installation
 
@@ -73,26 +62,5 @@ or
 or
 
     $ gulp release    // => X.0.0
-
-
-## Globals
-
-The build tool also defines a variable named `process.env.NODE_ENV` in your scripts. It will be set to `development` unless you use the `--production` option.
-
-
-**Example:** `./app/background.js`
-
-```javascript
-if(process.env.NODE_ENV === 'development'){
-  console.log('We are in development mode!');
-}
-```
-
-## Testing
-
-To run the tests locally, it is required a Hypothesis Developer Token. You can get yours at: https://hypothes.is/account/developer
-Then, create an .env file and add it with name "HYPOTHESIS_TOKEN" (without commas)
-
-
 
 
