@@ -47,7 +47,7 @@
     "js-sha256": "^0.9.0",
     "json-form-data": "^1.7.2",
     "jspdf": "^1.5.3",
-    "langchain": "0.0.103",
+    "langchain": "0.0.184",
     "lodash": "^4.17.20",
     "pdfjs-dist": "^2.5.207",
     "qtip2": "^3.0.3",

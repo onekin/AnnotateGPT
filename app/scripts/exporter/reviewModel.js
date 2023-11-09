@@ -142,6 +142,175 @@ export class Review {
 
     return t;
   }
+
+  groupByCategory(){
+    // Summary of the work
+    let t = "<Summarize the work>\r\n\r\n";
+
+    // Criterion Assessment
+    t += "<Criterion assessments>\r\n\r\n";
+    this._assessedCriteria.forEach( (assessedCriteria) => {
+      t+= assessedCriteria.criterion.toUpperCase() + " ASSESSMENT:\r\n\r\n";
+      if (assessedCriteria.resume) {
+        t += "-Resume:- "+assessedCriteria.resume+"\r\n\r\n";
+      }
+      if (assessedCriteria.alternative) {
+        t += "-Alternative viewpoints:- "+assessedCriteria.alternative+"\r\n\r\n";
+      }
+      t += "\r\n";
+      // Strengths
+      if(this.strengths.length>0){
+        for(let s in this.strengths){
+          if (this.strengths[s].annotations[0].criterion === assessedCriteria.criterion){
+            t+= '\t' + "***Strengths***\r\n\r\n";
+            t += '\t' + (this.strengths[s].toGroupByCategories())+ "\r\n\r\n";
+          }
+        }
+        t += "\r\n";
+      }
+
+      // Major concerns
+      if(this.majorConcerns.length>0) {
+        for(let i=0;i<this.majorConcerns.length;i++) {
+          if (this.majorConcerns[i].annotations[0].criterion === assessedCriteria.criterion) {
+            t += '\t' +"***Major weaknesses***\r\n\r\n"
+            t += '\t' + (this.majorConcerns[i].toGroupByCategories()) + "\r\n\r\n";
+          }
+        }
+        t += "\r\n";
+      }
+
+      // Minor concerns
+      if(this.minorConcerns.length>0){
+        for(let i=0;i<this.minorConcerns.length;i++){
+          if (this.minorConcerns[i].annotations[0].criterion === assessedCriteria.criterion) {
+            t += '\t' +"***Minor weaknesses***\r\n\r\n"
+            t += '\t' + (this.minorConcerns[i].toGroupByCategories()) + "\r\n\r\n";
+          }
+        }
+        t += "\r\n";
+      }
+    })
+
+    // Presentation errors
+    if(this.presentationErrors.length>0){
+      t += "PRESENTATION:\r\n\r\n"
+      for(let i=0;i<this.presentationErrors.length;i++){
+        t += "- "+this.presentationErrors[i].toGroupByCategories()+"\r\n\r\n"
+      }
+      t += "\r\n"
+    }
+
+    // Other comments
+    if(this.unsortedAnnotations.length>0){
+      t += "OTHER COMMENTS:\r\n\r\n"
+      let reviewReferences = this.references
+      for(let i=0;i<this.unsortedAnnotations.length;i++){
+        t += "\t- "
+        if(this.unsortedAnnotations[i].page!=null) t+= '(Page '+this.unsortedAnnotations[i].page+'): '
+        t += '"'+this.unsortedAnnotations[i].highlightText+'"'
+        if(this.unsortedAnnotations[i].comment!=null&&this.unsortedAnnotations[i].comment!="") t+= '\r\n\t'+this.unsortedAnnotations[i].comment
+        let literature = this.unsortedAnnotations[i].suggestedLiterature!=null ? this.unsortedAnnotations[i].suggestedLiterature : []
+        if(literature.length>0){
+          t += '\r\n\tI would encourage the authors to look at the following papers: ';
+          for(let j in literature){
+            t += '['+(reviewReferences.indexOf(literature[j])+1)+']'
+            if(j===literature.length-2&&literature.length>1) t += ' and '
+            else if(literature.length>1&&j<literature.length-1) t += ', '
+          }
+        }
+        t += '\r\n'
+      }
+    }
+
+    // References
+    let references = this.references
+    if(references.length>0){
+      t += "REFERENCES:\r\n"
+      for(let i=0;i<references.length;i++){
+        t += "\r\n["+(i+1)+"] "+references[i]
+      }
+    }
+
+    t += "\r\n<Comments to editors>";
+
+    return t;
+  }
+
+  groupBySentiment(){
+    // Summary of the work
+    let t = "<Summarize the work>\r\n\r\n";
+    // Strengths
+    if(this.strengths.length>0){
+      t+= "STRENGTHS:\r\n\r\n";
+      for(let s in this.strengths){
+        t += "- "+this.strengths[s].toString()+"\r\n\r\n";
+      }
+      t += "\r\n";
+    }
+
+    // Major concerns
+    if(this.majorConcerns.length>0){
+      t += "MAJOR WEAKNESSES:\r\n\r\n"
+      for(let i=0;i<this.majorConcerns.length;i++){
+        t += (i+1)+"- "+this.majorConcerns[i].toString()+"\r\n\r\n";
+      }
+      t += "\r\n";
+    }
+
+    // Minor concerns
+    if(this.minorConcerns.length>0){
+      t += "MINOR WEAKNESSES:\r\n\r\n"
+      for(let i=0;i<this.minorConcerns.length;i++){
+        t += (i+1)+"- "+this.minorConcerns[i].toString()+"\r\n\r\n";
+      }
+      t += "\r\n";
+    }
+
+    // Presentation errors
+    if(this.presentationErrors.length>0){
+      t += "PRESENTATION:\r\n\r\n"
+      for(let i=0;i<this.presentationErrors.length;i++){
+        t += "- "+this.presentationErrors[i].toString()+"\r\n\r\n"
+      }
+      t += "\r\n"
+    }
+
+    // Other comments
+    if(this.unsortedAnnotations.length>0){
+      t += "OTHER COMMENTS:\r\n\r\n"
+      let reviewReferences = this.references
+      for(let i=0;i<this.unsortedAnnotations.length;i++){
+        t += "\t- "
+        if(this.unsortedAnnotations[i].page!=null) t+= '(Page '+this.unsortedAnnotations[i].page+'): '
+        t += '"'+this.unsortedAnnotations[i].highlightText+'"'
+        if(this.unsortedAnnotations[i].comment!=null&&this.unsortedAnnotations[i].comment!="") t+= '\r\n\t'+this.unsortedAnnotations[i].comment
+        let literature = this.unsortedAnnotations[i].suggestedLiterature!=null ? this.unsortedAnnotations[i].suggestedLiterature : []
+        if(literature.length>0){
+          t += '\r\n\tI would encourage the authors to look at the following papers: ';
+          for(let j in literature){
+            t += '['+(reviewReferences.indexOf(literature[j])+1)+']'
+            if(j===literature.length-2&&literature.length>1) t += ' and '
+            else if(literature.length>1&&j<literature.length-1) t += ', '
+          }
+        }
+        t += '\r\n'
+      }
+    }
+
+    // References
+    let references = this.references
+    if(references.length>0){
+      t += "REFERENCES:\r\n"
+      for(let i=0;i<references.length;i++){
+        t += "\r\n["+(i+1)+"] "+references[i]
+      }
+    }
+
+    t += "\r\n<Comments to editors>";
+
+    return t;
+  }
 }
 
 export class Annotation {
@@ -223,6 +392,50 @@ export class AnnotationGroup {
       t += '\n\tI would encourage the authors to look at the following papers: ';
       for (let j in literature) {
         t += '[' + (reviewReferences.indexOf(literature[j]) + 1) + ']'
+        if (j === literature.length - 2 && literature.length > 1) t += ' and '
+        else if (literature.length > 1 && j < literature.length - 1) t += ', '
+      }
+    }
+    return t
+  }
+
+  toGroupByCategories () {
+    let t = ''
+    for (let i in this._annotations) {
+      if (this._annotations[i].highlightText === null) continue
+      t += '\t' + '\r\n\t* '
+      if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
+      t += '\t' + '"' + this._annotations[i].highlightText + '". ';
+      if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+    }
+    let literature = [].concat.apply([], this._annotations.map((e) => {return e.suggestedLiterature}))
+    let reviewReferences = this._review.references
+    if (literature.length > 0) {
+      t += '\n\t\tI would encourage the authors to look at the following papers: ';
+      for (let j in literature) {
+        t += '\t[' + (reviewReferences.indexOf(literature[j]) + 1) + ']'
+        if (j === literature.length - 2 && literature.length > 1) t += ' and '
+        else if (literature.length > 1 && j < literature.length - 1) t += ', '
+      }
+    }
+    return t
+  }
+
+  toGroupBySentiment () {
+    let t = ''
+    for (let i in this._annotations) {
+      if (this._annotations[i].highlightText === null) continue
+      t += '\t' + '\r\n\t* '
+      if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
+      t += '\t' + '"' + this._annotations[i].highlightText + '". ';
+      if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+    }
+    let literature = [].concat.apply([], this._annotations.map((e) => {return e.suggestedLiterature}))
+    let reviewReferences = this._review.references
+    if (literature.length > 0) {
+      t += '\n\t\tI would encourage the authors to look at the following papers: ';
+      for (let j in literature) {
+        t += '\t[' + (reviewReferences.indexOf(literature[j]) + 1) + ']'
         if (j === literature.length - 2 && literature.length > 1) t += ' and '
         else if (literature.length > 1 && j < literature.length - 1) t += ', '
       }

@@ -4,7 +4,6 @@ import ContentTypeManager from '../ContentTypeManager'
 import Tag from '../Tag'
 import TagGroup from '../TagGroup'
 import Events from '../Events'
-import RolesManager from '../RolesManager'
 import DOMTextUtils from '../../utils/DOMTextUtils'
 import PDFTextUtils from '../../utils/PDFTextUtils'
 import LanguageUtils from '../../utils/LanguageUtils'
@@ -535,26 +534,63 @@ class TextAnnotator extends ContentAnnotator {
   }
 
   createContextMenuForAnnotation (annotation) {
+    let paragraph
+    let groupTag = window.abwa.tagManager.getGroupFromAnnotation(annotation)
+    let criterionName = groupTag.config.name
+    let selectors = annotation.target[0].selector
+    let fragmentTextSelector
+    if (selectors) {
+      fragmentTextSelector = selectors.find((selector) => {
+        return selector.type === 'TextQuoteSelector'
+      })
+    }
+    if (fragmentTextSelector) {
+      paragraph = fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '')
+    }
     $.contextMenu({
       selector: '[data-annotation-id="' + annotation.id + '"]',
       build: () => {
         // Create items for context menu
         let items = {}
         // If current user is the same as author, allow to remove annotation or add a comment
-        if (window.abwa.rolesManager.role === RolesManager.roles.reviewer) {
-          items['comment'] = {name: 'Comment'}
-          items['delete'] = {name: 'Delete'}
-        } else if (window.abwa.rolesManager.role === RolesManager.roles.author) {
-          // This is disabled by now, maybe in the future it will be interesting to provide a reply mechanism
-          // In the same way, if the author cannot reply to reviewer annotation, the rest of the functionality in this .js about replying will not be used
-          // items['reply'] = {name: 'Reply'}
-        }
+        items['clarify'] = {name: 'Clarify by LLM'}
+        items['factChecking'] = {name: 'Fact Check by LLM'}
+        items['socialJudge'] = {name: 'Social judge by LLM'}
+        items['comment'] = {name: 'Comment'}
+        items['delete'] = {name: 'Delete'}
         return {
           callback: (key) => {
             if (key === 'delete') {
               this.deleteAnnotationHandler(annotation)
             } else if (key === 'comment') {
               this.commentAnnotationHandler(annotation)
+            } else if (key === 'clarify') {
+              // this.commentAnnotationHandler(annotation)
+              Alerts.inputTextAlert({
+                title: 'Clarify by LLM',
+                inputPlaceholder: 'Your question',
+                preConfirm: () => {
+                  return new Promise((resolve) => {
+                    let question = document.querySelector('.swal2-input').value
+                    if (question && question.length > 3) {
+                      resolve(question)
+                    } else {
+                      Alerts.errorAlert({text: 'Please enter a question'})
+                    }
+                  })
+                },
+                callback: () => {
+                  let question = document.querySelector('.swal2-input').value
+                  TextAnnotator.askQuestionClarify(paragraph, question, criterionName, annotation)
+                }
+              })
+            } else if (key === 'factChecking') {
+              // this.commentAnnotationHandler(annotation)
+              // let question = document.querySelector('#swal-criterionQuestion').value
+              TextAnnotator.askQuestionFactChecking(paragraph, criterionName, annotation)
+            } else if (key === 'socialJudge') {
+              // this.commentAnnotationHandler(annotation)
+              TextAnnotator.askQuestionSocialJudge(paragraph, criterionName, annotation)
             }
           },
           items: items
@@ -664,6 +700,7 @@ class TextAnnotator extends ContentAnnotator {
       if (form.comment) {
         fragmentText = form.comment
       }
+      /*
       // retrieve underlined text
       let paragraph = ''
       if (form.paragraph) {
@@ -682,13 +719,13 @@ class TextAnnotator extends ContentAnnotator {
       }
       let criterionQuestion = '<div class="askDiv class="notMargin"><input placeholder="Clarify by LLM" class="swal2-input askImage notMargin" id="swal-criterionQuestion" ><img width="9%" id="clarifyByLLM" class="askImage askImageHover" alt="Ask" src="' + chrome.runtime.getURL('images/ask.png') + '"/></div>'
       let factCheckingButton = '</br><button id="btnFactChecking" class="btnFragment">Fact checking</button>'
-      let socialJudge = '<button id="btnSocialJudge" class="btnFragment">Social judge</button></br>'
+      let socialJudge = '<button id="btnSocialJudge" class="btnFragment">Social judge</button></br>' */
       TextAnnotator.tryToLoadSwal()
       if (_.isNull(swal)) {
         console.log('Unable to load swal')
       } else {
         swal.fire({
-          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Comment:</span><br/>' + '<textarea rows="10" cols="40" id="swal-textarea">' + fragmentText + '</textarea>' + factCheckingButton + socialJudge + criterionQuestion +
+          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Comment:</span><br/>' + '<textarea rows="10" cols="40" id="swal-textarea">' + fragmentText + '</textarea>' + /* factCheckingButton + socialJudge + criterionQuestion + */
             '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input notMargin"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
           showLoaderOnConfirm: true,
           width: '40em',
@@ -730,6 +767,7 @@ class TextAnnotator extends ContentAnnotator {
             $('.removeReference').on('click', function () {
               $(this).closest('li').remove()
             })
+            /*
             const image = document.getElementById('clarifyByLLM')
             image.addEventListener('click', () => {
               let question = document.querySelector('#swal-criterionQuestion').value
@@ -748,7 +786,7 @@ class TextAnnotator extends ContentAnnotator {
             btnSocialJudge.addEventListener('click', () => {
               let question = document.querySelector('#swal-criterionQuestion').value
               TextAnnotator.askQuestionSocialJudge(paragraph, question, criterionName, annotation)
-            })
+            }) */
           }
         })
       }
@@ -883,7 +921,7 @@ class TextAnnotator extends ContentAnnotator {
     })
   }
 
-  static askQuestionFactChecking (paragraph, question, criterion, annotation) {
+  static askQuestionFactChecking (paragraph, criterion, annotation) {
     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
       if (llm === '') {
         llm = Config.review.defaultLLM
@@ -909,7 +947,6 @@ class TextAnnotator extends ContentAnnotator {
                 Alerts.answerTextFragmentAlert({
                   answer: answer,
                   paragraph: paragraph,
-                  question: question,
                   criterion: criterion,
                   type: 'factChecking',
                   annotation: annotation
@@ -945,7 +982,7 @@ class TextAnnotator extends ContentAnnotator {
     })
   }
 
-  static askQuestionSocialJudge (paragraph, question, criterion, annotation) {
+  static askQuestionSocialJudge (paragraph, criterion, annotation) {
     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
       if (llm === '') {
         llm = Config.review.defaultLLM
@@ -971,7 +1008,6 @@ class TextAnnotator extends ContentAnnotator {
                 Alerts.answerTextFragmentAlert({
                   answer: answer,
                   paragraph: paragraph,
-                  question: question,
                   criterion: criterion,
                   type: 'socialJudge',
                   annotation: annotation

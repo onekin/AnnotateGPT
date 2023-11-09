@@ -282,9 +282,9 @@ class Alerts {
             if (type === 'clarification') {
               TextAnnotator.askQuestionClarify(paragraph, question, criterion)
             } else if (type === 'socialJudge') {
-              TextAnnotator.askQuestionSocialJudge(paragraph, question, criterion)
+              TextAnnotator.askQuestionSocialJudge(paragraph, criterion)
             } else if (type === 'factChecking') {
-              TextAnnotator.askQuestionFactChecking(paragraph, question, criterion)
+              TextAnnotator.askQuestionFactChecking(paragraph, criterion)
             }
           })
 

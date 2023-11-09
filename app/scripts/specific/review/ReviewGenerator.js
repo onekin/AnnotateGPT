@@ -55,13 +55,13 @@ class ReviewGenerator {
       this.overviewImage.addEventListener('click', () => {
         this.generateCanvas()
       })
-      // Set import export image and event
+      /* Set import export image and event
       let importExportImageURL = chrome.runtime.getURL('/images/importExport.png')
       this.importExportImage = this.container.querySelector('#importExportButton')
       this.importExportImage.src = importExportImageURL
       this.importExportImage.addEventListener('click', () => {
         this.importExportButtonHandler()
-      })
+      }) */
       // Set configuration button
       let configurationImageURL = chrome.runtime.getURL('/images/configuration.png')
       this.configurationImage = this.container.querySelector('#configurationButton')
@@ -147,18 +147,21 @@ class ReviewGenerator {
       build: () => {
         // Create items for context menu
         let items = {}
-        items['report'] = {name: 'Generate basic report'}
+        items['category'] = {name: 'Group by Category'}
+        items['sentiment'] = {name: 'Group by Sentiment'}
         items['llmReport'] = {name: 'Generate guidelines based report'}
-        items['screenshot'] = {name: 'Generate annotated PDF'}
+        // items['screenshot'] = {name: 'Generate annotated PDF'}
         return {
           callback: (key, opt) => {
-            if (key === 'report') {
-              this.generateReview()
+            if (key === 'category') {
+              this.generateReviewByCategory()
+            } else if (key === 'sentiment') {
+              this.generateReviewBySentiment()
             } else if (key === 'llmReport') {
               this.generateLLMReview()
-            } else if (key === 'screenshot') {
+            } /* else if (key === 'screenshot') {
               this.generateScreenshot()
-            }
+            } */
           },
           items: items
         }
@@ -398,9 +401,10 @@ class ReviewGenerator {
         return {
           callback: (key, opt) => {
             if (key === 'manual') {
-              window.open("https://github.com/haritzmedina/reviewAndGo/wiki/Review&Go-FAQ","_blank")
+              window.open("https://github.com/onekin/CoReviewer","_blank")
             } else if (key === 'questionnaire') {
-              window.open("https://forms.gle/5u8wsh2xUW8KcdtC9","_blank")
+              // window.open("https://forms.gle/5u8wsh2xUW8KcdtC9","_blank")
+              console.log('TODO')
             } else if (key === 'recentActivity') {
               window.open(chrome.runtime.getURL('/pages/specific/review/recentActivity.html'),"_blank")
             } else if (key === 'config') {
@@ -489,10 +493,22 @@ class ReviewGenerator {
     Screenshots.takeScreenshot()
   }
 
-  generateReview () {
+  generateReviewByCategory () {
     Alerts.loadingAlert({text: chrome.i18n.getMessage('GeneratingReviewReport')})
     let review = this.parseAnnotations(window.abwa.contentAnnotator.allAnnotations)
-    let report = review.toString()
+    let report = review.groupByCategory()
+    let blob = new Blob([report], {type: 'text/plain;charset=utf-8'})
+    let title = window.PDFViewerApplication.baseUrl !== null ? window.PDFViewerApplication.baseUrl.split("/")[window.PDFViewerApplication.baseUrl.split("/").length-1].replace(/\.pdf/i,"") : ""
+    let docTitle = 'Review report'
+    if(title!=='') docTitle += ' for '+title
+    FileSaver.saveAs(blob, docTitle+'.txt')
+    Alerts.closeAlert()
+  }
+
+  generateReviewBySentiment () {
+    Alerts.loadingAlert({text: chrome.i18n.getMessage('GeneratingReviewReport')})
+    let review = this.parseAnnotations(window.abwa.contentAnnotator.allAnnotations)
+    let report = review.groupBySentiment()
     let blob = new Blob([report], {type: 'text/plain;charset=utf-8'})
     let title = window.PDFViewerApplication.baseUrl !== null ? window.PDFViewerApplication.baseUrl.split("/")[window.PDFViewerApplication.baseUrl.split("/").length-1].replace(/\.pdf/i,"") : ""
     let docTitle = 'Review report'

@@ -15,8 +15,6 @@ class LocalStorageClient {
         user: this.database.user,
         annotations: this.database.annotations
       })
-      console.debug('Create annotation')
-      console.debug(annotationToStore)
       // Store in database
       this.database.annotations.push(annotationToStore)
       // TODO Update storage
