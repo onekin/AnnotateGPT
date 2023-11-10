@@ -389,13 +389,13 @@ class CustomCriteriasManager {
         items['delete'] = { name: 'Delete' }
       } */
       // Highlight criterion by LLM
-      items['llmHighlight'] = { name: 'Highlight by LLM' }
+      items['llmHighlight'] = { name: 'Uncover' }
       // Assess criterion by LLM
-      items['llmResume'] = { name: 'Resume by the LLM' }
+      items['llmResume'] = { name: 'Compile' }
       // Find alternative viewpoints by LLM
-      items['llmAlternative'] = { name: 'Alternative view points by LLM' }
+      items['llmAlternative'] = { name: 'Provide alternatives' }
       // Find alternative viewpoints by LLM
-      items['showAssessment'] = { name: 'Show current assessment' }
+      items['showAssessment'] = { name: 'Recap' }
       $.contextMenu({
         selector: '[data-mark="' + tagGroup.config.name + '"]',
         build: () => {
@@ -987,20 +987,20 @@ class CustomCriteriasManager {
     if (currentTagGroup.config.options.resume || currentTagGroup.config.options.alternative || paragraphs.length > 0) {
       let html = '<div width=800px>'
       if (currentTagGroup.config.options.resume) {
-        html += '<h3>Resume:</h3><div width=800px>' + currentTagGroup.config.options.resume + '</div></br>'
+        html += '<h3>Compilation:</h3><div width=800px>' + currentTagGroup.config.options.resume + '</div></br>'
       }
       if (currentTagGroup.config.options.alternative) {
-        html += '<h3>Alternative view point:</h3><div width=800px>' + currentTagGroup.config.options.alternative + '</div></br>'
+        html += '<h3>Provided alternatives:</h3><div width=800px>' + currentTagGroup.config.options.alternative + '</div></br>'
       }
       if (paragraphs.length > 0) {
-        html += '<h3>Highlighted paragraphs:</h3><div width=800px><ul>'
+        html += '<h3>Excerpts:</h3><div width=800px><ul>'
         for (const item of paragraphs) {
           html += `<li>${item}</li></br>`
         }
         html += '</ul></div>'
       }
       html += '</div>'
-      Alerts.criterionInfoAlert({ title: 'The assessment for criterion ' + criterion + ' is:', text: html })
+      Alerts.criterionInfoAlert({ title: criterion + '. The assessment so far is:', text: html })
     } else {
       Alerts.errorAlert({
         title: 'No assessed',
