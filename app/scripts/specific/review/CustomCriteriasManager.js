@@ -803,7 +803,7 @@ class CustomCriteriasManager {
                     description: description,
                     criterion: criterion,
                     annotation: annotation,
-                    type: 'resume'
+                    type: 'compile'
                   })
                 }
                 if (apiKey && apiKey !== '') {
@@ -984,13 +984,31 @@ class CustomCriteriasManager {
         }
       }
     }
-    if (currentTagGroup.config.options.resume || currentTagGroup.config.options.alternative || paragraphs.length > 0) {
-      let html = '<div width=800px>'
-      if (currentTagGroup.config.options.resume) {
-        html += '<h3>Compilation:</h3><div width=800px>' + currentTagGroup.config.options.resume + '</div></br>'
+    let compile = ''
+    if (currentTagGroup.config.options.compile !== '') {
+      const findResume = currentTagGroup.config.options.compile.find((resume) => {
+        return resume.document === window.abwa.contentTypeManager.pdfFingerprint
+      })
+      if (findResume) {
+        compile = findResume.answer
       }
-      if (currentTagGroup.config.options.alternative) {
-        html += '<h3>Provided alternatives:</h3><div width=800px>' + currentTagGroup.config.options.alternative + '</div></br>'
+    }
+    let alternative = ''
+    if (currentTagGroup.config.options.alternative !== '') {
+      const findAlternative = currentTagGroup.config.options.alternative.find((alternative) => {
+        return alternative.document === window.abwa.contentTypeManager.pdfFingerprint
+      })
+      if (findAlternative) {
+        alternative = findAlternative.answer
+      }
+    }
+    if (compile || alternative || paragraphs.length > 0) {
+      let html = '<div width=800px>'
+      if (compile) {
+        html += '<h3>Compilation:</h3><div width=800px>' + compile + '</div></br>'
+      }
+      if (alternative) {
+        html += '<h3>Provided alternatives:</h3><div width=800px>' + alternative + '</div></br>'
       }
       if (paragraphs.length > 0) {
         html += '<h3>Excerpts:</h3><div width=800px><ul>'

@@ -244,10 +244,20 @@ class Alerts {
             let data
             if (annotation.text) {
               data = jsYaml.load(annotation.text)
-              if (type === 'resume') {
-                data.resume = answer
+              if (type === 'compile') {
+                // Check if data.resume exists and is an array. If not, initialize it as an empty array.
+                if (!Array.isArray(data.compile)) {
+                  data.compile = []
+                }
+                // Now that we're sure data.resume is an array, push the new object into it.
+                data.resume.push({ document: window.abwa.contentTypeManager.pdfFingerprint, answer: answer })
               } else if (type === 'alternative') {
-                data.alternative = answer
+                // Check if data.resume exists and is an array. If not, initialize it as an empty array.
+                if (!Array.isArray(data.alternative)) {
+                  data.alternative = []
+                }
+                // Now that we're sure data.resume is an array, push the new object into it.
+                data.alternative.push({ document: window.abwa.contentTypeManager.pdfFingerprint, answer: answer })
               }
             }
             annotation.text = jsYaml.dump(data)
@@ -292,25 +302,17 @@ class Alerts {
             let data
             if (annotation.text) {
               data = JSON.parse(annotation.text)
-              if (data.comment !== '') {
-                data.comment += '\n\n'
-              } if (type === 'clarification') {
-                data.comment += question + ': ' + answer
-              } else if (type === 'socialJudge') {
-                data.comment += 'Social judge: ' + answer
-              } else if (type === 'factChecking') {
-                data.comment += 'Fact checking: ' + answer
-              }
-            } else {
-              data = {
-                comment: ''
-              }
               if (type === 'clarification') {
-                data.comment += question + ': ' + answer
+                // Check if data.question exists and is an array. If not, initialize it as an empty array.
+                if (!Array.isArray(data.clarifications)) {
+                  data.clarifications = []
+                }
+                // Now that we're sure data.question is an array, push the new object into it.
+                data.clarifications.push({ question: question, answer: answer })
               } else if (type === 'socialJudge') {
-                data.comment += 'Social judge: ' + answer
+                data.socialJudge = answer
               } else if (type === 'factChecking') {
-                data.comment += 'Fact checking: ' + answer
+                data.factChecking = answer
               }
             }
             annotation.text = JSON.stringify(data)

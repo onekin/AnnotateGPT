@@ -32,7 +32,6 @@ class TextAnnotator extends ContentAnnotator {
     this.observerInterval = null
     this.reloadInterval = null
     this.allAnnotations = null
-    this.currentUserProfile = null
     this.highlightClassName = 'highlightedAnnotation'
   }
 
@@ -638,8 +637,11 @@ class TextAnnotator extends ContentAnnotator {
     // Open sweetalert
     // let that = this
 
-    let updateAnnotation = (comment, literature, level) => {
-      annotation.text = JSON.stringify({comment: comment, suggestedLiterature: literature})
+    let updateAnnotation = (comment, literature, level, form) => {
+      form.comment = comment
+      form.literature = literature
+      form.level = level
+      annotation.text = JSON.stringify(form)
 
       // Assign level to annotation
       if (level != null) {
@@ -671,9 +673,9 @@ class TextAnnotator extends ContentAnnotator {
       let groupTag = window.abwa.tagManager.getGroupFromAnnotation(annotation)
       let criterionName
       if (form.llm) {
-        criterionName = groupTag.config.name + ' [highlighted by ' + form.llm + ']'
+        criterionName = 'Criterion:' + groupTag.config.name + ' [highlighted by ' + form.llm + ']'
       } else {
-        criterionName = groupTag.config.name
+        criterionName = 'Criterion:' + groupTag.config.name
       }
       let poles = groupTag.tags.map((e) => { return e.name })
       // let poleChoiceRadio = poles.length>0 ? '<h3>Pole</h3>' : ''
@@ -696,36 +698,34 @@ class TextAnnotator extends ContentAnnotator {
         poleChoiceRadio += ' <span class="swal2-label" style="margin-right:5%;" title="\'+e+\'">' + e + '</span>'
       })
       poleChoiceRadio += '</div>'
-      let fragmentText = ''
+      let factChecking = ''
+      let socialJudge = ''
+      let clarifications = ''
+      let userComment = ''
+      let userCommentHTML = ''
       if (form.comment) {
-        fragmentText = form.comment
+        userComment = form.comment
       }
-      /*
-      // retrieve underlined text
-      let paragraph = ''
-      if (form.paragraph) {
-        paragraph = form.paragraph
-      } else {
-        let selectors = annotation.target[0].selector
-        let fragmentTextSelector
-        if (selectors) {
-          fragmentTextSelector = selectors.find((selector) => {
-            return selector.type === 'TextQuoteSelector'
-          })
-        }
-        if (fragmentTextSelector) {
-          paragraph = fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '')
-        }
+      userCommentHTML = '<br/><span>Comment:</span><br/>' + '<textarea rows="4" cols="40" id="swal-textarea">' + userComment + '</textarea>'
+      if (form.clarifications) {
+        let clarificationsQuestions = form.clarifications
+        clarificationsQuestions.forEach((e) => {
+          clarifications += '<br/><span>' + e.question + '</span><br/>'
+          clarifications += '<textarea readonly rows="4" cols="40">' + e.answer + '</textarea>'
+        })
       }
-      let criterionQuestion = '<div class="askDiv class="notMargin"><input placeholder="Clarify by LLM" class="swal2-input askImage notMargin" id="swal-criterionQuestion" ><img width="9%" id="clarifyByLLM" class="askImage askImageHover" alt="Ask" src="' + chrome.runtime.getURL('images/ask.png') + '"/></div>'
-      let factCheckingButton = '</br><button id="btnFactChecking" class="btnFragment">Fact checking</button>'
-      let socialJudge = '<button id="btnSocialJudge" class="btnFragment">Social judge</button></br>' */
+      if (form.factChecking) {
+        factChecking = '<br/><span>Fact checking:</span><br/>' + '<textarea readonly rows="4" cols="40" id="swal-textarea-factChecking">' + form.factChecking + '</textarea>'
+      }
+      if (form.socialJudge) {
+        socialJudge = '<br/><span>Social Judge:</span><br/>' + '<textarea readonly rows="4" cols="40" id="swal-textarea-socialJudge">' + form.socialJudge + '</textarea>'
+      }
       TextAnnotator.tryToLoadSwal()
       if (_.isNull(swal)) {
         console.log('Unable to load swal')
       } else {
         swal.fire({
-          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + '<br/><span>Comment:</span><br/>' + '<textarea rows="10" cols="40" id="swal-textarea">' + fragmentText + '</textarea>' + /* factCheckingButton + socialJudge + criterionQuestion + */
+          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + userCommentHTML + clarifications + factChecking + socialJudge +
             '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input notMargin"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
           showLoaderOnConfirm: true,
           width: '40em',
@@ -733,60 +733,12 @@ class TextAnnotator extends ContentAnnotator {
             let newComment = $('#swal-textarea').val()
             let suggestedLiterature = Array.from($('#literatureList li span')).map((e) => { return $(e).attr('title') })
             let level = $('.poleRadio:checked') != null && $('.poleRadio:checked').length === 1 ? $('.poleRadio:checked')[0].value : null
-            if (newComment !== null && newComment !== '') {
-              $.ajax('http://text-processing.com/api/sentiment/', {
-                method: 'POST',
-                data: { text: newComment }
-              }).done(function (ret) {
-                if (ret.label === 'neg' && ret.probability.neg > 0.55) {
-                  swal({
-                    type: 'warning',
-                    text: 'The message may be ofensive. Please modify it.',
-                    showCancelButton: true,
-                    cancelButtonText: 'Modify comment',
-                    confirmButtonText: 'Save as it is',
-                    reverseButtons: true
-                  }).then((result) => {
-                    if (result.value) {
-                      updateAnnotation(newComment, suggestedLiterature, level)
-                    } else if (result.dismiss === swal.DismissReason.cancel) {
-                      showAlert({ comment: newComment, suggestedLiterature: suggestedLiterature })
-                    }
-                  })
-                } else {
-                  // Update annotation
-                  updateAnnotation(newComment, suggestedLiterature, level)
-                }
-              })
-            } else {
-              // Update annotation
-              updateAnnotation('', suggestedLiterature, level)
-            }
+            updateAnnotation(newComment, suggestedLiterature, level, form)
           },
           didOpen: () => {
             $('.removeReference').on('click', function () {
               $(this).closest('li').remove()
             })
-            /*
-            const image = document.getElementById('clarifyByLLM')
-            image.addEventListener('click', () => {
-              let question = document.querySelector('#swal-criterionQuestion').value
-              if (question.length < 10) {
-                Alerts.infoAlert({ text: 'You have to provide a longer question' })
-              } else {
-                TextAnnotator.askQuestionClarify(paragraph, question, criterionName, annotation)
-              }
-            })
-            const btnFactChecking = document.getElementById('btnFactChecking')
-            btnFactChecking.addEventListener('click', () => {
-              let question = document.querySelector('#swal-criterionQuestion').value
-              TextAnnotator.askQuestionFactChecking(paragraph, question, criterionName, annotation)
-            })
-            const btnSocialJudge = document.getElementById('btnSocialJudge')
-            btnSocialJudge.addEventListener('click', () => {
-              let question = document.querySelector('#swal-criterionQuestion').value
-              TextAnnotator.askQuestionSocialJudge(paragraph, question, criterionName, annotation)
-            }) */
           }
         })
       }
