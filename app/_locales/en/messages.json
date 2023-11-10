@@ -1,10 +1,10 @@
 {
   "appName": {
-    "message": "CoReviewer",
+    "message": "AnnotatorGPT",
     "description": "The name of the application"
   },
   "appShortName": {
-    "message": "CoReviewer",
+    "message": "AnnotatorGPT",
     "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
   },
   "appDescription": {
@@ -12,7 +12,7 @@
     "description": "The description of the application"
   },
   "browserActionTitle": {
-    "message": "CoReviewer",
+    "message": "AnnotatorGPT",
     "description": "The title of the browser action button"
   },
   "HypothesisLoginRequired": {

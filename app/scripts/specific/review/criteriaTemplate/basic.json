@@ -61,6 +61,26 @@
       "custom": true
     },
     {
+      "name": "Evaluation",
+      "group": "Essential",
+      "description": "Empirically evaluates the proposed artifact using:\naction research, in which the researchers intervene a real organization using the artifact,\na case study in which a real organization uses the artifact without researcher intervention,\na controlled experiment in which human participants use the artifact,\na simulation in which the artifact is used in an artificial environment, or\nanother method for which a clear and convincing rationale is provided",
+      "levels": [
+        {
+          "name": "Strength",
+          "description": ""
+        },
+        {
+          "name": "Minor weakness",
+          "description": ""
+        },
+        {
+          "name": "Major weakness",
+          "description": ""
+        }
+      ],
+      "custom": true
+    },
+    {
       "group": "Essential",
       "name": "Result addressing research",
       "description": "results directly address research questions",

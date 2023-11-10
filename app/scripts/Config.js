@@ -1,16 +1,30 @@
 const Config = {
   review: {
-    groupName: 'ReviewAndGo',
+    groupName: 'AnnotatorGPT',
     namespace: 'review',
     urlParamName: 'rag',
     defaultLLM: 'anthropic',
-    defaultQuery: 'I will provide you the content of a research paper. ' +
-      'Then, you have to act as an academic reviewer and assess  the criterion "[C_NAME]" which description is <description>[C_DESCRIPTION]</description>.' +
-      ' For the criterion, you have to provide THREE text fragments as pieces of evidence from the provided article that can help to assess the given criterion.' +
-      ' You have to provide the response in JSON format with the following keys: -"name" (contains the criteria name), -"paragraphs" (an array with THREE objects with two keys ("text" and "sentiment").' +
-      ' The key "text" provide the text fragment written in the same way as in the article that can be useful to assess the criterion).' +
-      ' The key "sentiment" assess if the given "text" support whether the criterion is "Met", "Partially met" or "Not met". ' +
-      'The sentiment key only has to include one of the last three values, but it can be different for each object',
+    defaultQuery: 'Research Paper Context: [The research paper is provided above]\n' +
+    'Criterion for Evaluation: [C_NAME]\n' + 'Criterion Description: [C_DESCRIPTION]\n' +
+'Based on the above, please analyze the full research paper and generate a JSON response. The JSON should list THREE paragraphs of the paper that are associated with the criterion for evaluation and indicate whether it meets the specified criterion ("Met"), (“Partially Met”) or not ("Not Met"). The format should be as follows:\n' +
+'{\n' +
+  '"name": "[Criterion Name]",\n' +
+  '"paragraphs": [\n' +
+  '{\n' +
+    '"text": "[Text of the first significant paragraph]",\n' +
+    '"sentiment": "[Met/Partially Met/Not met]"\n' +
+  '},\n' +
+  '{\n' +
+    '"text": "[Text of the second significant paragraph]",\n' +
+    '"sentiment": "[Met/Partially met/Not met]"\n' +
+  '},\n' +
+  '{\n' +
+    '"text": "[Text of the third significant paragraph]",\n' +
+    '"sentiment": "[Met/Partially met/Not met]"\n' +
+  '},\n' +
+']\n' +
+'}\n' +
+'When using this prompt, replace the placeholders with the actual content of the research paper and the specific criterion details.\n',
     resumeQuery: 'I will provide you the content of a research paper. Then, you have to act as an academic reviewer and assess ' +
       ' the criterion <criterion> [C_NAME] </criterion> which description is <description>[C_DESCRIPTION]</description>. For the criterion, you have to assess if it is met considering these possible results:' +
       ' Met, Partially met, or Not met. Then, you have to explain  why it is met or not met.' +
