@@ -91,7 +91,7 @@ class Alerts {
         html: text,
         onBeforeOpen: () => {
           let element = document.querySelector('.swal2-popup')
-          element.style.width = '800px'
+          element.style.width = '900px'
         }
       }).then(() => {
         if (_.isFunction(callback)) {
@@ -216,7 +216,7 @@ class Alerts {
     }
   }
 
-  static answerCriterionAlert ({ title = 'This is the answer', answer = '', paragraphs = '', description = '', annotation = '', type, criterion = '' }) {
+  static answerCriterionAlert ({ title = 'This is the answer:', answer = '', paragraphs = '', description = '', annotation = '', type, criterion = '' }) {
     Alerts.tryToLoadSwal()
     if (_.isNull(swal)) {
 
@@ -224,20 +224,22 @@ class Alerts {
       const buttons = '<button id="llmAnswerOKButton" >Ok</button></br><button id="redoButton" class="llmAnswerButton">Redo</brbutton><button id="summaryButton" class="llmAnswerButton">Save answer</button>'
       swal.fire({
         title: title,
-        html: '<div>' + answer + '</div></br>' + buttons,
+        html: '<div style="text-align: justify;text-justify: inter-word" width=450px>' + answer + '</div></br>' + buttons,
         showCancelButton: false,
         showConfirmButton: false,
         onBeforeOpen: () => {
+          let element = document.querySelector('.swal2-popup')
+          element.style.width = '500px'
           // Add event listeners to the buttons after they are rendered
           document.getElementById('llmAnswerOKButton').addEventListener('click', () => {
             swal.close()
           })
           document.getElementById('redoButton').addEventListener('click', () => {
             swal.close()
-            if (type === 'resume') {
-              CustomCriteriasManager.resumeByLLMHandler(criterion, description, paragraphs)
+            if (type === 'compile') {
+              CustomCriteriasManager.compile(criterion, description, paragraphs)
             } else if (type === 'alternative') {
-              CustomCriteriasManager.alternativeByLLMHandler(criterion, description)
+              CustomCriteriasManager.alternative(criterion, description)
             }
           })
           document.getElementById('summaryButton').addEventListener('click', () => {
@@ -250,7 +252,7 @@ class Alerts {
                   data.compile = []
                 }
                 // Now that we're sure data.resume is an array, push the new object into it.
-                data.resume.push({ document: window.abwa.contentTypeManager.pdfFingerprint, answer: answer })
+                data.compile.push({ document: window.abwa.contentTypeManager.pdfFingerprint, answer: answer })
               } else if (type === 'alternative') {
                 // Check if data.resume exists and is an array. If not, initialize it as an empty array.
                 if (!Array.isArray(data.alternative)) {
@@ -278,10 +280,12 @@ class Alerts {
       const buttons = '<button id="llmAnswerOKButton" >Ok</button></br><button id="redoButton" class="llmAnswerButton">Redo</brbutton><button id="summaryButton" class="llmAnswerButton">Save answer</button>'
       swal.fire({
         title: title,
-        html: '<div>' + answer + '</div></br>' + buttons,
+        html: '<div style="text-align: justify;text-justify: inter-word" width=450px>' + answer + '</div></br>' + buttons,
         showCancelButton: false,
         showConfirmButton: false,
         onBeforeOpen: () => {
+          let element = document.querySelector('.swal2-popup')
+          element.style.width = '500px'
           // Add event listeners to the buttons after they are rendered
           document.getElementById('llmAnswerOKButton').addEventListener('click', () => {
             swal.close()

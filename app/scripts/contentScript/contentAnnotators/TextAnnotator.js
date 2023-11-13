@@ -506,7 +506,6 @@ class TextAnnotator extends ContentAnnotator {
         // Create context menu event for highlighted elements
         this.createContextMenuForAnnotation(annotation)
         // Create click event to move to next annotation
-        // this.createNextAnnotationHandler(annotation)
         // Create double click event handler
         this.createDoubleClickEventHandler(annotation)
       } catch (e) {
@@ -822,7 +821,7 @@ class TextAnnotator extends ContentAnnotator {
         clarificationQuery = clarificationQuery.replaceAll('[C_TEXT]', paragraph).replaceAll('[C_NAME]', criterion).replaceAll('[C_QUESTION]', question)
         Alerts.confirmAlert({
           title: 'Clarification',
-          text: 'You are going to ask the following question:\n ' + clarificationQuery,
+          text: '<div style="text-align: justify;text-justify: inter-word">You are going to ask the following question:\n ' + clarificationQuery + '</div>',
           cancelButtonText: 'Cancel',
           callback: async () => {
             let documents = []
@@ -884,7 +883,7 @@ class TextAnnotator extends ContentAnnotator {
         factCheckingQuery = factCheckingQuery.replaceAll('[C_TEXT]', paragraph)
         Alerts.confirmAlert({
           title: 'Fact Checking',
-          text: 'You are going to ask the following question:\n ' + factCheckingQuery,
+          text: '<div style="text-align: justify;text-justify: inter-word">You are going to ask the following question:\n ' + factCheckingQuery + '</div>',
           cancelButtonText: 'Cancel',
           callback: async () => {
             let documents = []
@@ -945,7 +944,7 @@ class TextAnnotator extends ContentAnnotator {
         socialJudgeQuery = socialJudgeQuery.replaceAll('[C_TEXT]', paragraph)
         Alerts.confirmAlert({
           title: 'Social Judge',
-          text: 'You are going to ask the following question:\n ' + socialJudgeQuery,
+          text: '<div style="text-align: justify;text-justify: inter-word">You are going to ask the following question:\n ' + socialJudgeQuery + '</div>',
           cancelButtonText: 'Cancel',
           callback: async () => {
             let documents = []

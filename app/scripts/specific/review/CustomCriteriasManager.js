@@ -394,13 +394,13 @@ class CustomCriteriasManager {
       let description = tagGroup.config.options.description
       let items = {}
       // Highlight criterion by LLM
-      items['llmHighlight'] = { name: 'Uncover' }
+      items['uncover'] = { name: 'Uncover' }
       // Assess criterion by LLM
-      items['llmResume'] = { name: 'Compile' }
+      items['compile'] = { name: 'Compile' }
       // Find alternative viewpoints by LLM
-      items['llmAlternative'] = { name: 'Provide alternatives' }
+      items['alternative'] = { name: 'Provide alternatives' }
       // Find alternative viewpoints by LLM
-      items['showAssessment'] = { name: 'Recap' }
+      items['recap'] = { name: 'Recap' }
       $.contextMenu({
         selector: '[data-mark="' + tagGroup.config.name + '"]',
         build: () => {
@@ -408,16 +408,12 @@ class CustomCriteriasManager {
             callback: (key) => {
               // Get latest version of tag
               let currentTagGroup = _.find(window.abwa.tagManager.currentTags, currentTag => currentTag.config.annotation.id === tagGroup.config.annotation.id)
-              /* if (key === 'delete') {
-                this.deleteCriteriaHandler(currentTagGroup)
-              } else if (key === 'modify') {
-                this.modifyCriteriaHandler(currentTagGroup)
-              } else */ if (key === 'llmHighlight') {
-                this.highlightByLLMHandler(criterion, description)
-              } else if (key === 'llmResume') {
+              if (key === 'uncover') {
+                this.uncover(criterion, description)
+              } else if (key === 'compile') {
                 this.getParagraphs(criterion, (paragraphs) => {
                   if (paragraphs) {
-                    CustomCriteriasManager.resumeByLLMHandler(criterion, description, paragraphs, currentTagGroup.config.annotation)
+                    CustomCriteriasManager.compile(criterion, description, paragraphs, currentTagGroup.config.annotation)
                   } else {
                     Alerts.errorAlert({
                       title: 'There are not annotations',
@@ -425,10 +421,10 @@ class CustomCriteriasManager {
                     })
                   }
                 })
-              } else if (key === 'llmAlternative') {
+              } else if (key === 'alternative') {
                 this.getParagraphs(criterion, (paragraphs) => {
                   if (paragraphs) {
-                    CustomCriteriasManager.alternativeByLLMHandler(criterion, description, paragraphs, currentTagGroup.config.annotation)
+                    CustomCriteriasManager.alternative(criterion, description, paragraphs, currentTagGroup.config.annotation)
                   } else {
                     Alerts.errorAlert({
                       title: 'There are not annotations',
@@ -436,8 +432,8 @@ class CustomCriteriasManager {
                     })
                   }
                 })
-              } else if (key === 'showAssessment') {
-                CustomCriteriasManager.showAssessment(currentTagGroup)
+              } else if (key === 'recap') {
+                CustomCriteriasManager.recap(currentTagGroup)
               }
             },
             items: items
@@ -657,7 +653,7 @@ class CustomCriteriasManager {
     }
   }
 
-  highlightByLLMHandler (criterion, description) {
+  uncover (criterion, description) {
     if (description.length < 20) {
       Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
     } else {
@@ -775,7 +771,7 @@ class CustomCriteriasManager {
     }
   }
 
-  static resumeByLLMHandler (criterion, description, paragraphs, annotation) {
+  static compile (criterion, description, paragraphs, annotation) {
     if (description.length < 20) {
       Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
     } else {
@@ -788,7 +784,7 @@ class CustomCriteriasManager {
           let selectedLLM = llm
           Alerts.confirmAlert({
             title: criterion + ' assessment',
-            text: 'Do you want to assess this criterion using ' + llm + '?',
+            text: '<div style="text-align: justify;text-justify: inter-word">Do you want to compile the assessment using ' + llm + '?</div>',
             cancelButtonText: 'Cancel',
             callback: async () => {
               let documents = []
@@ -845,7 +841,7 @@ class CustomCriteriasManager {
     }
   }
 
-  static alternativeByLLMHandler (criterion, description, paragraphs, annotation) {
+  static alternative (criterion, description, paragraphs, annotation) {
     if (description.length < 20) {
       Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
     } else {
@@ -857,7 +853,7 @@ class CustomCriteriasManager {
           let selectedLLM = llm
           Alerts.confirmAlert({
             title: criterion + ' assessment',
-            text: 'Do you want to generate alternative view points for this criterion using ' + llm + '?',
+            text: '<div style="text-align: justify;text-justify: inter-word">Do you want to generate alternative view points for this criterion using ' + llm + '?</div>',
             cancelButtonText: 'Cancel',
             callback: async () => {
               let documents = []
@@ -952,7 +948,7 @@ class CustomCriteriasManager {
     return selectors
   }
 
-  static showAssessment (currentTagGroup) {
+  static recap (currentTagGroup) {
     let criterion = currentTagGroup.config.name
     let tagGroupAnnotations
     let paragraphs = []
@@ -970,13 +966,19 @@ class CustomCriteriasManager {
     if (tagGroupAnnotations) {
       for (let i = 0; i < tagGroupAnnotations.length; i++) {
         let annotation = tagGroupAnnotations[i]
+        let selectors = annotation.target[0].selector
+        let pageSelector
+        if (selectors) {
+          pageSelector = selectors.find((selector) => {
+            return selector.type === 'FragmentSelector'
+          })
+        }
         if (annotation.text) {
           let body = JSON.parse(annotation.text)
           if (body.paragraph) {
-            paragraphs.push(body.paragraph.replace(/(\r\n|\n|\r)/gm, ''))
+            paragraphs.push('(page' + pageSelector.page + '): ' + body.paragraph.replace(/(\r\n|\n|\r)/gm, ''))
           }
         } else {
-          let selectors = annotation.target[0].selector
           let fragmentTextSelector
           if (selectors) {
             fragmentTextSelector = selectors.find((selector) => {
@@ -984,7 +986,7 @@ class CustomCriteriasManager {
             })
           }
           if (fragmentTextSelector) {
-            paragraphs.push(fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, ''))
+            paragraphs.push('(page' + pageSelector.page + '): ' + fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, ''))
           }
         }
       }
@@ -1008,7 +1010,7 @@ class CustomCriteriasManager {
       }
     }
     if (compile || alternative || paragraphs.length > 0) {
-      let html = '<div width=800px>'
+      let html = '<div width=900px style="text-align: justify;text-justify: inter-word">'
       if (compile) {
         html += '<h3>Compilation:</h3><div width=800px>' + compile + '</div></br>'
       }
@@ -1016,9 +1018,9 @@ class CustomCriteriasManager {
         html += '<h3>Provided alternatives:</h3><div width=800px>' + alternative + '</div></br>'
       }
       if (paragraphs.length > 0) {
-        html += '<h3>Excerpts:</h3><div width=800px><ul>'
+        html += '<h3>Excerpts:</h3></br><ul>'
         for (const item of paragraphs) {
-          html += `<li>${item}</li></br>`
+          html += `<div style="margin-left: 30px"><li>${item}</li></div></br>`
         }
         html += '</ul></div>'
       }
