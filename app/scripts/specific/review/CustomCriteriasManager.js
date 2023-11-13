@@ -235,7 +235,18 @@ class CustomCriteriasManager {
     })
   }
 
+  destroyContextMenus () {
+    let arrayOfTagGroups = _.values(window.abwa.tagManager.currentTags)
+    arrayOfTagGroups.forEach(tagGroup => {
+      let selector = '[data-mark="' + tagGroup.config.name + '"]'
+      if (selector) {
+        $.contextMenu('destroy', selector)
+      }
+    })
+  }
+
   initContextMenu () {
+    this.destroyContextMenus()
     this.initContextMenuForCriteria()
     this.initContextMenuForCriteriaGroups()
   }
@@ -382,12 +393,6 @@ class CustomCriteriasManager {
       let criterion = tagGroup.config.name
       let description = tagGroup.config.options.description
       let items = {}
-      /* // Modify menu element
-      items['modify'] = { name: 'Modify' }
-      // If custom criteria, it is also possible to delete it
-      if (tagGroup.config.options.custom) {
-        items['delete'] = { name: 'Delete' }
-      } */
       // Highlight criterion by LLM
       items['llmHighlight'] = { name: 'Uncover' }
       // Assess criterion by LLM

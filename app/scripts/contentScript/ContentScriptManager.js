@@ -9,7 +9,6 @@ import GroupSelector from './GroupSelector'
 import LocalStorageManager from '../storage/local/LocalStorageManager'
 import Config from '../Config'
 import Alerts from '../utils/Alerts'
-import RolesManager from './RolesManager'
 import TextAnnotator from './contentAnnotators/TextAnnotator'
 
 class ContentScriptManager {
@@ -86,31 +85,16 @@ class ContentScriptManager {
   }
 
   reloadContentByGroup (callback) {
-    this.reloadRolesManager(() => {
-      // Load tag manager
-      this.reloadTagManager(() => {
-        // Load content annotator
-        this.reloadContentAnnotator(() => {
-          // Reload specific content script
-          this.reloadSpecificContentScript(() => {
-            if (_.isFunction(callback)) {
-              callback()
-            }
-          })
+    this.reloadTagManager(() => {
+      // Load content annotator
+      this.reloadContentAnnotator(() => {
+        // Reload specific content script
+        this.reloadSpecificContentScript(() => {
+          if (_.isFunction(callback)) {
+            callback()
+          }
         })
       })
-    })
-  }
-
-  reloadRolesManager (callback) {
-    if (window.abwa.rolesManager) {
-      window.abwa.rolesManager.destroy()
-    }
-    window.abwa.rolesManager = new RolesManager()
-    window.abwa.rolesManager.init(() => {
-      if (_.isFunction(callback)) {
-        callback()
-      }
     })
   }
 

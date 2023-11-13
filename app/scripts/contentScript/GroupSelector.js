@@ -314,6 +314,10 @@ class GroupSelector {
             this.setCurrentGroup(result.id, () => {
               // Expand groups container
               this.container.setAttribute('aria-expanded', 'false')
+              LanguageUtils.dispatchCustomEvent(Events.groupChanged, {
+                group: this.currentGroup,
+                time: new Date()
+              })
               // Reopen sidebar if closed
               window.abwa.sidebar.openSidebar()
             })
@@ -556,6 +560,10 @@ class GroupSelector {
                         // Update groups from storage
                         this.retrieveGroups(() => {
                           this.setCurrentGroup(review.storageGroup.id)
+                          /* LanguageUtils.dispatchCustomEvent(Events.groupChanged, {
+                            group: this.currentGroup,
+                            time: new Date()
+                          }) */
                         })
                       }
                     }
