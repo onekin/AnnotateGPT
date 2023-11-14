@@ -152,7 +152,7 @@ export class Review {
     this._assessedCriteria.forEach( (assessedCriteria) => {
       t+= assessedCriteria.criterion.toUpperCase() + " ASSESSMENT:\r\n\r\n";
       if (assessedCriteria.resume) {
-        t += "-Resume:- "+assessedCriteria.resume+"\r\n\r\n";
+        t += "-Compile:- "+assessedCriteria.resume+"\r\n\r\n";
       }
       if (assessedCriteria.alternative) {
         t += "-Alternative viewpoints:- "+assessedCriteria.alternative+"\r\n\r\n";

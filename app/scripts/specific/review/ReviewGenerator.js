@@ -6,6 +6,7 @@ import Alerts from '../../utils/Alerts'
 import AnthropicManager from '../../llm/anthropic/AnthropicManager'
 import OpenAIManager from '../../llm/openAI/OpenAIManager'
 import FileUtils from '../../utils/FileUtils'
+import AnnotationUtils from '../../utils/AnnotationUtils'
 
 const ReviewSchema = require('../../model/schema/Review')
 const ImportSchema = require('./ImportSchema')
@@ -35,11 +36,18 @@ class ReviewGenerator {
       document.querySelector('#abwaSidebarContainer').insertAdjacentHTML('afterbegin', response.data)
       this.container = document.querySelector('#reviewGenerator')
       // Set generator image and event
-      let generatorImageURL = chrome.runtime.getURL('/images/generator.png')
-      this.generatorImage = this.container.querySelector('#reviewGeneratorButton')
-      this.generatorImage.src = generatorImageURL
-      this.generatorImage.addEventListener('click', () => {
-        this.generateReviewButtonHandler()
+      let categoryGeneratorImageURL = chrome.runtime.getURL('/images/generatorC.png')
+      this.categoryBasedImage = this.container.querySelector('#categoryReviewGeneratorButton')
+      this.categoryBasedImage.src = categoryGeneratorImageURL
+      this.categoryBasedImage.addEventListener('click', () => {
+        this.generateCategoryReviewButtonHandler()
+      })
+      // Set generator image and event
+      let sentimentImageURL = chrome.runtime.getURL('/images/generatorS.png')
+      this.sentimentBasedImage = this.container.querySelector('#sentimentReviewGeneratorButton')
+      this.sentimentBasedImage.src = sentimentImageURL
+      this.sentimentBasedImage.addEventListener('click', () => {
+        this.generateSentimentReviewButtonHandler()
       })
       // Set delete annotations image and event
       let deleteAnnotationsImageURL = chrome.runtime.getURL('/images/deleteAnnotations.png')
@@ -55,13 +63,6 @@ class ReviewGenerator {
       this.overviewImage.addEventListener('click', () => {
         this.generateCanvas()
       })
-      /* Set import export image and event
-      let importExportImageURL = chrome.runtime.getURL('/images/importExport.png')
-      this.importExportImage = this.container.querySelector('#importExportButton')
-      this.importExportImage.src = importExportImageURL
-      this.importExportImage.addEventListener('click', () => {
-        this.importExportButtonHandler()
-      }) */
       // Set configuration button
       let configurationImageURL = chrome.runtime.getURL('/images/configuration.png')
       this.configurationImage = this.container.querySelector('#configurationButton')
@@ -111,23 +112,43 @@ class ReviewGenerator {
       let suggestedLiterature = annotationText.suggestedLiterature !== null ? annotationText.suggestedLiterature : []
       r.insertAnnotation(new Annotation(annotations[a].id,criterion,level,group,highlightText.replace(/(\r\n|\n|\r)/gm, ''),pageNumber,comment,suggestedLiterature))
     }
-    currentTags.forEach( (tag) => {
-      let resume = null
-      if (tag.config.options.resume) {
-        resume = tag.config.options.resume
-      }
-      let alternative = null
-      if (tag.config.options.alternative) {
-        alternative = tag.config.options.alternative
-        if (alternative.isArray) {
-          alternative = alternative.join('\n')
+    currentTags.forEach((currentTagGroup) => {
+      let criterion = currentTagGroup.config.name
+      let tagGroupAnnotations
+      if (window.abwa.contentAnnotator) {
+        let annotations = window.abwa.contentAnnotator.allAnnotations
+        // Mark as chosen annotated tags
+        for (let i = 0; i < annotations.length; i++) {
+          let model = window.abwa.tagManager.model
+          let tag = model.namespace + ':' + model.config.grouped.relation + ':' + criterion
+          tagGroupAnnotations = annotations.filter((annotation) => {
+            return AnnotationUtils.hasATag(annotation, tag)
+          })
         }
       }
-      if (resume || alternative) {
+      let compile = ''
+      if (currentTagGroup.config.options.compile && currentTagGroup.config.options.compile.length > 0) {
+        const findResume = currentTagGroup.config.options.compile.find((resume) => {
+          return resume.document === window.abwa.contentTypeManager.pdfFingerprint
+        })
+        if (findResume) {
+          compile = findResume.answer
+        }
+      }
+      let alternative = ''
+      if (currentTagGroup.config.options.alternative && currentTagGroup.config.options.alternative.length > 0) {
+        const findAlternative = currentTagGroup.config.options.alternative.find((alternative) => {
+          return alternative.document === window.abwa.contentTypeManager.pdfFingerprint
+        })
+        if (findAlternative) {
+          alternative = findAlternative.answer
+        }
+      }
+      if (compile || alternative || tagGroupAnnotations.length > 0) {
         let data = {}
-        data.criterion = tag.config.name
-        if (resume) {
-          data.resume = resume
+        data.criterion = currentTagGroup.config.name
+        if (compile) {
+          data.compile = compile
         }
         if (alternative) {
           data.alternative = alternative
@@ -139,34 +160,12 @@ class ReviewGenerator {
     return r
   }
 
-  generateReviewButtonHandler () {
-    // Create context menu
-    $.contextMenu({
-      selector: '#reviewGeneratorButton',
-      trigger: 'left',
-      build: () => {
-        // Create items for context menu
-        let items = {}
-        items['category'] = {name: 'Group by Category'}
-        items['sentiment'] = {name: 'Group by Sentiment'}
-        items['llmReport'] = {name: 'Generate guidelines based report'}
-        // items['screenshot'] = {name: 'Generate annotated PDF'}
-        return {
-          callback: (key, opt) => {
-            if (key === 'category') {
-              this.generateReviewByCategory()
-            } else if (key === 'sentiment') {
-              this.generateReviewBySentiment()
-            } else if (key === 'llmReport') {
-              this.generateLLMReview()
-            } /* else if (key === 'screenshot') {
-              this.generateScreenshot()
-            } */
-          },
-          items: items
-        }
-      }
-    })
+  generateCategoryReviewButtonHandler () {
+    this.generateReviewByCategory()
+  }
+
+  generateSentimentReviewButtonHandler () {
+    this.generateReviewBySentiment()
   }
 
   importAnnotationsMetaReview (importedReview,reviewerName) {

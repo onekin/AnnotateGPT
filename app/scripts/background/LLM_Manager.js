@@ -3,6 +3,9 @@ import { loadQAStuffChain } from 'langchain/chains'
 import { ChatOpenAI } from 'langchain/chat_models/openai'
 import Config from '../Config'
 import { ChatAnthropic } from 'langchain/chat_models/anthropic'
+import { TokenTextSplitter } from 'langchain/text_splitter'
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
+import { MemoryVectorStore } from 'langchain/vectorstores/memory'
 
 class LLMManager {
   init () {
@@ -104,13 +107,14 @@ class LLMManager {
     })
   }
 
-  async askLLMOpenAI4 (request, lessDocuments) {
+  async askLLMOpenAI4 (request) {
     const apiKey = request.data.apiKey
     const query = request.data.query
-    let documents
+    const documents = request.data.documents
     let callback = async function (documents) {
       // Create QA chain
       console.log('QUERY: ' + query)
+      console.log('REMOVE LAST PAGE')
       return chain.call({ // Make sure to return the promise here
         input_documents: documents,
         question: query
@@ -125,18 +129,41 @@ class LLMManager {
           if (documents.length === 0) {
             return { error: 'All documents removed, no results found.' }
           }
-          return callback(documents) // Return the callback promise
+          return resolveWithEmbeddings(documents) // Return the callback promise
         } else {
           throw err
         }
       })
     }
 
-    if (!lessDocuments) {
-      documents = request.data.documents
-    } else {
-      documents = lessDocuments
+    let resolveWithEmbeddings = async function (documents) {
+      const splitter = new TokenTextSplitter({
+        chunkSize: 500,
+        chunkOverlap: 10
+      })
+      const output = await splitter.splitDocuments(documents)
+      // Create LLM
+      const docsearch = await MemoryVectorStore.fromDocuments(
+        output, new OpenAIEmbeddings({ openAIApiKey: apiKey })
+      )
+      let results = await docsearch.similaritySearch(query, 15)
+      const chainA = loadQAStuffChain(model)
+      // Create QA chain
+      console.log('QUERY: ' + query)
+      console.log('WITH EMBEDDINGS')
+      return chainA.call({
+        input_documents: results,
+        question: query
+      }).then(res => {
+        // if stored max pages nothing, else store max pages
+        return res // Return the result so it can be used in the next .then()
+      }).catch(async err => {
+        console.log(err.toString())
+        // Handle the error properly
+        throw err
+      })
     }
+    // create model
     const model = new ChatOpenAI({
       temperature: 0,
       modelName: 'gpt-4-1106-preview',
@@ -147,11 +174,41 @@ class LLMManager {
         }
       }
     })
+    /*
+    create model
+    let totalCompletionTokens = 0
+    let totalPromptTokens = 0
+    let totalExecutionTokens = 0
+
+    const model = new ChatOpenAI({
+      temperature: 0,
+      callbacks: [
+        {
+          handleLLMEnd: (output, runId, parentRunId, tags) => {
+            const { completionTokens, promptTokens, totalTokens } = output.llmOutput?.tokenUsage || { completionTokens: 0, promptTokens: 0, totalTokens: 0 }
+
+            totalCompletionTokens += completionTokens
+            totalPromptTokens += promptTokens
+            totalExecutionTokens += totalTokens
+
+            console.log(`Total completion tokens: ${totalCompletionTokens}`)
+            console.log(`Total prompt tokens: ${totalPromptTokens}`)
+            console.log(`Total execution tokens: ${totalExecutionTokens}`)
+          },
+        },
+      ],
+      modelName: 'gpt-4-1106-preview',
+      openAIApiKey: apiKey,
+      modelKwargs: {
+        'response_format': {
+          type: 'json_object'
+        }
+      }
+    }); */
 
     // Create QA chain
     const chain = loadQAStuffChain(model)
     console.log('QUERY: ' + query)
-
     return chain.call({ // Return the promise here as well
       input_documents: documents,
       question: query
