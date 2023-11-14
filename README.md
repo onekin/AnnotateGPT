@@ -1,5 +1,6 @@
 # AnnotateGPT
-[![Build Status](https://travis-ci.com/haritzmedina/reviewAndGo.svg?branch=master)](https://travis-ci.com/haritzmedina/reviewAndGo)
+*Purpose: AnnotateGPT is designed to streamline the academic peer-review process by pre-annotating manuscripts using AI-generated highlights.
+*Background: Addresses the increasing pressure on traditional peer-review systems due to the growing number of research submissions.
 
 AnnotateGPT is a chrome extension to allow conference and journal reviewers to review papers using annotations. 
 Main features:
