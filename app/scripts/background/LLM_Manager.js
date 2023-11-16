@@ -94,36 +94,36 @@ class LLMManager {
       if (request.scope === 'llmQuestion') {
         if (request.cmd === 'askLLMAnthropic') {
           this.askLLMAnthropic(request).then(
-            res => sendResponse({ res: res }
-            ))
+            res => sendResponse({ res: res }),
+            err => sendResponse({ err: err }) // Return the error inside the message handler
+          )
           return true // Return true inside the message handler
-        } else if (request.cmd === 'askLLMOpenAI4') {
-          this.askLLMOpenAI4(request).then(
-            res => sendResponse({ res: res }
-            ))
+        } else if (request.cmd === 'askLLMOpenAI') {
+          this.askLLMOpenAI(request).then(
+            res => sendResponse({ res: res }),
+            err => sendResponse({ err: err })
+          )// Return the error inside the message handler
           return true // Return true inside the message handler
         }
       }
     })
   }
 
-  async askLLMOpenAI4 (request) {
+  async askLLMOpenAI (request) {
     const apiKey = request.data.apiKey
     const query = request.data.query
     const documents = request.data.documents
     let callback = async function (documents) {
       // Create QA chain
       console.log('QUERY: ' + query)
-      console.log('REMOVE LAST PAGE')
+      console.log('TRYING REMOVING LAST PAGE')
       return chain.call({ // Make sure to return the promise here
         input_documents: documents,
         question: query
       }).then(res => {
         // if stored max pages nothing, else store max pages
         return res // Return the result so it can be used in the next .then()
-      }).catch(async err => {
-        console.log(err.toString())
-        // Handle the error properly
+      }).catch(async err => { // Handle the error properly
         if (err.toString().startsWith('Error: 429')) {
           documents.pop()
           if (documents.length === 0) {
@@ -131,26 +131,31 @@ class LLMManager {
           }
           return resolveWithEmbeddings(documents) // Return the callback promise
         } else {
-          throw err
+          return { error: 'An error has occurred during callback' }
         }
       })
     }
 
     let resolveWithEmbeddings = async function (documents) {
-      const splitter = new TokenTextSplitter({
-        chunkSize: 500,
-        chunkOverlap: 10
-      })
-      const output = await splitter.splitDocuments(documents)
-      // Create LLM
-      const docsearch = await MemoryVectorStore.fromDocuments(
-        output, new OpenAIEmbeddings({ openAIApiKey: apiKey })
-      )
-      let results = await docsearch.similaritySearch(query, 15)
+      let results
+      try {
+        const splitter = new TokenTextSplitter({
+          chunkSize: 500,
+          chunkOverlap: 20
+        })
+        const output = await splitter.splitDocuments(documents)
+        // Create LLM
+        const docsearch = await MemoryVectorStore.fromDocuments(
+          output, new OpenAIEmbeddings({ openAIApiKey: apiKey })
+        )
+        results = await docsearch.similaritySearch(query, 22)
+      } catch (err) {
+        return { error: 'An error has occurred loading embeddings' }
+      }
       const chainA = loadQAStuffChain(model)
       // Create QA chain
       console.log('QUERY: ' + query)
-      console.log('WITH EMBEDDINGS')
+      console.log('TRYING WITH EMBEDDINGS')
       return chainA.call({
         input_documents: results,
         question: query
@@ -160,22 +165,10 @@ class LLMManager {
       }).catch(async err => {
         console.log(err.toString())
         // Handle the error properly
-        throw err
+        return { error: 'An error has occurred with embeddings' }
       })
     }
     // create model
-    const model = new ChatOpenAI({
-      temperature: 0,
-      modelName: 'gpt-4-1106-preview',
-      openAIApiKey: apiKey,
-      modelKwargs: {
-        'response_format': {
-          type: 'json_object'
-        }
-      }
-    })
-    /*
-    create model
     let totalCompletionTokens = 0
     let totalPromptTokens = 0
     let totalExecutionTokens = 0
@@ -194,8 +187,8 @@ class LLMManager {
             console.log(`Total completion tokens: ${totalCompletionTokens}`)
             console.log(`Total prompt tokens: ${totalPromptTokens}`)
             console.log(`Total execution tokens: ${totalExecutionTokens}`)
-          },
-        },
+          }
+        }
       ],
       modelName: 'gpt-4-1106-preview',
       openAIApiKey: apiKey,
@@ -204,7 +197,7 @@ class LLMManager {
           type: 'json_object'
         }
       }
-    }); */
+    })
 
     // Create QA chain
     const chain = loadQAStuffChain(model)
@@ -222,8 +215,10 @@ class LLMManager {
           return { error: 'All documents removed, no results found.' }
         }
         return callback(documents)
+      } else if (err.toString().startsWith('Error: 401')) {
+        return { error: 'Incorrect API key provided.' }
       } else {
-        throw err
+        return { error: 'An error has occurred trying first call.' }
       }
     })
   }
@@ -233,19 +228,45 @@ class LLMManager {
     const query = request.data.query
     const documents = request.data.documents
     // Create LLM
+    let totalCompletionTokens = 0
+    let totalPromptTokens = 0
+    let totalExecutionTokens = 0
     const model = new ChatAnthropic({
       temperature: 0.2,
       anthropicApiKey: apiKey,
-      modelName: 'claude-2.0'
+      modelName: 'claude-2.0',
+      callbacks: [
+        {
+          handleLLMEnd: (output, runId, parentRunId, tags) => {
+            const { completionTokens, promptTokens, totalTokens } = output.llmOutput?.tokenUsage || { completionTokens: 0, promptTokens: 0, totalTokens: 0 }
+
+            totalCompletionTokens += completionTokens
+            totalPromptTokens += promptTokens
+            totalExecutionTokens += totalTokens
+
+            console.log(`Total completion tokens: ${totalCompletionTokens}`)
+            console.log(`Total prompt tokens: ${totalPromptTokens}`)
+            console.log(`Total execution tokens: ${totalExecutionTokens}`)
+          }
+        }
+      ]
     })
     // Create QA chain
     const chain = loadQAStuffChain(model)
     console.log('QUERY: ' + query)
-    let res = await chain.call({
+    return chain.call({ // Return the promise here as well
       input_documents: documents,
       question: query
+    }).then(res => {
+      return res // Return the result so it can be used in the next .then()
+    }).catch(async err => {
+      console.log(err.toString())
+      if (err.toString().startsWith('Error: 401')) {
+        return { error: 'Incorrect API key provided.' }
+      } else {
+        return { error: err.toString() }
+      }
     })
-    return res
   }
 }
 

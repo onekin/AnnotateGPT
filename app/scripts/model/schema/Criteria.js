@@ -4,15 +4,15 @@ const Level = require('./Level')
 const LanguageUtils = require('../../utils/LanguageUtils')
 
 class Criteria extends GuideElement {
-  constructor ({name, color, review, group = 'Other', description, custom = false, resume, alternative}) {
+  constructor ({name, color, review, group = 'Other', description, custom = false, compile, alternative}) {
     super({name, color, parentElement: review})
     this.levels = this.childElements
     this.group = group
     this.review = this.parentElement
     this.description = description
     this.custom = custom
-    if (resume) {
-      this.resume = resume
+    if (compile) {
+      this.compile = compile
     }
     if (alternative) {
       this.alternative = alternative
@@ -32,11 +32,11 @@ class Criteria extends GuideElement {
 
   toAnnotation () {
     let review = this.getAncestor()
-    let resume
-    if (this.resume) {
-      resume = this.resume
+    let compile
+    if (this.compile) {
+      compile = this.compile
     } else {
-      resume = ''
+      compile = ''
     }
     let alternative
     if (this.alternative) {
@@ -57,7 +57,7 @@ class Criteria extends GuideElement {
         group: this.group,
         custom: this.custom,
         alternative: alternative,
-        resume: resume
+        compile: compile
       }),
       uri: review.storageGroup.links ? review.storageGroup.links.html : review.storageGroup.url // Compatibility with both group representations getGroups and userProfile
     }

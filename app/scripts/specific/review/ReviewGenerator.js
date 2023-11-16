@@ -107,10 +107,12 @@ class ReviewGenerator {
           pageNumber = annotations[a].target[k].selector.find((e) => { return e.type === 'FragmentSelector'}).page
         }
       }
-      let annotationText = annotations[a].text!==null&&annotations[a].text!=='' ? JSON.parse(annotations[a].text) : {comment:'',suggestedLiterature:[]}
+      let annotationText = annotations[a].text!==null&&annotations[a].text!=='' ? JSON.parse(annotations[a].text) : {comment:''}
       let comment = annotationText.comment !== null ? annotationText.comment : null
-      let suggestedLiterature = annotationText.suggestedLiterature !== null ? annotationText.suggestedLiterature : []
-      r.insertAnnotation(new Annotation(annotations[a].id,criterion,level,group,highlightText.replace(/(\r\n|\n|\r)/gm, ''),pageNumber,comment,suggestedLiterature))
+      let clarifications = annotationText.clarifications !== null ? annotationText.clarifications : null
+      let factChecking = annotationText.factChecking !== null ? annotationText.factChecking : null
+      let socialJudge = annotationText.socialJudge !== null ? annotationText.socialJudge : null
+      r.insertAnnotation(new Annotation(annotations[a].id,criterion,level,group,highlightText.replace(/(\r\n|\n|\r)/gm, ''),pageNumber,comment,clarifications,factChecking,socialJudge))
     }
     currentTags.forEach((currentTagGroup) => {
       let criterion = currentTagGroup.config.name
@@ -132,7 +134,7 @@ class ReviewGenerator {
           return resume.document === window.abwa.contentTypeManager.pdfFingerprint
         })
         if (findResume) {
-          compile = findResume.answer
+          compile = findResume
         }
       }
       let alternative = ''
@@ -516,97 +518,6 @@ class ReviewGenerator {
     Alerts.closeAlert()
   }
 
-  generateLLMReview () {
-    Alerts.loadingAlert({text: chrome.i18n.getMessage('GeneratingReviewReport')})
-    let review = this.parseAnnotations(window.abwa.contentAnnotator.allAnnotations)
-    let report = review.toString()
-    Alerts.inputTextAlert({
-      title: 'Upload your guidelines file',
-      html: 'Here you can upload your guidelines in the .txt or .pdf format.',
-      input: 'file',
-      callback: async (err, file) => {
-        if (err) {
-          window.alert('An unexpected error happened when trying to load the alert.')
-        } else {
-          // Read file
-          let extension = (file.name.substring(file.name.lastIndexOf('.'))).toLowerCase()
-          if (extension !== '.pdf' && extension !== '.txt') {
-            Alerts.errorAlert({ text:'The file must have a .txt or .pdf extension' })
-          } else {
-            await this.loadGuidelines(file, extension, (err, guidelines) => {
-              if (err) {
-                Alerts.errorAlert({ text: err.message })
-              } else {
-                chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
-                  if (llm === '') {
-                    llm = Config.review.defaultLLM
-                  }
-                  if (llm && llm !== '') {
-                    let selectedLLM = llm
-                    chrome.runtime.sendMessage({
-                      scope: 'llm',
-                      cmd: 'getAPIKEY',
-                      data: selectedLLM
-                    }, ({ apiKey }) => {
-                      let callback = (json) => {
-                        let answer = json.answer
-                        let blob = new Blob([answer], { type: 'text/plain;charset=utf-8' })
-                        let title = window.PDFViewerApplication.baseUrl !== null ? window.PDFViewerApplication.baseUrl.split("/")[window.PDFViewerApplication.baseUrl.split("/").length - 1].replace(/\.pdf/i, "") : ""
-                        let docTitle = 'Review report'
-                        if (title !== '') docTitle += ' for ' + title
-                        FileSaver.saveAs(blob, docTitle + '.txt')
-                        Alerts.closeAlert()
-                      }
-                      if (apiKey && apiKey !== '') {
-                        let params = {
-                          apiKey: apiKey,
-                          report: report,
-                          guidelines: guidelines,
-                          extension: extension,
-                          callback: callback
-                        }
-                        if (selectedLLM === 'anthropic') {
-                          AnthropicManager.createReview(params)
-                        } else if (selectedLLM === 'openAI') {
-                          OpenAIManager.createReview(params)
-                        }
-                      } else {
-                        let callback = () => {
-                          window.open(chrome.runtime.getURL('pages/options.html'))
-                        }
-                        Alerts.infoAlert({
-                          text: 'Please, configure your LLM.',
-                          title: 'Please select a LLM and provide your API key',
-                          callback: callback()
-                        })
-                      }
-                    })
-                  }
-                })
-              }
-            })
-          }
-        }
-      }
-    })
-  }
-
-  async loadGuidelines (file, extension, callback) {
-    let guidelines
-    if (extension === '.pdf') {
-      guidelines = await FileUtils.readGuidelinesFromPDF(file)
-      if (_.isFunction(callback)) {
-        callback(null, guidelines)
-      }
-    } else if (extension === '.txt') {
-      FileUtils.readGuidelinesFromTXT(file, (err, guidelines) => {
-        if (_.isFunction(callback)) {
-          callback(err, guidelines)
-        }
-      })
-    }
-  }
-
   generateCanvas () {
     window.abwa.sidebar.closeSidebar()
     Alerts.loadingAlert({text: chrome.i18n.getMessage('GeneratingReviewReport')})
@@ -670,7 +581,6 @@ class ReviewGenerator {
         let swalContent = '';
         if (annotation.highlightText != null && annotation.highlightText != '') swalContent += '<h2 style="text-align:left;margin-bottom:10px;">Highlight</h2><div style="text-align:justify;font-style:italic">"' + annotation.highlightText.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '"</div>'
         if (annotation.comment != null && annotation.comment != '') swalContent += '<h2 style="text-align:left;margin-top:10px;margin-bottom:10px;">Comment</h2><div style="text-align:justify;">' + annotation.comment.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>'
-        if (annotation.suggestedLiterature != null && annotation.suggestedLiterature.length > 0) swalContent += '<h2 style="text-align:left;margin-top:10px;margin-bottom:10px;">Suggested literature</h2><div style="text-align:justify;"><ul style="padding-left:10px;">' + annotation.suggestedLiterature.map((e) => {return '<li>' + e.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</li>'}).join('') + '</ul></div>'
         ReviewGenerator.tryToLoadSwal()
         if (_.isNull(Swal)) {
           Alerts.errorAlert({text: 'Unable to load swal'})

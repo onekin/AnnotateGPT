@@ -16,7 +16,7 @@ class Popup {
     this.activated = true
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       chrome.tabs.sendMessage(tabs[0].id, {action: 'initContentScript'}, (response) => {
-        // chrome.action.setIcon({tabId: tabs[0].id, path: 'images/icon-38.png'})
+        chrome.action.setIcon({tabId: tabs[0].id, path: '../../images/robotFace_short.png'})
       })
     })
   }

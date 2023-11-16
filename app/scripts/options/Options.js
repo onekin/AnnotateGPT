@@ -61,7 +61,7 @@ class Options {
         if (button.innerHTML === 'Change API Key value') {
           let input = document.querySelector('#' + selectedLLM + '-APIKey')
           input.disabled = false
-          button.innerHTML = 'Validate and Save'
+          button.innerHTML = 'Save'
         } else {
           let apiKey = document.querySelector('#' + selectedLLM + '-APIKey').value
           if (selectedLLM && apiKey) {

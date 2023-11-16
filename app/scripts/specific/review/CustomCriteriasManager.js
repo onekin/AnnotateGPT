@@ -394,7 +394,7 @@ class CustomCriteriasManager {
       let description = tagGroup.config.options.description
       let items = {}
       // Highlight criterion by LLM
-      items['uncover'] = { name: 'Uncover' }
+      items['annotate'] = { name: 'Auto-annotate' }
       // Assess criterion by LLM
       items['compile'] = { name: 'Compile' }
       // Find alternative viewpoints by LLM
@@ -408,8 +408,8 @@ class CustomCriteriasManager {
             callback: (key) => {
               // Get latest version of tag
               let currentTagGroup = _.find(window.abwa.tagManager.currentTags, currentTag => currentTag.config.annotation.id === tagGroup.config.annotation.id)
-              if (key === 'uncover') {
-                this.uncover(criterion, description)
+              if (key === 'annotate') {
+                this.annotate(criterion, description)
               } else if (key === 'compile') {
                 this.getParagraphs(criterion, (paragraphs) => {
                   if (paragraphs) {
@@ -417,7 +417,7 @@ class CustomCriteriasManager {
                   } else {
                     Alerts.errorAlert({
                       title: 'There are not annotations',
-                      text: 'Please, highlight some paragraphs to assess the ' + criterion + ' criterion'
+                      text: 'Please, annotate some paragraphs to assess the ' + criterion + ' criterion'
                     })
                   }
                 })
@@ -653,7 +653,7 @@ class CustomCriteriasManager {
     }
   }
 
-  uncover (criterion, description) {
+  annotate (criterion, description) {
     if (description.length < 20) {
       Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
     } else {
@@ -804,7 +804,8 @@ class CustomCriteriasManager {
                     description: description,
                     criterion: criterion,
                     annotation: annotation,
-                    type: 'compile'
+                    type: 'compile',
+                    compileSentiment: sentiment
                   })
                 }
                 if (apiKey && apiKey !== '') {
@@ -976,7 +977,7 @@ class CustomCriteriasManager {
         if (annotation.text) {
           let body = JSON.parse(annotation.text)
           if (body.paragraph) {
-            paragraphs.push('(page' + pageSelector.page + '): ' + body.paragraph.replace(/(\r\n|\n|\r)/gm, ''))
+            paragraphs.push('(page ' + pageSelector.page + '): ' + body.paragraph.replace(/(\r\n|\n|\r)/gm, ''))
           }
         } else {
           let fragmentTextSelector
@@ -997,7 +998,7 @@ class CustomCriteriasManager {
         return resume.document === window.abwa.contentTypeManager.pdfFingerprint
       })
       if (findResume) {
-        compile = findResume.answer
+        compile = findResume
       }
     }
     let alternative = ''
@@ -1012,7 +1013,7 @@ class CustomCriteriasManager {
     if (compile || alternative || paragraphs.length > 0) {
       let html = '<div width=900px style="text-align: justify;text-justify: inter-word">'
       if (compile) {
-        html += '<h3>Compilation:</h3><div width=800px>' + compile + '</div></br>'
+        html += '<h3>Compilation:</h3><div width=800px>' + '(' + compile.sentiment + ') ' + compile.answer + '</div></br>'
       }
       if (alternative) {
         html += '<h3>Provided alternatives:</h3><div width=800px>' + alternative + '</div></br>'

@@ -216,7 +216,7 @@ class Alerts {
     }
   }
 
-  static answerCriterionAlert ({ title = 'This is the answer:', answer = '', paragraphs = '', description = '', annotation = '', type, criterion = '' }) {
+  static answerCriterionAlert ({ title = 'This is the answer:', answer = '', paragraphs = '', description = '', annotation = '', type, criterion = '', compileSentiment = '' }) {
     Alerts.tryToLoadSwal()
     if (_.isNull(swal)) {
 
@@ -251,8 +251,11 @@ class Alerts {
                 if (!Array.isArray(data.compile)) {
                   data.compile = []
                 }
+                let sentiment = TextAnnotator.findTagForSentiment(compileSentiment.toLowerCase())
+                let parts = sentiment.split(':')
+                let lastValue = parts[parts.length - 1]
                 // Now that we're sure data.resume is an array, push the new object into it.
-                data.compile.push({ document: window.abwa.contentTypeManager.pdfFingerprint, answer: answer })
+                data.compile.push({ document: window.abwa.contentTypeManager.pdfFingerprint, answer: answer, sentiment: lastValue })
               } else if (type === 'alternative') {
                 // Check if data.resume exists and is an array. If not, initialize it as an empty array.
                 if (!Array.isArray(data.alternative)) {

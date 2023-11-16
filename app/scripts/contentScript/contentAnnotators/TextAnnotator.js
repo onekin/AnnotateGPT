@@ -291,7 +291,7 @@ class TextAnnotator extends ContentAnnotator {
       uri: window.abwa.contentTypeManager.getDocumentURIToSaveInStorage()
     }
     if (commentData && commentData.llm) {
-      data.text = JSON.stringify({comment: commentData.comment, suggestedLiterature: [], llm: commentData.llm, paragraph: commentData.paragraph})
+      data.text = JSON.stringify({comment: commentData.comment, llm: commentData.llm, paragraph: commentData.paragraph})
     }
     if (commentData && commentData.sentiment) {
       let tag = TextAnnotator.findTagForSentiment(commentData.sentiment)
@@ -636,9 +636,8 @@ class TextAnnotator extends ContentAnnotator {
     // Open sweetalert
     // let that = this
 
-    let updateAnnotation = (comment, literature, level, form) => {
+    let updateAnnotation = (comment, level, form) => {
       form.comment = comment
-      form.literature = literature
       form.level = level
       annotation.text = JSON.stringify(form)
 
@@ -656,15 +655,6 @@ class TextAnnotator extends ContentAnnotator {
       }
     }
     let showAlert = (form) => {
-      let suggestedLiteratureHtml = (lit) => {
-        let html = ''
-        for (let i in lit) {
-          if (lit.hasOwnProperty(i)) {
-            html += '<li><a class="removeReference"></a><span title="' + lit[i] + '">' + lit[i] + '</span></li>'
-          }
-        }
-        return html
-      }
       let hasLevel = (annotation, level) => {
         return annotation.tags.find((e) => { return e === Config.review.namespace + ':' + Config.review.tags.grouped.subgroup + ':' + level }) != null
       }
@@ -724,20 +714,13 @@ class TextAnnotator extends ContentAnnotator {
         console.log('Unable to load swal')
       } else {
         swal.fire({
-          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + userCommentHTML + clarifications + factChecking + socialJudge +
-            '<input placeholder="Suggest literature from DBLP" id="swal-input1" class="swal2-input notMargin"><ul id="literatureList">' + suggestedLiteratureHtml(form.suggestedLiterature) + '</ul>',
+          html: '<h3 class="criterionName">' + criterionName + '</h3>' + poleChoiceRadio + userCommentHTML + clarifications + factChecking + socialJudge,
           showLoaderOnConfirm: true,
           width: '40em',
           preConfirm: () => {
             let newComment = $('#swal-textarea').val()
-            let suggestedLiterature = Array.from($('#literatureList li span')).map((e) => { return $(e).attr('title') })
             let level = $('.poleRadio:checked') != null && $('.poleRadio:checked').length === 1 ? $('.poleRadio:checked')[0].value : null
-            updateAnnotation(newComment, suggestedLiterature, level, form)
-          },
-          didOpen: () => {
-            $('.removeReference').on('click', function () {
-              $(this).closest('li').remove()
-            })
+            updateAnnotation(newComment, level, form)
           }
         })
       }
@@ -746,64 +729,9 @@ class TextAnnotator extends ContentAnnotator {
           $(this).prev('.poleRadio').prop('checked', true)
         })
       }
-
-      $('#swal-input1').autocomplete({
-        source: function (request, response) {
-          $.ajax({
-            url: 'http://dblp.org/search/publ/api',
-            data: {
-              q: request.term,
-              format: 'json',
-              h: 5
-            },
-            success: function (data) {
-              response(data.result.hits.hit.map((e) => { return {label: e.info.title + ' (' + e.info.year + ')', value: e.info.title + ' (' + e.info.year + ')', info: e.info} }))
-            }
-          })
-        },
-        minLength: 3,
-        delay: 500,
-        select: function (event, ui) {
-          let content = ''
-          if (ui.item.info.authors !== null && Array.isArray(ui.item.info.authors.author)) {
-            if (_.isObject(ui.item.info.authors.author[0])) {
-              content += ui.item.info.authors.author.map(a => a.text).join(', ') + ': '
-            } else {
-              content += ui.item.info.authors.author.join(', ') + ': '
-            }
-          } else if (ui.item.info.authors !== null) {
-            if (_.has(ui.item.info.authors.author, 'text')) {
-              content += ui.item.info.authors.author.text + ': '
-            } else {
-              content += ui.item.info.authors.author + ': '
-            }
-          }
-          if (ui.item.info.title !== null) {
-            content += ui.item.info.title
-          }
-          if (ui.item.info.year !== null) {
-            content += ' (' + ui.item.info.year + ')'
-          }
-          const a = document.createElement('a')
-          a.className = 'removeReference'
-          a.addEventListener('click', function (e) {
-            $(e.target).closest('li').remove()
-          })
-          const li = document.createElement('li')
-          $(li).append(a, '<span title="' + content + '">' + content + '</span>')
-          $('#literatureList').append(li)
-          setTimeout(function () {
-            $('#swal-input1').val('')
-          }, 10)
-        },
-        appendTo: '.swal2-container',
-        create: function () {
-          $('.ui-autocomplete').css('max-width', $('#swal2-content').width())
-        }
-      })
     }
     if (annotation.text === null || annotation.text === '') {
-      showAlert({comment: '', suggestedLiterature: []})
+      showAlert({comment: ''})
     } else {
       showAlert(JSON.parse(annotation.text))
     }
