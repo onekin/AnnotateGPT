@@ -394,7 +394,7 @@ class CustomCriteriasManager {
       let description = tagGroup.config.options.description
       let items = {}
       // Highlight criterion by LLM
-      items['annotate'] = { name: 'Auto-annotate' }
+      items['annotate'] = { name: 'Annotate' }
       // Assess criterion by LLM
       items['compile'] = { name: 'Compile' }
       // Find alternative viewpoints by LLM
@@ -443,7 +443,7 @@ class CustomCriteriasManager {
     }
   }
 
-  static showParagraphs (annotations) {
+  static showParagraphs (annotations, criterion) {
     if (annotations.length > 0) {
       let annotation = annotations.pop()
       let buttonText
@@ -453,25 +453,25 @@ class CustomCriteriasManager {
         buttonText = 'OK'
       }
       Alerts.infoAlert({
-        title: 'The LLM suggests this information for your criterion',
+        title: 'The LLM suggests this information for ' + criterion,
         text: annotation.paragraph,
         confirmButtonText: buttonText,
         showCancelButton: false,
         callback: () => {
-          CustomCriteriasManager.showParagraphs(annotations)
+          CustomCriteriasManager.showParagraphs(annotations, criterion)
         }
       })
     }
   }
 
-  static showAnnotatedParagraphs (createdAnnotations, noCreatedAnnotations) {
+  static showAnnotatedParagraphs (createdAnnotations, noCreatedAnnotations, criterion) {
     if (createdAnnotations.length > 0) {
       // let annotation =
       createdAnnotations.pop()
       if (createdAnnotations.length > 0) {
-        CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations)
+        CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations, criterion)
       } else if (noCreatedAnnotations.length > 0) {
-        CustomCriteriasManager.showParagraphs(noCreatedAnnotations)
+        CustomCriteriasManager.showParagraphs(noCreatedAnnotations, criterion)
       }
     }
   }
@@ -680,8 +680,8 @@ class CustomCriteriasManager {
                   // let comment = json.comment
                   // let sentiment = json.sentiment
                   let annotations = []
-                  for (let i = 0; i < json.paragraphs.length; i += 1) {
-                    let paragraphElement = json.paragraphs[i]
+                  for (let i = 0; i < json.excerpts.length; i += 1) {
+                    let paragraphElement = json.excerpts[i]
                     let paragraph = ''
                     let sentiment = 'not met'
                     if (paragraphElement && paragraphElement.text) {
@@ -729,9 +729,9 @@ class CustomCriteriasManager {
                     showCancelButton: false,
                     callback: () => {
                       if (createdAnnotations.length > 0) {
-                        CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations)
+                        CustomCriteriasManager.showAnnotatedParagraphs(createdAnnotations, noCreatedAnnotations, criterion)
                       } else if (noCreatedAnnotations.length > 0) {
-                        CustomCriteriasManager.showParagraphs(noCreatedAnnotations)
+                        CustomCriteriasManager.showParagraphs(noCreatedAnnotations, criterion)
                       }
                     }
                   })
@@ -809,15 +809,15 @@ class CustomCriteriasManager {
                   })
                 }
                 if (apiKey && apiKey !== '') {
-                  let resumeQuery = Config.review.resumeQuery
-                  resumeQuery = resumeQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion).replaceAll('[C_PARAGRAPHS]', paragraphs)
+                  let compilationQuery = Config.prompts.compilationQuery
+                  compilationQuery = compilationQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion).replaceAll('[C_PARAGRAPHS]', paragraphs)
                   let params = {
                     criterion: criterion,
                     description: description,
                     apiKey: apiKey,
                     documents: documents,
                     callback: callback,
-                    criterionQuery: resumeQuery
+                    criterionQuery: compilationQuery
                   }
                   if (selectedLLM === 'anthropic') {
                     AnthropicManager.askCriteria(params)
@@ -876,7 +876,7 @@ class CustomCriteriasManager {
                   })
                 }
                 if (apiKey && apiKey !== '') {
-                  let alternativeQuery = Config.review.alternativeQuery
+                  let alternativeQuery = Config.prompts.alternativeQuery
                   alternativeQuery = alternativeQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion).replaceAll('[C_PARAGRAPHS]', paragraphs)
                   let params = {
                     criterion: criterion,
@@ -1026,7 +1026,7 @@ class CustomCriteriasManager {
         html += '</ul></div>'
       }
       html += '</div>'
-      Alerts.criterionInfoAlert({ title: criterion + '. The assessment so far is:', text: html })
+      Alerts.criterionInfoAlert({ title: 'Criterion Review: ' + criterion, text: html })
     } else {
       Alerts.errorAlert({
         title: 'No assessed',

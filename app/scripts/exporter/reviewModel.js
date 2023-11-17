@@ -59,7 +59,7 @@ export class Review {
     // Criterion Assessment
     t += "<Criterion assessments>\r\n\r\n";
     this._assessedCriteria.forEach( (assessedCriteria) => {
-      t+= assessedCriteria.criterion + " assessment:\r\n\r\n";
+      t+= assessedCriteria.criterion + ":\r\n\r\n";
       if (assessedCriteria.compile) {
         t += "-Compilation:- "+assessedCriteria.compile+"\r\n\r\n";
       }
@@ -127,30 +127,30 @@ export class Review {
     // Criterion Assessment
     t += "<Criterion assessments>\r\n\r\n";
     this._assessedCriteria.forEach( (assessedCriteria) => {
-      t+= assessedCriteria.criterion.toUpperCase() + " ASSESSMENT:\r\n\r\n";
+      t += assessedCriteria.criterion.toUpperCase() + ":\r\n\r\n";
       if (assessedCriteria.compile) {
-        t += "-Compilation:- "+assessedCriteria.compile.answer+"\r\n\r\n";
+        t += "-Compilation:- " + assessedCriteria.compile.answer + "\r\n\r\n";
       }
       if (assessedCriteria.alternative) {
-        t += "-Alternative viewpoints: "+assessedCriteria.alternative+"\r\n\r\n";
+        t += "-Alternative viewpoints: " + assessedCriteria.alternative.replaceAll('</br>','\n').replaceAll('<b>','').replaceAll('</b>','') + "\r\n\r\n";
       }
       t += "\r\n";
       // Strengths
-      if(this.strengths.length>0) {
-        for(let s in this.strengths){
-          if (this.strengths[s].annotations[0].criterion === assessedCriteria.criterion){
-            t+= '\t' + "***Strengths***\r\n\r\n";
-            t += '\t' + (this.strengths[s].toGroupByCategories())+ "\r\n\r\n";
+      if (this.strengths.length > 0) {
+        for (let s in this.strengths) {
+          if (this.strengths[s].annotations[0].criterion === assessedCriteria.criterion) {
+            t += '\t' + "***Strengths***\r\n\r\n";
+            t += '\t' + (this.strengths[s].toGroupByCategories()) + "\r\n\r\n";
           }
         }
         t += "\r\n";
       }
 
       // Major concerns
-      if(this.majorConcerns.length>0) {
-        for(let i=0;i<this.majorConcerns.length;i++) {
+      if (this.majorConcerns.length > 0) {
+        for (let i = 0; i < this.majorConcerns.length; i++) {
           if (this.majorConcerns[i].annotations[0].criterion === assessedCriteria.criterion) {
-            t += '\t' +"***Major weaknesses***\r\n\r\n"
+            t += '\t' + "***Major weaknesses***\r\n\r\n"
             t += '\t' + (this.majorConcerns[i].toGroupByCategories()) + "\r\n\r\n";
           }
         }
@@ -158,17 +158,31 @@ export class Review {
       }
 
       // Minor concerns
-      if(this.minorConcerns.length>0){
-        for(let i=0;i<this.minorConcerns.length;i++){
+      if (this.minorConcerns.length > 0) {
+        for (let i = 0; i < this.minorConcerns.length; i++) {
           if (this.minorConcerns[i].annotations[0].criterion === assessedCriteria.criterion) {
-            t += '\t' +"***Minor weaknesses***\r\n\r\n"
+            t += '\t' + "***Minor weaknesses***\r\n\r\n"
             t += '\t' + (this.minorConcerns[i].toGroupByCategories()) + "\r\n\r\n";
           }
         }
         t += "\r\n";
       }
-    })
 
+      // Other Comments
+      const criterionUnsortedAnnotations = this.unsortedAnnotations.filter((e) => {return e.criterion === assessedCriteria.criterion})
+      if (criterionUnsortedAnnotations && criterionUnsortedAnnotations.length > 0) {
+        // Other comments
+        t += '\t' + '***Other comments***:\r\n\r\n'
+        for (let i = 0; i < criterionUnsortedAnnotations.length; i++) {
+          t += "\t* "
+          if (criterionUnsortedAnnotations[i].page != null) t += '(Page ' + criterionUnsortedAnnotations[i].page + '): '
+          t += '"' + criterionUnsortedAnnotations[i].highlightText + '"'
+          if (criterionUnsortedAnnotations[i].comment != null && criterionUnsortedAnnotations[i].comment != "") t += '\r\n\t' + criterionUnsortedAnnotations[i].comment
+          t += '\r\n'
+        }
+        t += "\r\n";
+      }
+    })
     // Presentation errors
     if(this.presentationErrors.length>0){
       t += "PRESENTATION:\r\n\r\n"
@@ -176,18 +190,6 @@ export class Review {
         t += "- "+this.presentationErrors[i].toGroupByCategories()+"\r\n\r\n"
       }
       t += "\r\n"
-    }
-
-    // Other comments
-    t += "OTHER COMMENTS:\r\n\r\n"
-    if(this.unsortedAnnotations.length>0){
-      for(let i=0;i<this.unsortedAnnotations.length;i++){
-        t += "\t- "
-        if(this.unsortedAnnotations[i].page!=null) t+= '(Page '+this.unsortedAnnotations[i].page+'): '
-        t += '"'+this.unsortedAnnotations[i].highlightText+'"'
-        if(this.unsortedAnnotations[i].comment!=null&&this.unsortedAnnotations[i].comment!="") t+= '\r\n\t'+this.unsortedAnnotations[i].comment
-        t += '\r\n'
-      }
     }
 
     t += "\r\n<Comments to editors>";
@@ -211,7 +213,7 @@ export class Review {
         t += "- "+strengtCriteria[i].compile.answer+"\r\n\r\n";
       }
       for(let s in this.strengths){
-        t += "- "+this.strengths[s].toString()+"\r\n\r\n";
+        t += "- "+this.strengths[s].toSentimentString()+"\r\n\r\n";
       }
       t += "\r\n";
     }
@@ -226,10 +228,10 @@ export class Review {
       t += "MAJOR WEAKNESSES:\r\n\r\n"
 
       for (let i=0; i<majorWeaknessCriteria.length; i++) {
-        t += "- "+majorWeaknessCriteria[i].criterion + ': ' + majorWeaknessCriteria[i].compile.answer+"\r\n\r\n";
+        t += '- ' + majorWeaknessCriteria[i].compile.answer+"\r\n\r\n";
       }
       for(let i=0;i<this.majorConcerns.length;i++){
-        t += (i+1)+"- "+this.majorConcerns[i].toString()+"\r\n\r\n";
+        t += (i+1)+"- "+this.majorConcerns[i].toSentimentString()+"\r\n\r\n";
       }
       t += "\r\n";
     }
@@ -246,7 +248,7 @@ export class Review {
         t += "- "+minorWeaknessCriteria[i].compile.answer+"\r\n\r\n";
       }
       for(let i=0;i<this.minorConcerns.length;i++){
-        t += (i+1)+"- "+this.minorConcerns[i].toString()+"\r\n\r\n";
+        t += (i+1)+" "+this.minorConcerns[i].toSentimentString()+"\r\n\r\n";
       }
       t += "\r\n";
     }
@@ -264,12 +266,12 @@ export class Review {
     t += "OTHER COMMENTS:\r\n\r\n"
     this._assessedCriteria.forEach( (assessedCriteria) => {
       if (assessedCriteria.alternative) {
-        t += "- Alternatives for " + assessedCriteria.criterion.toUpperCase() + ': ' + assessedCriteria.alternative + "\r\n\r\n";
+        t += "- Alternatives for " + assessedCriteria.criterion.toUpperCase() + ': ' + assessedCriteria.alternative.replaceAll('</br>','\n').replaceAll('<b>','').replaceAll('</b>','') + "\r\n\r\n";
       }
     })
     if(this.unsortedAnnotations.length>0){
       for(let i=0;i<this.unsortedAnnotations.length;i++){
-        t += "\t- "
+        t += '\t* ' + this.unsortedAnnotations[i].criterion + ' '
         if(this.unsortedAnnotations[i].page!=null) t+= '(Page '+this.unsortedAnnotations[i].page+'): '
         t += '"'+this.unsortedAnnotations[i].highlightText+'"'
         if(this.unsortedAnnotations[i].comment!=null&&this.unsortedAnnotations[i].comment!="") t+= '\r\n\t'+this.unsortedAnnotations[i].comment
@@ -367,6 +369,18 @@ export class AnnotationGroup {
       if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
       t += '"' + this._annotations[i].highlightText + '". ';
       if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+    }
+    return t
+  }
+
+  toSentimentString () {
+    let t = '\t***' + this._annotations[0].criterion + '***'
+    for (let i in this._annotations) {
+      if (this._annotations[i].highlightText === null) continue
+      t += '\r\n\t\t* '
+      if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
+      t += '"' + this._annotations[i].highlightText + '". ';
+      if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
     }
     return t
   }

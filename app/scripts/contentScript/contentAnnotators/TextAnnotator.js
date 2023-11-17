@@ -744,7 +744,7 @@ class TextAnnotator extends ContentAnnotator {
       }
       if (llm && llm !== '') {
         let selectedLLM = llm
-        let clarificationQuery = Config.review.clarificationQuery
+        let clarificationQuery = Config.prompts.clarificationQuery
         criterion = criterion.replace(/\[.*?\]/g, '')
         clarificationQuery = clarificationQuery.replaceAll('[C_TEXT]', paragraph).replaceAll('[C_NAME]', criterion).replaceAll('[C_QUESTION]', question)
         Alerts.confirmAlert({
@@ -807,7 +807,7 @@ class TextAnnotator extends ContentAnnotator {
       }
       if (llm && llm !== '') {
         let selectedLLM = llm
-        let factCheckingQuery = Config.review.factCheckingQuery
+        let factCheckingQuery = Config.prompts.factCheckingQuery
         factCheckingQuery = factCheckingQuery.replaceAll('[C_TEXT]', paragraph)
         Alerts.confirmAlert({
           title: 'Fact Checking',
@@ -868,7 +868,7 @@ class TextAnnotator extends ContentAnnotator {
       }
       if (llm && llm !== '') {
         let selectedLLM = llm
-        let socialJudgeQuery = Config.review.socialJudgeQuery
+        let socialJudgeQuery = Config.prompts.socialJudgeQuery
         socialJudgeQuery = socialJudgeQuery.replaceAll('[C_TEXT]', paragraph)
         Alerts.confirmAlert({
           title: 'Social Judge',

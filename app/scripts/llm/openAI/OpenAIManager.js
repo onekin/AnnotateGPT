@@ -27,7 +27,7 @@ class OpenAIManager {
             if (criterionQuery) {
               query = criterionQuery
             }
-            chrome.runtime.sendMessage({ scope: 'llmQuestion', cmd: 'askLLMOpenAI', data: {documents: documents, apiKey: apiKey, query: query} }, function (response) {
+            chrome.runtime.sendMessage({ scope: 'askLLM', cmd: 'openAI', data: {documents: documents, apiKey: apiKey, query: query} }, function (response) {
               if (chrome.runtime.lastError) {
                 Swal.close()
                 Alerts.errorAlert({text: 'Unable to ask OpenAI: ' + chrome.runtime.lastError.message})

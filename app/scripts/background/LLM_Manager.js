@@ -38,26 +38,26 @@ class LLMManager {
               sendResponse({ llm: selectedLLM })
             }
           })
-        } else if (request.cmd === 'setCriterionQuery') {
-          let criterionQuery = request.data.query
-          ChromeStorage.setData('llm.criterionQuery', { data: JSON.stringify(criterionQuery) }, ChromeStorage.sync, (err) => {
+        } else if (request.cmd === 'setAnnotateQuery') {
+          let annotateQuery = request.data.query
+          ChromeStorage.setData('llm.annotateQuery', { data: JSON.stringify(annotateQuery) }, ChromeStorage.sync, (err) => {
             if (err) {
               sendResponse({ err: err })
             } else {
-              sendResponse({ query: criterionQuery })
+              sendResponse({ query: annotateQuery })
             }
           })
-        } else if (request.cmd === 'getCriterionQuery') {
-          const defaultQuery = Config.review.defaultQuery
-          ChromeStorage.getData('llm.criterionQuery', ChromeStorage.sync, (err, llm) => {
+        } else if (request.cmd === 'getAnnotateQuery') {
+          const annotateQuery = Config.prompts.annotateQuery
+          ChromeStorage.getData('llm.annotateQuery', ChromeStorage.sync, (err, query) => {
             if (err) {
               sendResponse({ err: err })
             } else {
-              if (llm && llm.data) {
-                let parsedQuery = JSON.parse(llm.data)
+              if (query && query.data) {
+                let parsedQuery = JSON.parse(query.data)
                 sendResponse({ criterionQuery: parsedQuery || '' })
               } else {
-                sendResponse({ criterionQuery: defaultQuery })
+                sendResponse({ criterionQuery: annotateQuery })
               }
             }
           })
@@ -91,14 +91,14 @@ class LLMManager {
     })
 
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      if (request.scope === 'llmQuestion') {
-        if (request.cmd === 'askLLMAnthropic') {
+      if (request.scope === 'askLLM') {
+        if (request.cmd === 'anthropic') {
           this.askLLMAnthropic(request).then(
             res => sendResponse({ res: res }),
             err => sendResponse({ err: err }) // Return the error inside the message handler
           )
           return true // Return true inside the message handler
-        } else if (request.cmd === 'askLLMOpenAI') {
+        } else if (request.cmd === 'openAI') {
           this.askLLMOpenAI(request).then(
             res => sendResponse({ res: res }),
             err => sendResponse({ err: err })

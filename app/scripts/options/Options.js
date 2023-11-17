@@ -7,7 +7,7 @@ import Config from '../Config'
 
 class Options {
   init () {
-    const defaultQuery = Config.review.defaultQuery
+    const annotateQuery = Config.prompts.annotateQuery
     const defaultLLM = Config.review.defaultLLM
     // Storage type
     document.querySelector('#LLMDropdown').addEventListener('change', (event) => {
@@ -21,9 +21,9 @@ class Options {
 
     document.querySelector('#defaultQueryButton').addEventListener('click', () => {
       let messageLabel = document.querySelector('#criterionQueryMessage')
-      this.setCriterionQuery(defaultQuery)
+      this.setCriterionQuery(annotateQuery)
       let currentQuery = document.querySelector('#criterionQuery')
-      currentQuery.value = defaultQuery
+      currentQuery.value = annotateQuery
       messageLabel.innerHTML = 'Prompt saved'
     })
 
@@ -41,8 +41,8 @@ class Options {
       if (criterionQuery && criterionQuery !== '') {
         document.querySelector('#criterionQuery').value = criterionQuery
       } else {
-        document.querySelector('#criterionQuery').value = defaultQuery
-        this.setCriterionQuery(defaultQuery)
+        document.querySelector('#criterionQuery').value = annotateQuery
+        this.setCriterionQuery(annotateQuery)
       }
     })
 

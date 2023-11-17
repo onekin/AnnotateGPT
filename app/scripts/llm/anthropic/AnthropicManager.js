@@ -28,7 +28,7 @@ class AnthropicManager {
             if (criterionQuery) {
               query = criterionQuery
             }
-            chrome.runtime.sendMessage({ scope: 'llmQuestion', cmd: 'askLLMAnthropic', data: {documents: documents, apiKey: apiKey, query: query} }, function (response) {
+            chrome.runtime.sendMessage({ scope: 'askLMM', cmd: 'anthropic', data: {documents: documents, apiKey: apiKey, query: query} }, function (response) {
               if (chrome.runtime.lastError) {
                 Swal.close()
                 Alerts.errorAlert({text: 'Unable to ask Anthropic: ' + chrome.runtime.lastError.message})

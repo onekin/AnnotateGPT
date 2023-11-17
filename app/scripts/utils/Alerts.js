@@ -224,12 +224,12 @@ class Alerts {
       const buttons = '<button id="llmAnswerOKButton" >Ok</button></br><button id="redoButton" class="llmAnswerButton">Redo</brbutton><button id="summaryButton" class="llmAnswerButton">Save answer</button>'
       swal.fire({
         title: title,
-        html: '<div style="text-align: justify;text-justify: inter-word" width=450px>' + answer + '</div></br>' + buttons,
+        html: '<div style="text-align: justify;text-justify: inter-word" width=550px>' + answer + '</div></br>' + buttons,
         showCancelButton: false,
         showConfirmButton: false,
         onBeforeOpen: () => {
           let element = document.querySelector('.swal2-popup')
-          element.style.width = '500px'
+          element.style.width = '600px'
           // Add event listeners to the buttons after they are rendered
           document.getElementById('llmAnswerOKButton').addEventListener('click', () => {
             swal.close()
