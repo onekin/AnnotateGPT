@@ -737,186 +737,207 @@ class TextAnnotator extends ContentAnnotator {
     }
   }
 
-  static askQuestionClarify (paragraph, question, criterion, annotation) {
+  static askQuestionClarify (excerpt, question, criterion, annotation) {
     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
       if (llm === '') {
         llm = Config.review.defaultLLM
       }
       if (llm && llm !== '') {
         let selectedLLM = llm
-        let clarificationQuery = Config.prompts.clarificationQuery
-        criterion = criterion.replace(/\[.*?\]/g, '')
-        clarificationQuery = clarificationQuery.replaceAll('[C_TEXT]', paragraph).replaceAll('[C_NAME]', criterion).replaceAll('[C_QUESTION]', question)
-        Alerts.confirmAlert({
-          title: 'Clarification',
-          text: '<div style="text-align: justify;text-justify: inter-word">You are going to ask the following question:\n ' + clarificationQuery + '</div>',
-          cancelButtonText: 'Cancel',
-          callback: async () => {
-            let documents = []
-            documents = await LLMTextUtils.loadDocument()
-            chrome.runtime.sendMessage({
-              scope: 'llm',
-              cmd: 'getAPIKEY',
-              data: selectedLLM
-            }, ({ apiKey }) => {
-              let callback = (json) => {
-                let answer = json.answer
-                Alerts.answerTextFragmentAlert({
-                  answer: answer,
-                  paragraph: paragraph,
-                  question: question,
-                  criterion: criterion,
-                  type: 'clarification',
-                  annotation: annotation
-                })
-              }
-              if (apiKey && apiKey !== '') {
-                let params = {
-                  criterion: criterion,
-                  apiKey: apiKey,
-                  documents: documents,
-                  callback: callback,
-                  criterionQuery: clarificationQuery
-                }
-                if (selectedLLM === 'anthropic') {
-                  AnthropicManager.askCriteria(params)
-                } else if (selectedLLM === 'openAI') {
-                  OpenAIManager.askCriteria(params)
-                }
-              } else {
-                let callback = () => {
-                  window.open(chrome.runtime.getURL('pages/options.html'))
-                }
-                Alerts.infoAlert({
-                  text: 'Please, configure your LLM.',
-                  title: 'Please select a LLM and provide your API key',
-                  callback: callback()
-                })
-              }
-            })
+        chrome.runtime.sendMessage({ scope: 'prompt', cmd: 'getPrompt', data: {type: 'clarifyPrompt'} }, ({ prompt }) => {
+          let clarifyPrompt
+          if (prompt) {
+            clarifyPrompt = prompt
+          } else {
+            clarifyPrompt = Config.prompts.clarifyPrompt
           }
+          criterion = criterion.replace(/\[.*?\]/g, '')
+          clarifyPrompt = clarifyPrompt.replaceAll('[C_EXCERPT]', excerpt).replaceAll('[C_NAME]', criterion).replaceAll('[C_QUESTION]', question)
+          Alerts.confirmAlert({
+            title: 'Clarification',
+            text: '<div style="text-align: justify;text-justify: inter-word">You are going to ask the following question:\n ' + clarifyPrompt + '</div>',
+            cancelButtonText: 'Cancel',
+            callback: async () => {
+              let documents = []
+              documents = await LLMTextUtils.loadDocument()
+              chrome.runtime.sendMessage({
+                scope: 'llm',
+                cmd: 'getAPIKEY',
+                data: selectedLLM
+              }, ({ apiKey }) => {
+                let callback = (json) => {
+                  let answer = json.answer
+                  Alerts.answerTextFragmentAlert({
+                    answer: answer,
+                    excerpt: excerpt,
+                    question: question,
+                    criterion: criterion,
+                    type: 'clarification',
+                    annotation: annotation
+                  })
+                }
+                if (apiKey && apiKey !== '') {
+                  let params = {
+                    criterion: criterion,
+                    apiKey: apiKey,
+                    documents: documents,
+                    callback: callback,
+                    prompt: clarifyPrompt
+                  }
+                  if (selectedLLM === 'anthropic') {
+                    AnthropicManager.askCriteria(params)
+                  } else if (selectedLLM === 'openAI') {
+                    OpenAIManager.askCriteria(params)
+                  }
+                } else {
+                  let callback = () => {
+                    window.open(chrome.runtime.getURL('pages/options.html'))
+                  }
+                  Alerts.infoAlert({
+                    text: 'Please, configure your LLM.',
+                    title: 'Please select a LLM and provide your API key',
+                    callback: callback()
+                  })
+                }
+              })
+            }
+          })
         })
       }
     })
   }
 
-  static askQuestionFactChecking (paragraph, criterion, annotation) {
+  static askQuestionFactChecking (excerpt, criterion, annotation) {
     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
       if (llm === '') {
         llm = Config.review.defaultLLM
       }
       if (llm && llm !== '') {
         let selectedLLM = llm
-        let factCheckingQuery = Config.prompts.factCheckingQuery
-        factCheckingQuery = factCheckingQuery.replaceAll('[C_TEXT]', paragraph)
-        Alerts.confirmAlert({
-          title: 'Fact Checking',
-          text: '<div style="text-align: justify;text-justify: inter-word">You are going to ask the following question:\n ' + factCheckingQuery + '</div>',
-          cancelButtonText: 'Cancel',
-          callback: async () => {
-            let documents = []
-            documents = await LLMTextUtils.loadDocument()
-            chrome.runtime.sendMessage({
-              scope: 'llm',
-              cmd: 'getAPIKEY',
-              data: selectedLLM
-            }, ({ apiKey }) => {
-              let callback = (json) => {
-                let answer = json.answer
-                Alerts.answerTextFragmentAlert({
-                  answer: answer,
-                  paragraph: paragraph,
-                  criterion: criterion,
-                  type: 'factChecking',
-                  annotation: annotation
-                })
-              }
-              if (apiKey && apiKey !== '') {
-                let params = {
-                  criterion: criterion,
-                  apiKey: apiKey,
-                  documents: documents,
-                  callback: callback,
-                  criterionQuery: factCheckingQuery
-                }
-                if (selectedLLM === 'anthropic') {
-                  AnthropicManager.askCriteria(params)
-                } else if (selectedLLM === 'openAI') {
-                  OpenAIManager.askCriteria(params)
-                }
-              } else {
-                let callback = () => {
-                  window.open(chrome.runtime.getURL('pages/options.html'))
-                }
-                Alerts.infoAlert({
-                  text: 'Please, configure your LLM.',
-                  title: 'Please select a LLM and provide your API key',
-                  callback: callback()
-                })
-              }
-            })
+        chrome.runtime.sendMessage({ scope: 'prompt', cmd: 'getPrompt', data: {type: 'factCheckingPrompt'} }, ({ prompt }) => {
+          let factCheckingPrompt
+          if (prompt) {
+            factCheckingPrompt = prompt
+          } else {
+            factCheckingPrompt = Config.prompts.factCheckingPrompt
           }
+          factCheckingPrompt = factCheckingPrompt.replaceAll('[C_EXCERPT]', excerpt)
+          Alerts.confirmAlert({
+            title: 'Fact Checking',
+            text: '<div style="text-align: justify;text-justify: inter-word">You are going to ask the following question:\n ' + factCheckingPrompt + '</div>',
+            cancelButtonText: 'Cancel',
+            callback: async () => {
+              let documents = []
+              documents = await LLMTextUtils.loadDocument()
+              chrome.runtime.sendMessage({
+                scope: 'llm',
+                cmd: 'getAPIKEY',
+                data: selectedLLM
+              }, ({ apiKey }) => {
+                let callback = (json) => {
+                  let answer = json.answer
+                  Alerts.answerTextFragmentAlert({
+                    answer: answer,
+                    excerpt: excerpt,
+                    criterion: criterion,
+                    type: 'factChecking',
+                    annotation: annotation
+                  })
+                }
+                if (apiKey && apiKey !== '') {
+                  let params = {
+                    criterion: criterion,
+                    apiKey: apiKey,
+                    documents: documents,
+                    callback: callback,
+                    prompt: factCheckingPrompt
+                  }
+                  if (selectedLLM === 'anthropic') {
+                    AnthropicManager.askCriteria(params)
+                  } else if (selectedLLM === 'openAI') {
+                    OpenAIManager.askCriteria(params)
+                  }
+                } else {
+                  let callback = () => {
+                    window.open(chrome.runtime.getURL('pages/options.html'))
+                  }
+                  Alerts.infoAlert({
+                    text: 'Please, configure your LLM.',
+                    title: 'Please select a LLM and provide your API key',
+                    callback: callback()
+                  })
+                }
+              })
+            }
+          })
         })
       }
     })
   }
 
-  static askQuestionSocialJudge (paragraph, criterion, annotation) {
+  static askQuestionSocialJudge (excerpt, criterion, annotation) {
     chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getSelectedLLM' }, async ({ llm }) => {
       if (llm === '') {
         llm = Config.review.defaultLLM
       }
       if (llm && llm !== '') {
         let selectedLLM = llm
-        let socialJudgeQuery = Config.prompts.socialJudgeQuery
-        socialJudgeQuery = socialJudgeQuery.replaceAll('[C_TEXT]', paragraph)
-        Alerts.confirmAlert({
-          title: 'Social Judge',
-          text: '<div style="text-align: justify;text-justify: inter-word">You are going to ask the following question:\n ' + socialJudgeQuery + '</div>',
-          cancelButtonText: 'Cancel',
-          callback: async () => {
-            let documents = []
-            documents = await LLMTextUtils.loadDocument()
-            chrome.runtime.sendMessage({
-              scope: 'llm',
-              cmd: 'getAPIKEY',
-              data: selectedLLM
-            }, ({ apiKey }) => {
-              let callback = (json) => {
-                let answer = json.answer
-                Alerts.answerTextFragmentAlert({
-                  answer: answer,
-                  paragraph: paragraph,
-                  criterion: criterion,
-                  type: 'socialJudge',
-                  annotation: annotation
-                })
-              }
-              if (apiKey && apiKey !== '') {
-                let params = {
-                  criterion: criterion,
-                  apiKey: apiKey,
-                  documents: documents,
-                  callback: callback,
-                  criterionQuery: socialJudgeQuery
-                }
-                if (selectedLLM === 'anthropic') {
-                  AnthropicManager.askCriteria(params)
-                } else if (selectedLLM === 'openAI') {
-                  OpenAIManager.askCriteria(params)
-                }
-              } else {
-                let callback = () => {
-                  window.open(chrome.runtime.getURL('pages/options.html'))
-                }
-                Alerts.infoAlert({
-                  text: 'Please, configure your LLM.',
-                  title: 'Please select a LLM and provide your API key',
-                  callback: callback()
-                })
-              }
-            })
+        chrome.runtime.sendMessage({ scope: 'prompt', cmd: 'getPrompt', data: {type: 'socialJudgePrompt'} }, ({ prompt }) => {
+          let socialJudgePrompt
+          if (prompt) {
+            socialJudgePrompt = prompt
+          } else {
+            socialJudgePrompt = Config.prompts.socialJudgePrompt
           }
+          socialJudgePrompt = socialJudgePrompt.replaceAll('[C_EXCERPT]', excerpt)
+          Alerts.confirmAlert({
+            title: 'Social Judge',
+            text: '<div style="text-align: justify;text-justify: inter-word">You are going to ask the following question:\n ' + socialJudgePrompt + '</div>',
+            cancelButtonText: 'Cancel',
+            callback: async () => {
+              let documents = []
+              documents = await LLMTextUtils.loadDocument()
+              chrome.runtime.sendMessage({
+                scope: 'llm',
+                cmd: 'getAPIKEY',
+                data: selectedLLM
+              }, ({ apiKey }) => {
+                let callback = (json) => {
+                  let answer = json.answer
+                  Alerts.answerTextFragmentAlert({
+                    answer: answer,
+                    excerpt: excerpt,
+                    criterion: criterion,
+                    type: 'socialJudge',
+                    annotation: annotation
+                  })
+                }
+                if (apiKey && apiKey !== '') {
+                  let params = {
+                    criterion: criterion,
+                    apiKey: apiKey,
+                    documents: documents,
+                    callback: callback,
+                    prompt: socialJudgePrompt
+                  }
+                  if (selectedLLM === 'anthropic') {
+                    AnthropicManager.askCriteria(params)
+                  } else if (selectedLLM === 'openAI') {
+                    OpenAIManager.askCriteria(params)
+                  }
+                } else {
+                  let callback = () => {
+                    window.open(chrome.runtime.getURL('pages/options.html'))
+                  }
+                  Alerts.infoAlert({
+                    text: 'Please, configure your LLM.',
+                    title: 'Please select a LLM and provide your API key',
+                    callback: callback()
+                  })
+                }
+              })
+            }
+          })
         })
       }
     })

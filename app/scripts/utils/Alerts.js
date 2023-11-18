@@ -275,7 +275,7 @@ class Alerts {
     }
   }
 
-  static answerTextFragmentAlert ({title = 'This is the answer', answer = '', paragraph = '', question = '', criterion = '', type, annotation}) {
+  static answerTextFragmentAlert ({title = 'This is the answer', answer = '', excerpt = '', question = '', criterion = '', type, annotation}) {
     Alerts.tryToLoadSwal()
     if (_.isNull(swal)) {
 
@@ -297,11 +297,11 @@ class Alerts {
           document.getElementById('redoButton').addEventListener('click', () => {
             swal.close()
             if (type === 'clarification') {
-              TextAnnotator.askQuestionClarify(paragraph, question, criterion)
+              TextAnnotator.askQuestionClarify(excerpt, question, criterion)
             } else if (type === 'socialJudge') {
-              TextAnnotator.askQuestionSocialJudge(paragraph, criterion)
+              TextAnnotator.askQuestionSocialJudge(excerpt, criterion)
             } else if (type === 'factChecking') {
-              TextAnnotator.askQuestionFactChecking(paragraph, criterion)
+              TextAnnotator.askQuestionFactChecking(excerpt, criterion)
             }
           })
 

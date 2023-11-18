@@ -6,7 +6,7 @@ if (document && document.head) {
 }
 
 class OpenAIManager {
-  static async askCriteria ({description, apiKey, documents, callback, criterionQuery}) {
+  static async askCriteria ({apiKey, documents, callback, prompt}) {
     let alert = function () {
       OpenAIManager.tryToLoadSwal()
       if (_.isNull(Swal)) {
@@ -24,8 +24,8 @@ class OpenAIManager {
             const b = document.getElementById('swal2-title')
             b.innerText = 'Asking OpenAI'
             let query
-            if (criterionQuery) {
-              query = criterionQuery
+            if (prompt) {
+              query = prompt
             }
             chrome.runtime.sendMessage({ scope: 'askLLM', cmd: 'openAI', data: {documents: documents, apiKey: apiKey, query: query} }, function (response) {
               if (chrome.runtime.lastError) {

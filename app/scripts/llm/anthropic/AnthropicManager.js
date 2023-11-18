@@ -6,7 +6,7 @@ if (document && document.head) {
 }
 
 class AnthropicManager {
-  static async askCriteria ({description, apiKey, documents, callback, criterionQuery}) {
+  static async askCriteria ({ apiKey, documents, callback, prompt }) {
     let alert = function () {
       AnthropicManager.tryToLoadSwal()
       if (_.isNull(Swal)) {
@@ -25,10 +25,10 @@ class AnthropicManager {
             b.innerText = 'Asking Anthropic'
             // Document QA
             let query
-            if (criterionQuery) {
-              query = criterionQuery
+            if (prompt) {
+              query = prompt
             }
-            chrome.runtime.sendMessage({ scope: 'askLMM', cmd: 'anthropic', data: {documents: documents, apiKey: apiKey, query: query} }, function (response) {
+            chrome.runtime.sendMessage({ scope: 'askLLM', cmd: 'anthropic', data: {documents: documents, apiKey: apiKey, query: query} }, function (response) {
               if (chrome.runtime.lastError) {
                 Swal.close()
                 Alerts.errorAlert({text: 'Unable to ask Anthropic: ' + chrome.runtime.lastError.message})

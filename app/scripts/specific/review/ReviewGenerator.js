@@ -1,15 +1,9 @@
 /* eslint-disable */
-import AnnotationExporter from './AnnotationExporter'
-import AnnotationImporter from './AnnotationImporter'
+
 import Config from '../../Config'
 import Alerts from '../../utils/Alerts'
-import AnthropicManager from '../../llm/anthropic/AnthropicManager'
-import OpenAIManager from '../../llm/openAI/OpenAIManager'
-import FileUtils from '../../utils/FileUtils'
 import AnnotationUtils from '../../utils/AnnotationUtils'
 
-const ReviewSchema = require('../../model/schema/Review')
-const ImportSchema = require('./ImportSchema')
 const axios = require('axios')
 const _ = require('lodash')
 const LanguageUtils = require('../../utils/LanguageUtils')
@@ -19,7 +13,6 @@ require('jquery-contextmenu/dist/jquery.contextMenu')
 const {Review, AssessedTag, Annotation} = require('../../exporter/reviewModel.js')
 const FileSaver = require('file-saver')
 const Events = require('../../contentScript/Events')
-const jsYaml = require('js-yaml')
 
 let Swal = null
 if (document && document.head) {
@@ -179,6 +172,7 @@ class ReviewGenerator {
         items['manual'] = {name: 'User manual'}
         items['questionnaire'] = {name: 'Feedback'}
         items['config'] = {name: 'Configuration'}
+        items['prompts'] = {name: 'Prompts'}
         return {
           callback: (key, opt) => {
             if (key === 'manual') {
@@ -188,6 +182,8 @@ class ReviewGenerator {
               console.log('TODO')
             } else if (key === 'config') {
               window.open(chrome.runtime.getURL('/pages/options.html'),"_blank")
+            } else if (key === 'prompts') {
+              window.open(chrome.runtime.getURL('/pages/promptConfiguration.html'), "_blank")
             }
           },
           items: items

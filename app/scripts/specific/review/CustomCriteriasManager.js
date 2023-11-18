@@ -681,18 +681,18 @@ class CustomCriteriasManager {
                   // let sentiment = json.sentiment
                   let annotations = []
                   for (let i = 0; i < json.excerpts.length; i += 1) {
-                    let paragraphElement = json.excerpts[i]
-                    let paragraph = ''
+                    let excerptElement = json.excerpts[i]
+                    let excerpt = ''
                     let sentiment = 'not met'
-                    if (paragraphElement && paragraphElement.text) {
-                      paragraph = paragraphElement.text
+                    if (excerptElement && excerptElement.text) {
+                      excerpt = excerptElement.text
                     }
-                    if (paragraphElement && paragraphElement.sentiment) {
-                      sentiment = paragraphElement.sentiment.toLowerCase()
+                    if (excerptElement && excerptElement.sentiment) {
+                      sentiment = excerptElement.sentiment.toLowerCase()
                     }
-                    let selectors = this.getSelectorsFromLLM(paragraph, documents)
+                    let selectors = this.getSelectorsFromLLM(excerpt, documents)
                     let annotation = {
-                      paragraph: paragraph,
+                      paragraph: excerpt,
                       selectors: selectors
                     }
                     annotations.push(annotation)
@@ -701,7 +701,7 @@ class CustomCriteriasManager {
                         comment: '',
                         sentiment: sentiment,
                         llm: llm,
-                        paragraph: paragraph
+                        paragraph: excerpt
                       }
                       let model = window.abwa.tagManager.model
                       let tag = [
@@ -723,7 +723,7 @@ class CustomCriteriasManager {
                     info = ' did not annotate fragments.'
                   }
                   Alerts.infoAlert({
-                    title: 'The criterion ' + criterion + ' has been highlighted ',
+                    title: 'The criterion ' + criterion + ' has been annotated ',
                     text: llm.charAt(0).toUpperCase() + llm.slice(1) + info,
                     confirmButtonText: 'OK',
                     showCancelButton: false,
@@ -737,15 +737,16 @@ class CustomCriteriasManager {
                   })
                 }
                 if (apiKey && apiKey !== '') {
-                  chrome.runtime.sendMessage({ scope: 'llm', cmd: 'getCriterionQuery' }, async ({ criterionQuery }) => {
-                    criterionQuery = criterionQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion)
+                  chrome.runtime.sendMessage({ scope: 'prompt', cmd: 'getPrompt', data: {type: 'annotatePrompt'} }, ({ prompt }) => {
+                    prompt = prompt.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion)
                     let params = {
                       criterion: criterion,
                       description: description,
                       apiKey: apiKey,
                       documents: documents,
                       callback: callback,
-                      criterionQuery: criterionQuery
+                      prompt: prompt,
+                      selectedLLM
                     }
                     if (selectedLLM === 'anthropic') {
                       AnthropicManager.askCriteria(params)
@@ -809,21 +810,28 @@ class CustomCriteriasManager {
                   })
                 }
                 if (apiKey && apiKey !== '') {
-                  let compilationQuery = Config.prompts.compilationQuery
-                  compilationQuery = compilationQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion).replaceAll('[C_PARAGRAPHS]', paragraphs)
-                  let params = {
-                    criterion: criterion,
-                    description: description,
-                    apiKey: apiKey,
-                    documents: documents,
-                    callback: callback,
-                    criterionQuery: compilationQuery
-                  }
-                  if (selectedLLM === 'anthropic') {
-                    AnthropicManager.askCriteria(params)
-                  } else if (selectedLLM === 'openAI') {
-                    OpenAIManager.askCriteria(params)
-                  }
+                  chrome.runtime.sendMessage({ scope: 'prompt', cmd: 'getPrompt', data: {type: 'compilePrompt'} }, ({ prompt }) => {
+                    let compilePrompt
+                    if (prompt) {
+                      compilePrompt = prompt
+                    } else {
+                      compilePrompt = Config.prompts.compilePrompt
+                    }
+                    compilePrompt = compilePrompt.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion).replaceAll('[C_EXCERPTS]', paragraphs)
+                    let params = {
+                      criterion: criterion,
+                      description: description,
+                      apiKey: apiKey,
+                      documents: documents,
+                      callback: callback,
+                      prompt: compilePrompt
+                    }
+                    if (selectedLLM === 'anthropic') {
+                      AnthropicManager.askCriteria(params)
+                    } else if (selectedLLM === 'openAI') {
+                      OpenAIManager.askCriteria(params)
+                    }
+                  })
                 } else {
                   let callback = () => {
                     window.open(chrome.runtime.getURL('pages/options.html'))
@@ -876,21 +884,28 @@ class CustomCriteriasManager {
                   })
                 }
                 if (apiKey && apiKey !== '') {
-                  let alternativeQuery = Config.prompts.alternativeQuery
-                  alternativeQuery = alternativeQuery.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion).replaceAll('[C_PARAGRAPHS]', paragraphs)
-                  let params = {
-                    criterion: criterion,
-                    description: description,
-                    apiKey: apiKey,
-                    documents: documents,
-                    callback: callback,
-                    criterionQuery: alternativeQuery
-                  }
-                  if (selectedLLM === 'anthropic') {
-                    AnthropicManager.askCriteria(params)
-                  } else if (selectedLLM === 'openAI') {
-                    OpenAIManager.askCriteria(params)
-                  }
+                  chrome.runtime.sendMessage({ scope: 'prompt', cmd: 'getPrompt', data: {type: 'alternativePrompt'} }, ({ prompt }) => {
+                    let alternativePrompt
+                    if (prompt) {
+                      alternativePrompt = prompt
+                    } else {
+                      alternativePrompt = Config.prompts.alternativePrompt
+                    }
+                    alternativePrompt = alternativePrompt.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion).replaceAll('[C_EXCERPTS]', paragraphs)
+                    let params = {
+                      criterion: criterion,
+                      description: description,
+                      apiKey: apiKey,
+                      documents: documents,
+                      callback: callback,
+                      prompt: alternativePrompt
+                    }
+                    if (selectedLLM === 'anthropic') {
+                      AnthropicManager.askCriteria(params)
+                    } else if (selectedLLM === 'openAI') {
+                      OpenAIManager.askCriteria(params)
+                    }
+                  })
                 } else {
                   let callback = () => {
                     window.open(chrome.runtime.getURL('pages/options.html'))

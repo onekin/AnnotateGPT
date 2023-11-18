@@ -1,7 +1,6 @@
 import ChromeStorage from '../utils/ChromeStorage'
 import { loadQAStuffChain } from 'langchain/chains'
 import { ChatOpenAI } from 'langchain/chat_models/openai'
-import Config from '../Config'
 import { ChatAnthropic } from 'langchain/chat_models/anthropic'
 import { TokenTextSplitter } from 'langchain/text_splitter'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
@@ -36,29 +35,6 @@ class LLMManager {
               sendResponse({ err: err })
             } else {
               sendResponse({ llm: selectedLLM })
-            }
-          })
-        } else if (request.cmd === 'setAnnotateQuery') {
-          let annotateQuery = request.data.query
-          ChromeStorage.setData('llm.annotateQuery', { data: JSON.stringify(annotateQuery) }, ChromeStorage.sync, (err) => {
-            if (err) {
-              sendResponse({ err: err })
-            } else {
-              sendResponse({ query: annotateQuery })
-            }
-          })
-        } else if (request.cmd === 'getAnnotateQuery') {
-          const annotateQuery = Config.prompts.annotateQuery
-          ChromeStorage.getData('llm.annotateQuery', ChromeStorage.sync, (err, query) => {
-            if (err) {
-              sendResponse({ err: err })
-            } else {
-              if (query && query.data) {
-                let parsedQuery = JSON.parse(query.data)
-                sendResponse({ criterionQuery: parsedQuery || '' })
-              } else {
-                sendResponse({ criterionQuery: annotateQuery })
-              }
             }
           })
         } else if (request.cmd === 'getAPIKEY') {

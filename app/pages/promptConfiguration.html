@@ -4,10 +4,10 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+  <script src="../scripts/promptConfiguration.js"></script>
   <link rel="stylesheet" type="text/css" href="../styles/options.css">
 
-  <title>AnnotatorGPT configuration</title>
+  <title>AnnotateGPT Prompts definition</title>
 </head>
 <body>
 <div class="container">
@@ -20,63 +20,90 @@
     <div class="jumbotron">
       </br></br>
       <img alt="Review and go logo" title="Review and go logo" class="logo" src="../images/icon.png">
-      <h2 class="title">AnnotatorGPT configuration</h2>
+      <h2 class="title">AnnotateGPT Prompt Configuration</h2>
       <div class="card">
-        <div class="card-header card-header bg-dark text-white">User manual</div>
+        <div class="card-header card-header bg-dark text-white">Criterion-based prompts</div>
         <div class="card-body">
-          <div class="form-group">
-            Visit whenever you want the <a href="https://github.com/haritzmedina/reviewandgo/wiki" target="_blank">user manual</a> for further information or checkout the <a href="https://www.youtube.com/watch?v=iPC6YEr3qlo">video</a>.
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header card-header bg-dark text-white">Large Language Model selection</div>
-        <div class="card-body">
-          <div class="form-check">
-            <label for="LLMDropdown">Select your Large Language Model</label>
-            <select class="form-control" id="LLMDropdown">
-              <option value="anthropic" selected="selected">Anthropic (Claude-2)</option>
-              <option value="openAI">OpenAI (GPT4-turbo)</option>
-            </select>
-          </div>
-          <br>
-          <div id="anthropic-ApiKeyContainer" class="APIKey-Configuration">
-            <label>Paste here your Anthropic API key:</label>
-            <input type="text" id="anthropic-APIKey"/>
-            <button id="anthropic-APIKeyValidationButton" class="APIKeyValidationButton">Save</button>
-          </div>
-          <div id="openAI-ApiKeyContainer" class="APIKey-Configuration">
-            <label>Paste here your OpenAI API key:</label>
-            <input type="text" id="openAI-APIKey" />
-            <button id="openAI-APIKeyValidationButton" class="APIKeyValidationButton">Save</button>
-          </div>
-        </div >
-      </div>
-      <div class="card">
-        <div class="card-header card-header bg-dark text-white">Criterion assessment query</div>
-        <div class="card-body">
-          <div id="QueryContainer" class="Query-Configuration">
-            <label>Configure your query here, consider that you have to include the criterion description with [C_DESCRIPTION] and the name with [C_NAME]:</label>
+          <div id="annotatePromptContainer" class="Prompt-Configuration">
+            <label>Configure your <b>Annotate Prompt</b> here, consider that you have to include the criterion description with [C_DESCRIPTION] and the its with [C_NAME]:</label>
             <div class="form-check">
               </br>
-              <textarea type="text" id="criterionQuery" rows="5" cols="100"></textarea>
+              <textarea type="text" id="annotatePrompt" class="promptTextArea" rows="5" ></textarea>
               </br></br>
-              <button id="defaultQueryButton" class="saveQueryButtonClass btn btn-secondary">Get default prompt</button>
-              <button id="saveQueryButton" class="saveQueryButtonClass btn btn-secondary">Save</button>
-              <label id="criterionQueryMessage"></label>
+              <button id="annotatePromptButton" class="savePromptButtonClass btn btn-secondary">Get default prompt</button>
+              <button id="annotatePromptSaveButton" class="savePromptButtonClass btn btn-secondary">Save prompt</button>
+              <label id="annotatePromptMessage"></label>
+            </div>
+          </div>
+        </div >
+        <div class="card-body">
+          <div id="compilePromptConfiguration" class="Prompt-Configuration">
+            <label>Configure your <b>Compile Prompt</b> here, consider that you have to include the criterion description with [C_DESCRIPTION] and the its with [C_NAME]:</label>
+            <div class="form-check">
+              </br>
+              <textarea type="text" id="compilePrompt" class="promptTextArea" rows="5" ></textarea>
+              </br></br>
+              <button id="compilePromptButton" class="savePromptButtonClass btn btn-secondary">Get default prompt</button>
+              <button id="compilePromptSaveButton" class="savePromptButtonClass btn btn-secondary">Save prompt</button>
+              <label id="compilePromptMessage"></label>
+            </div>
+          </div>
+        </div >
+        <div class="card-body">
+          <div id="alternativePromptConfiguration" class="Prompt-Configuration">
+            <label>Configure your <b>Alternative Prompt</b> here, consider that you have to include the criterion description with [C_DESCRIPTION] and the its with [C_NAME]:</label>
+            <div class="form-check">
+              </br>
+              <textarea type="text" id="alternativePrompt" class="promptTextArea" rows="5" ></textarea>
+              </br></br>
+              <button id="alternativePromptButton" class="savePromptButtonClass btn btn-secondary">Get default prompt</button>
+              <button id="alternativePromptSaveButton" class="savePromptButtonClass btn btn-secondary">Save prompt</button>
+              <label id="alternativePromptMessage"></label>
             </div>
           </div>
         </div >
       </div>
-      <div id="localStorageConfigurationCard" class="card storageConfiguration">
-        <div class="card-header bg-dark text-white">Local storage</div>
+      <div class="card">
+        <div class="card-header card-header bg-dark text-white">Criterion-based prompts</div>
         <div class="card-body">
-          <div class="form-check">
-            <button class="btn btn-secondary" id="restoreDatabaseButton">Restore annotations</button>
-            <button class="btn btn-secondary" id="backupDatabaseButton">Backup annotations</button>
-            <button class="btn btn-secondary" id="deleteDatabaseButton">Delete annotations</button>
+          <div id="clarifyPromptContainer" class="Prompt-Configuration">
+            <label>Configure your <b>Clarify Prompt</b> here, consider that you have to include the question [C_QUESTION] the criterion description with [C_EXCERPT] and the its with [C_NAME]:</label>
+            <div class="form-check">
+              </br>
+              <textarea type="text" id="clarifyPrompt" class="promptTextArea" rows="5" ></textarea>
+              </br></br>
+              <button id="clarifyPromptButton" class="savePromptButtonClass btn btn-secondary">Get default prompt</button>
+              <button id="clarifyPromptSaveButton" class="savePromptButtonClass btn btn-secondary">Save prompt</button>
+              <label id="clarifyPromptMessage"></label>
+            </div>
           </div>
-        </div>
+        </div >
+        <div class="card-body">
+          <div id="factCheckingPromptConfiguration" class="Prompt-Configuration">
+            <label>Configure your <b>Fact Checking Prompt</b> here, consider that you have to include the excerpt [C_EXCERPT]:</label>
+            <div class="form-check">
+              </br>
+              <textarea type="text" id="factCheckingPrompt" class="promptTextArea" rows="5" ></textarea>
+              </br></br>
+              <button id="factCheckingPromptButton" class="savePromptButtonClass btn btn-secondary">Get default prompt</button>
+              <button id="factCheckingPromptSaveButton" class="savePromptButtonClass btn btn-secondary">Save prompt</button>
+              <label id="factCheckingPromptMessage"></label>
+            </div>
+          </div>
+        </div >
+        <div class="card-body">
+          <div id="socialJudgePromptConfiguration" class="Prompt-Configuration">
+            <label>Configure your <b>Social Judgement Prompt</b> here, consider that you have to include the excerpt [C_EXCERPT]:</label>
+            <div class="form-check">
+              </br>
+              <textarea type="text" id="socialJudgePrompt" class="promptTextArea" rows="5" ></textarea>
+              </br></br>
+              <button id="socialJudgePromptButton" class="savePromptButtonClass btn btn-secondary">Get default prompt</button>
+              <button id="socialJudgePromptSaveButton" class="savePromptButtonClass btn btn-secondary">Save prompt</button>
+              <label id="socialJudgePromptMessage"></label>
+            </div>
+          </div>
+        </div >
       </div>
     </div>
   </div>

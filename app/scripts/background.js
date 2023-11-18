@@ -1,4 +1,5 @@
 import LLMManager from './background/LLM_Manager'
+import PromptManager from './background/Prompt_Manager'
 import Popup from './popup/Popup'
 import _ from 'lodash'
 
@@ -11,6 +12,9 @@ class Background {
     // Initialize LLM manager
     this.llmManager = new LLMManager()
     this.llmManager.init()
+    // Initialize Prompt manager
+    this.promptManager = new PromptManager()
+    this.promptManager.init()
 
     // Initialize page_action event handler
     chrome.action.onClicked.addListener((tab) => {
