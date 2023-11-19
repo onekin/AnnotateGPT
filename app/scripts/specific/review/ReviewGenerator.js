@@ -98,7 +98,16 @@ class ReviewGenerator {
           pageNumber = annotations[a].target[k].selector.find((e) => { return e.type === 'FragmentSelector'}).page
         }
       }
-      let annotationText = annotations[a].text!==null&&annotations[a].text!=='' ? JSON.parse(annotations[a].text) : {comment:''}
+      let annotationText
+      if (annotations[a].text!==null&&annotations[a].text!=='') {
+        if (annotations[a].text) {
+          annotationText = JSON.parse(annotations[a].text)
+        } else {
+          annotationText = { comment: '' }
+        }
+      } else {
+        annotationText = { comment: '' }
+      }
       let comment = annotationText.comment !== null ? annotationText.comment : null
       let clarifications = annotationText.clarifications !== null ? annotationText.clarifications : null
       let factChecking = annotationText.factChecking !== null ? annotationText.factChecking : null
@@ -134,10 +143,15 @@ class ReviewGenerator {
           return alternative.document === window.abwa.contentTypeManager.pdfFingerprint
         })
         if (findAlternative) {
-          alternative = findAlternative.answer
+          if (Array.isArray(findAlternative.answer)) {
+            alternative = findAlternative.answer.join('')
+          }
+          else  {
+            alternative = findAlternative.answer
+          }
         }
       }
-      if (compile || alternative || tagGroupAnnotations.length > 0) {
+      if (compile || alternative || (tagGroupAnnotations && tagGroupAnnotations.length > 0)) {
         let data = {}
         data.criterion = currentTagGroup.config.name
         if (compile) {

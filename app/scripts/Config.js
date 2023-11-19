@@ -15,7 +15,7 @@ const Config = {
   prompts: {
     annotatePrompt: 'Research Paper Context: [The research paper is provided above]\n' +
       'Criterion for Evaluation: [C_NAME]\n' + 'Criterion Description: [C_DESCRIPTION]\n' +
-      'Based on the above, please analyze the full research paper and generate a JSON response. The JSON should list THREE text excerpts of the paper that are associated with the criterion for evaluation and indicate whether it meets the specified criterion ("Met"), (“Partially Met”) or not ("Not Met"). The format should be as follows:\n' +
+      'Based on the above, please analyze the full research paper and generate a JSON response. The JSON should list THREE text excerpts of the paper that are associated with the criterion for evaluation and indicate whether it meets the specified criterion ("Met"), (“Partially Met”) or not ("Not Met"). The excerpts should come to the point and be quite brief, so be thrifty. The format should be as follows:\n' +
       '{\n' +
       '"name": "[Criterion Name]",\n' +
       '"excerpts": [\n' +
@@ -49,10 +49,10 @@ const Config = {
       'Criterion for Evaluation: [C_NAME]\n' +
       'Criterion Description: [C_DESCRIPTION]\n' +
       'Paragraphs: [C_EXCERPTS]\n' +
-      'You have to act as an academic reviewer and generate multiple alternative view points for the asessed criterion. Base on the above and base your opinion mainly in the above Paragraphs to analyze the full research paper and generate a JSON response. The JSON format should be as follows:\n' +
+      'You have to act as an academic reviewer and generate multiple alternative view points for the asessed criterion (Positive Viewpoint, Critical Viewpoint, Constructive Viewpoint, Alternative Viewpoint). Base on the above and base your opinion mainly in the above Paragraphs to analyze the full research paper and generate a JSON response. The JSON format should be as follows:\n' +
       '{\n' +
       '"name": "[Criterion Name]",\n' +
-      '"answer": [provide different viewpoints in different bullet points using dashes, you have to put a "</br>" before each dash like "</br>-". You have to mark the different view point with bold xml tags (<b>). All the content must be specified in the answer key, without creating keys inside, if you mention one of the paragraphs in your answer reference the full paragraphs instead of the paragraph number)],\n' +
+      '"answer": [provide different viewpoints in different bullet points using dashes (all in a single string), you have to put a "</br>" before each dash like "</br>-". You have to mark the different view point with bold xml tags (<b>). All the content must be specified in the answer key, without creating keys inside, if you mention one of the paragraphs in your answer reference the full paragraphs instead of the paragraph number)],\n' +
       '}\n' +
       'When using this prompt, replace the placeholders with the actual content of the research paper and the specific criterion details.\n',
     factCheckingPrompt: 'Fack check the following text <text>[C_EXCERPT]</text>.' +

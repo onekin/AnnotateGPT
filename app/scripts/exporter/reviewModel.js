@@ -127,20 +127,20 @@ export class Review {
     // Criterion Assessment
     t += "<Criterion assessments>\r\n\r\n";
     this._assessedCriteria.forEach( (assessedCriteria) => {
-      t += assessedCriteria.criterion.toUpperCase() + ":\r\n\r\n";
+      t += assessedCriteria.criterion.toUpperCase() + " Criterion Review:\r\n";
       if (assessedCriteria.compile) {
-        t += "-Compilation:- " + assessedCriteria.compile.answer + "\r\n\r\n";
+        t += "Compilation:\n" + '(' + assessedCriteria.compile.sentiment + ')' + assessedCriteria.compile.answer + "\r\n";
       }
       if (assessedCriteria.alternative) {
-        t += "-Alternative viewpoints: " + assessedCriteria.alternative.replaceAll('</br>','\n').replaceAll('<b>','').replaceAll('</b>','') + "\r\n\r\n";
+        t += assessedCriteria.alternative.replaceAll('</br>','\n').replaceAll('<b>','').replaceAll('</b>','') + "\r\n";
       }
       t += "\r\n";
       // Strengths
       if (this.strengths.length > 0) {
         for (let s in this.strengths) {
           if (this.strengths[s].annotations[0].criterion === assessedCriteria.criterion) {
-            t += '\t' + "***Strengths***\r\n\r\n";
-            t += '\t' + (this.strengths[s].toGroupByCategories()) + "\r\n\r\n";
+            t += '\t' + "***Strengths***\r\n";
+            t += '\t' + (this.strengths[s].toGroupByCategories()) + "\r\n";
           }
         }
         t += "\r\n";
@@ -150,8 +150,8 @@ export class Review {
       if (this.majorConcerns.length > 0) {
         for (let i = 0; i < this.majorConcerns.length; i++) {
           if (this.majorConcerns[i].annotations[0].criterion === assessedCriteria.criterion) {
-            t += '\t' + "***Major weaknesses***\r\n\r\n"
-            t += '\t' + (this.majorConcerns[i].toGroupByCategories()) + "\r\n\r\n";
+            t += '\t' + "***Major weaknesses***\r\n"
+            t += '\t' + (this.majorConcerns[i].toGroupByCategories()) + "\r\n";
           }
         }
         t += "\r\n";
@@ -161,8 +161,8 @@ export class Review {
       if (this.minorConcerns.length > 0) {
         for (let i = 0; i < this.minorConcerns.length; i++) {
           if (this.minorConcerns[i].annotations[0].criterion === assessedCriteria.criterion) {
-            t += '\t' + "***Minor weaknesses***\r\n\r\n"
-            t += '\t' + (this.minorConcerns[i].toGroupByCategories()) + "\r\n\r\n";
+            t += '\t' + "***Minor weaknesses***\r\n"
+            t += '\t' + (this.minorConcerns[i].toGroupByCategories()) + "\r\n";
           }
         }
         t += "\r\n";
@@ -172,12 +172,22 @@ export class Review {
       const criterionUnsortedAnnotations = this.unsortedAnnotations.filter((e) => {return e.criterion === assessedCriteria.criterion})
       if (criterionUnsortedAnnotations && criterionUnsortedAnnotations.length > 0) {
         // Other comments
-        t += '\t' + '***Other comments***:\r\n\r\n'
+        t += '\t' + '***Other comments***:\r\n'
         for (let i = 0; i < criterionUnsortedAnnotations.length; i++) {
           t += "\t* "
-          if (criterionUnsortedAnnotations[i].page != null) t += '(Page ' + criterionUnsortedAnnotations[i].page + '): '
-          t += '"' + criterionUnsortedAnnotations[i].highlightText + '"'
-          if (criterionUnsortedAnnotations[i].comment != null && criterionUnsortedAnnotations[i].comment != "") t += '\r\n\t' + criterionUnsortedAnnotations[i].comment
+          if(criterionUnsortedAnnotations[i].page!=null) t+= '(EXCERPT: Page '+criterionUnsortedAnnotations[i].page+'): '
+          t += '"'+criterionUnsortedAnnotations[i].highlightText+'"'
+          if ((criterionUnsortedAnnotations[i].comment != null && criterionUnsortedAnnotations[i].comment != "") || (criterionUnsortedAnnotations[i].factChecking != null && criterionUnsortedAnnotations[i].factChecking != "") || (criterionUnsortedAnnotations[i].socialJudgement != null && criterionUnsortedAnnotations[i].socialJudgement != "")) {
+            t += '\r\n\t\t COMMENT: '
+            if (criterionUnsortedAnnotations[i].comment != null && criterionUnsortedAnnotations[i].comment != "") t += '\r\n\t\t' + criterionUnsortedAnnotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+            if (criterionUnsortedAnnotations[i].factChecking != null && criterionUnsortedAnnotations[i].factChecking != "") t += '\r\n\t Fact checking suggests that ' + criterionUnsortedAnnotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+            if (criterionUnsortedAnnotations[i].socialJudgement != null && criterionUnsortedAnnotations[i].socialJudgement != "") t += '\r\n\t Social Judgement suggests that: ' + criterionUnsortedAnnotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
+            if (criterionUnsortedAnnotations[i].clarifications && criterionUnsortedAnnotations[i].clarifications.length > 0) {
+              for (let j in criterionUnsortedAnnotations[i].clarifications) {
+                t += '\n\t[' + criterionUnsortedAnnotations[i].clarifications[j].question + ']: ' + criterionUnsortedAnnotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+              }
+            }
+          }
           t += '\r\n'
         }
         t += "\r\n";
@@ -210,7 +220,7 @@ export class Review {
     if(this.strengths.length>0 || strengtCriteria.length>0){
       t+= "STRENGTHS:\r\n\r\n";
       for (let i=0; i<strengtCriteria.length; i++) {
-        t += "- "+strengtCriteria[i].compile.answer+"\r\n\r\n";
+        t += "- (" + strengtCriteria[i].criterion + ')' + strengtCriteria[i].compile.answer+"\r\n\r\n";
       }
       for(let s in this.strengths){
         t += "- "+this.strengths[s].toSentimentString()+"\r\n\r\n";
@@ -266,16 +276,27 @@ export class Review {
     t += "OTHER COMMENTS:\r\n\r\n"
     this._assessedCriteria.forEach( (assessedCriteria) => {
       if (assessedCriteria.alternative) {
-        t += "- Alternatives for " + assessedCriteria.criterion.toUpperCase() + ': ' + assessedCriteria.alternative.replaceAll('</br>','\n').replaceAll('<b>','').replaceAll('</b>','') + "\r\n\r\n";
+        if (!assessedCriteria.alternative.isArray) {
+          t += "- Viewpoints for " + assessedCriteria.criterion + ': ' + assessedCriteria.alternative.replaceAll('</br>','\n\t').replaceAll('<b>','').replaceAll('</b>','') + "\r\n\r\n";
+        }
       }
     })
     if(this.unsortedAnnotations.length>0){
       for(let i=0;i<this.unsortedAnnotations.length;i++){
         t += '\t* ' + this.unsortedAnnotations[i].criterion + ' '
-        if(this.unsortedAnnotations[i].page!=null) t+= '(Page '+this.unsortedAnnotations[i].page+'): '
+        if(this.unsortedAnnotations[i].page!=null) t+= '(EXCERPT: Page '+this.unsortedAnnotations[i].page+'): '
         t += '"'+this.unsortedAnnotations[i].highlightText+'"'
-        if(this.unsortedAnnotations[i].comment!=null&&this.unsortedAnnotations[i].comment!="") t+= '\r\n\t'+this.unsortedAnnotations[i].comment
-
+        if ((this.unsortedAnnotations[i].comment != null && this.unsortedAnnotations[i].comment != "") || (this.unsortedAnnotations[i].factChecking != null && this.unsortedAnnotations[i].factChecking != "") || (this.unsortedAnnotations[i].socialJudgement != null && this.unsortedAnnotations[i].socialJudgement != "")) {
+          t += '\r\n\t\t COMMENT: '
+          if (this.unsortedAnnotations[i].comment != null && this.unsortedAnnotations[i].comment != "") t += '\r\n\t\t' + this.unsortedAnnotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+          if (this.unsortedAnnotations[i].factChecking != null && this.unsortedAnnotations[i].factChecking != "") t += '\r\n\t Fact checking suggests that ' + this.unsortedAnnotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+          if (this.unsortedAnnotations[i].socialJudgement != null && this.unsortedAnnotations[i].socialJudgement != "") t += '\r\n\t Social Judgement suggests that: ' + this.unsortedAnnotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
+          if (this.unsortedAnnotations[i].clarifications && this.unsortedAnnotations[i].clarifications.length > 0) {
+            for (let j in this.unsortedAnnotations[i].clarifications) {
+              t += '\n\t[' + this.unsortedAnnotations[i].clarifications[j].question + ']: ' + this.unsortedAnnotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+            }
+          }
+        }
         t += '\r\n'
       }
     }
@@ -378,9 +399,19 @@ export class AnnotationGroup {
     for (let i in this._annotations) {
       if (this._annotations[i].highlightText === null) continue
       t += '\r\n\t\t* '
-      if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
+      if (this._annotations[i].page !== null) t += 'EXCERPT: (Page ' + this._annotations[i].page + ') '
       t += '"' + this._annotations[i].highlightText + '". ';
-      if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+      if ((this._annotations[i].comment != null && this._annotations[i].comment != "") || (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") || (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "")) {
+        t += '\r\n\t\t COMMENT: '
+        if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") t += '\r\n\t Fact checking suggests that ' + this._annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") t += '\r\n\t Social Judgement suggests that: ' + this._annotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].clarifications && this._annotations[i].clarifications.length > 0) {
+          for (let j in this._annotations[i].clarifications) {
+            t += '\n\t[' + this._annotations[i].clarifications[j].question + ']: ' + this._annotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+          }
+        }
+      }
     }
     return t
   }
@@ -390,14 +421,17 @@ export class AnnotationGroup {
     for (let i in this._annotations) {
       if (this._annotations[i].highlightText === null) continue
       t += '\t' + '\r\n\t* '
-      if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
+      if (this._annotations[i].page !== null) t += 'EXCERPT: (Page ' + this._annotations[i].page + '): '
       t += '\t' + '"' + this._annotations[i].highlightText + '". ';
-      if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
-      if (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") t += '\r\n\t Fact checking suggests that ' + this._annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
-      if (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") t += '\r\n\t Social Judgement suggests that: ' + this._annotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
-      if (this._annotations[i].clarifications && this._annotations[i].clarifications.length > 0) {
-        for (let j in this._annotations[i].clarifications) {
-          t += '\n\t[' + this._annotations[i].clarifications[j].question + ']: ' + this._annotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+      if ((this._annotations[i].comment != null && this._annotations[i].comment != "") || (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") || (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "")) {
+        t += '\r\n\t\t COMMENT: '
+        if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") t += '\r\n\t Fact checking suggests that ' + this._annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") t += '\r\n\t Social Judgement suggests that: ' + this._annotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].clarifications && this._annotations[i].clarifications.length > 0) {
+          for (let j in this._annotations[i].clarifications) {
+            t += '\n\t[' + this._annotations[i].clarifications[j].question + ']: ' + this._annotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+          }
         }
       }
     }

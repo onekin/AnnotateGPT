@@ -257,11 +257,11 @@ class Alerts {
                 // Now that we're sure data.resume is an array, push the new object into it.
                 data.compile.push({ document: window.abwa.contentTypeManager.pdfFingerprint, answer: answer, sentiment: lastValue })
               } else if (type === 'alternative') {
-                // Check if data.resume exists and is an array. If not, initialize it as an empty array.
+                // Check if data.alternative exists and is an array. If not, initialize it as an empty array.
                 if (!Array.isArray(data.alternative)) {
                   data.alternative = []
                 }
-                // Now that we're sure data.resume is an array, push the new object into it.
+                // Now that we're sure data.alternative is an array, push the new object into it.
                 data.alternative.push({ document: window.abwa.contentTypeManager.pdfFingerprint, answer: answer })
               }
             }
@@ -309,18 +309,20 @@ class Alerts {
             let data
             if (annotation.text) {
               data = JSON.parse(annotation.text)
-              if (type === 'clarification') {
-                // Check if data.question exists and is an array. If not, initialize it as an empty array.
-                if (!Array.isArray(data.clarifications)) {
-                  data.clarifications = []
-                }
-                // Now that we're sure data.question is an array, push the new object into it.
-                data.clarifications.push({ question: question, answer: answer })
-              } else if (type === 'socialJudge') {
-                data.socialJudge = answer
-              } else if (type === 'factChecking') {
-                data.factChecking = answer
+            } else {
+              data = {}
+            }
+            if (type === 'clarification') {
+              // Check if data.question exists and is an array. If not, initialize it as an empty array.
+              if (!Array.isArray(data.clarifications)) {
+                data.clarifications = []
               }
+              // Now that we're sure data.question is an array, push the new object into it.
+              data.clarifications.push({ question: question, answer: answer })
+            } else if (type === 'socialJudge') {
+              data.socialJudge = answer
+            } else if (type === 'factChecking') {
+              data.factChecking = answer
             }
             annotation.text = JSON.stringify(data)
             LanguageUtils.dispatchCustomEvent(Events.updateAnnotation, {annotation: annotation})
