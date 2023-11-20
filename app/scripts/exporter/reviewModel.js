@@ -127,9 +127,9 @@ export class Review {
     // Criterion Assessment
     t += "<Criterion assessments>\r\n\r\n";
     this._assessedCriteria.forEach( (assessedCriteria) => {
-      t += assessedCriteria.criterion.toUpperCase() + " Criterion Review:\r\n";
+      t += assessedCriteria.criterion.toUpperCase() + " Criterion Review:\r\n\r\n";
       if (assessedCriteria.compile) {
-        t += "Compilation:\n" + '(' + assessedCriteria.compile.sentiment + ')' + assessedCriteria.compile.answer + "\r\n";
+        t += "Compilation:" + '(' + assessedCriteria.compile.sentiment + ')' + assessedCriteria.compile.answer + "\r\n";
       }
       if (assessedCriteria.alternative) {
         t += assessedCriteria.alternative.replaceAll('</br>','\n').replaceAll('<b>','').replaceAll('</b>','') + "\r\n";
@@ -175,16 +175,16 @@ export class Review {
         t += '\t' + '***Other comments***:\r\n'
         for (let i = 0; i < criterionUnsortedAnnotations.length; i++) {
           t += "\t* "
-          if(criterionUnsortedAnnotations[i].page!=null) t+= '(EXCERPT: Page '+criterionUnsortedAnnotations[i].page+'): '
+          if(criterionUnsortedAnnotations[i].page!=null) t+= 'EXCERPT: (Page '+criterionUnsortedAnnotations[i].page+'): '
           t += '"'+criterionUnsortedAnnotations[i].highlightText+'"'
-          if ((criterionUnsortedAnnotations[i].comment != null && criterionUnsortedAnnotations[i].comment != "") || (criterionUnsortedAnnotations[i].factChecking != null && criterionUnsortedAnnotations[i].factChecking != "") || (criterionUnsortedAnnotations[i].socialJudgement != null && criterionUnsortedAnnotations[i].socialJudgement != "")) {
-            t += '\r\n\t\t COMMENT: '
-            if (criterionUnsortedAnnotations[i].comment != null && criterionUnsortedAnnotations[i].comment != "") t += '\r\n\t\t' + criterionUnsortedAnnotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
-            if (criterionUnsortedAnnotations[i].factChecking != null && criterionUnsortedAnnotations[i].factChecking != "") t += '\r\n\t Fact checking suggests that ' + criterionUnsortedAnnotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
-            if (criterionUnsortedAnnotations[i].socialJudgement != null && criterionUnsortedAnnotations[i].socialJudgement != "") t += '\r\n\t Social Judgement suggests that: ' + criterionUnsortedAnnotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
+          if ((criterionUnsortedAnnotations[i].comment != null && criterionUnsortedAnnotations[i].comment != "") || (criterionUnsortedAnnotations[i].factChecking != null && criterionUnsortedAnnotations[i].factChecking != "") || (criterionUnsortedAnnotations[i].socialJudgement != null && criterionUnsortedAnnotations[i].socialJudgement != "") || (criterionUnsortedAnnotations[i].clarifications != null && criterionUnsortedAnnotations[i].clarifications != "")) {
+            t += '\r\n\t\t * COMMENTS: '
+            if (criterionUnsortedAnnotations[i].comment != null && criterionUnsortedAnnotations[i].comment != "") t += '\r\n\t\t-' + criterionUnsortedAnnotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+            if (criterionUnsortedAnnotations[i].factChecking != null && criterionUnsortedAnnotations[i].factChecking != "") t += '\r\n\t\t- Fact checking suggests that ' + criterionUnsortedAnnotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+            if (criterionUnsortedAnnotations[i].socialJudgement != null && criterionUnsortedAnnotations[i].socialJudgement != "") t += '\r\n\t\t- Social Judgement suggests that: ' + criterionUnsortedAnnotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
             if (criterionUnsortedAnnotations[i].clarifications && criterionUnsortedAnnotations[i].clarifications.length > 0) {
               for (let j in criterionUnsortedAnnotations[i].clarifications) {
-                t += '\n\t[' + criterionUnsortedAnnotations[i].clarifications[j].question + ']: ' + criterionUnsortedAnnotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+                t += '\r\n\t\t[' + criterionUnsortedAnnotations[i].clarifications[j].question + ']: ' + criterionUnsortedAnnotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
               }
             }
           }
@@ -286,14 +286,14 @@ export class Review {
         t += '\t* ' + this.unsortedAnnotations[i].criterion + ' '
         if(this.unsortedAnnotations[i].page!=null) t+= '(EXCERPT: Page '+this.unsortedAnnotations[i].page+'): '
         t += '"'+this.unsortedAnnotations[i].highlightText+'"'
-        if ((this.unsortedAnnotations[i].comment != null && this.unsortedAnnotations[i].comment != "") || (this.unsortedAnnotations[i].factChecking != null && this.unsortedAnnotations[i].factChecking != "") || (this.unsortedAnnotations[i].socialJudgement != null && this.unsortedAnnotations[i].socialJudgement != "")) {
-          t += '\r\n\t\t COMMENT: '
-          if (this.unsortedAnnotations[i].comment != null && this.unsortedAnnotations[i].comment != "") t += '\r\n\t\t' + this.unsortedAnnotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
-          if (this.unsortedAnnotations[i].factChecking != null && this.unsortedAnnotations[i].factChecking != "") t += '\r\n\t Fact checking suggests that ' + this.unsortedAnnotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
-          if (this.unsortedAnnotations[i].socialJudgement != null && this.unsortedAnnotations[i].socialJudgement != "") t += '\r\n\t Social Judgement suggests that: ' + this.unsortedAnnotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
+        if ((this.unsortedAnnotations[i].comment != null && this.unsortedAnnotations[i].comment != "") || (this.unsortedAnnotations[i].factChecking != null && this.unsortedAnnotations[i].factChecking != "") || (this.unsortedAnnotations[i].socialJudgement != null && this.unsortedAnnotations[i].socialJudgement != "") || (this.unsortedAnnotations[i].clarifications != null && this.unsortedAnnotations[i].clarifications != "")) {
+          t += '\r\n\t\t * COMMENTS: '
+          if (this.unsortedAnnotations[i].comment != null && this.unsortedAnnotations[i].comment != "") t += '\r\n\t\t\t-' + this.unsortedAnnotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+          if (this.unsortedAnnotations[i].factChecking != null && this.unsortedAnnotations[i].factChecking != "") t += '\r\n\t\t\t- Fact checking suggests that ' + this.unsortedAnnotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+          if (this.unsortedAnnotations[i].socialJudgement != null && this.unsortedAnnotations[i].socialJudgement != "") t += '\r\n\t\t\t- Social Judgement suggests that: ' + this.unsortedAnnotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
           if (this.unsortedAnnotations[i].clarifications && this.unsortedAnnotations[i].clarifications.length > 0) {
             for (let j in this.unsortedAnnotations[i].clarifications) {
-              t += '\n\t[' + this.unsortedAnnotations[i].clarifications[j].question + ']: ' + this.unsortedAnnotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+              t += '\r\n\t\t[' + this.unsortedAnnotations[i].clarifications[j].question + ']: ' + this.unsortedAnnotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
             }
           }
         }
@@ -401,14 +401,14 @@ export class AnnotationGroup {
       t += '\r\n\t\t* '
       if (this._annotations[i].page !== null) t += 'EXCERPT: (Page ' + this._annotations[i].page + ') '
       t += '"' + this._annotations[i].highlightText + '". ';
-      if ((this._annotations[i].comment != null && this._annotations[i].comment != "") || (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") || (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "")) {
-        t += '\r\n\t\t COMMENT: '
-        if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
-        if (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") t += '\r\n\t Fact checking suggests that ' + this._annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
-        if (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") t += '\r\n\t Social Judgement suggests that: ' + this._annotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
+      if ((this._annotations[i].comment != null && this._annotations[i].comment != "") || (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") || (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") || (this._annotations[i].clarifications != null && this._annotations[i].clarifications != "")) {
+        t += '\r\n\t\t * COMMENTS: '
+        if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t-' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") t += '\r\n\t\t- Fact checking suggests that ' + this._annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") t += '\r\n\t\t- Social Judgement suggests that: ' + this._annotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
         if (this._annotations[i].clarifications && this._annotations[i].clarifications.length > 0) {
           for (let j in this._annotations[i].clarifications) {
-            t += '\n\t[' + this._annotations[i].clarifications[j].question + ']: ' + this._annotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+            t += '\r\n\t\t[' + this._annotations[i].clarifications[j].question + ']: ' + this._annotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
           }
         }
       }
@@ -423,14 +423,14 @@ export class AnnotationGroup {
       t += '\t' + '\r\n\t* '
       if (this._annotations[i].page !== null) t += 'EXCERPT: (Page ' + this._annotations[i].page + '): '
       t += '\t' + '"' + this._annotations[i].highlightText + '". ';
-      if ((this._annotations[i].comment != null && this._annotations[i].comment != "") || (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") || (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "")) {
-        t += '\r\n\t\t COMMENT: '
-        if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
-        if (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") t += '\r\n\t Fact checking suggests that ' + this._annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
-        if (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") t += '\r\n\t Social Judgement suggests that: ' + this._annotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
+      if ((this._annotations[i].comment != null && this._annotations[i].comment != "") || (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") || (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") || (this._annotations[i].clarifications != null && this._annotations[i].clarifications != "")) {
+        t += '\r\n\t\t * COMMENTS: '
+        if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += '\r\n\t\t-' + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") t += '\r\n\t\t- Fact checking suggests that ' + this._annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") t += '\r\n\t\t- Social Judgement suggests that: ' + this._annotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
         if (this._annotations[i].clarifications && this._annotations[i].clarifications.length > 0) {
           for (let j in this._annotations[i].clarifications) {
-            t += '\n\t[' + this._annotations[i].clarifications[j].question + ']: ' + this._annotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+            t += '\r\n\t\t[' + this._annotations[i].clarifications[j].question + ']: ' + this._annotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
           }
         }
       }

@@ -738,6 +738,9 @@ class CustomCriteriasManager {
                 }
                 if (apiKey && apiKey !== '') {
                   chrome.runtime.sendMessage({ scope: 'prompt', cmd: 'getPrompt', data: {type: 'annotatePrompt'} }, ({ prompt }) => {
+                    if (!prompt) {
+                      prompt = Config.prompts.annotatePrompt
+                    }
                     prompt = prompt.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion)
                     let params = {
                       criterion: criterion,
