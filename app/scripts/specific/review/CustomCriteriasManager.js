@@ -398,7 +398,7 @@ class CustomCriteriasManager {
       // Assess criterion by LLM
       items['compile'] = { name: 'Compile' }
       // Find alternative viewpoints by LLM
-      items['alternative'] = { name: 'Provide alternatives' }
+      items['alternative'] = { name: 'Provide viewpoints' }
       // Find alternative viewpoints by LLM
       items['recap'] = { name: 'Recap' }
       $.contextMenu({

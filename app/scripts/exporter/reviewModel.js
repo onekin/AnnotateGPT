@@ -61,19 +61,27 @@ export class Review {
     }
   }
 
+  isFirstCommentHTML (t) {
+    if (t.endsWith("COMMENTS: ")) {
+      return ''
+    } else {
+      return '\r\n\n-'
+    }
+  }
+
   groupByCategory(){
     // Summary of the work
-    let t = "<Summarize the work>\r\n\r\n";
+    let t = "Review report date: " + new Date().toLocaleDateString() + "\r\n\r\n";
 
     // Criterion Assessment
     t += "<Criterion assessments>\r\n\r\n";
     this._assessedCriteria.forEach( (assessedCriteria) => {
-      t += assessedCriteria.criterion.toUpperCase() + " Criterion Review:\r\n\r\n";
+      t += "Criterion Review: " + assessedCriteria.criterion.toUpperCase() + "\r\n\r\n";
       if (assessedCriteria.compile) {
         t += "Compilation:" + '(' + assessedCriteria.compile.sentiment + ')' + assessedCriteria.compile.answer + "\r\n";
       }
       if (assessedCriteria.alternative) {
-        t += assessedCriteria.alternative.replaceAll('</br>','\n').replaceAll('<b>','').replaceAll('</b>','') + "\r\n";
+        t += "Viewpoints:" + assessedCriteria.alternative.replaceAll('</br>','\n').replaceAll('<b>','').replaceAll('</b>','') + "\r\n";
       }
       t += "\r\n";
       // Strengths
@@ -148,9 +156,114 @@ export class Review {
     return t;
   }
 
+  groupByCategoryHTML(){
+    // Starting HTML structure with internal CSS
+    let htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Review Report</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+            h1, h2, h3 { color: navy; }
+            h2 { border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+            .criterion { margin-top: 20px; }
+            .excerpt { font-style: italic; margin-bottom: 10px; display: flex; align-items: center; }
+            .excerpt img { margin-right: 5px; }
+            .editable { margin-left: 20px; background-color: #f0f0f0; padding: 10px; }
+            .editable textarea { width: 100%; height: 100px; }
+      </style>
+    </head>
+    <body>
+    `;
+    // Adding date at the top
+    htmlContent += "<h1>Review Report </h1><p>Date: "+ new Date().toLocaleDateString() + "</p>";
+
+    // Criterion Assessment
+    this._assessedCriteria.forEach( (assessedCriteria) => {
+      htmlContent += "<div class='criterion'><h2>"+ assessedCriteria.criterion.toUpperCase() + "</h2>";
+
+      if (assessedCriteria.compile) {
+        htmlContent += "<div class='editable'><h3>Compilation: (" + assessedCriteria.compile.sentiment + ") </h3><textarea>" + assessedCriteria.compile.answer + "</textarea></div>";
+      }
+
+      if (assessedCriteria.alternative) {
+        let alternativeText = assessedCriteria.alternative.replace(/<\/br>/g, '<br>').replace(/<b>/g, '<strong>').replace(/<\/b>/g, '</strong>');
+        htmlContent += "<div class='editable'>" + alternativeText + "</div>";
+      }
+
+      // Adding strengths, major concerns, minor concerns, and other comments
+      htmlContent += this.formatCategorySection('strength', this.strengths, assessedCriteria, 'green');
+      htmlContent += this.formatCategorySection('minorConcern', this.minorConcerns, assessedCriteria, '#DAA520');
+      htmlContent += this.formatCategorySection('majorConcern', this.majorConcerns, assessedCriteria, '#8b0000');
+      const criterionUnsortedAnnotations = this.unsortedAnnotations.filter((e) => {return e.criterion === assessedCriteria.criterion})
+      if (criterionUnsortedAnnotations && criterionUnsortedAnnotations.length > 0) {
+        htmlContent += this.formatUnsortedAnnotations(criterionUnsortedAnnotations, assessedCriteria, '#00316e');
+      }
+      htmlContent += "</div>"
+    });
+
+    // Presentation errors
+    if(this.presentationErrors.length>0){
+      htmlContent += "<h3>PRESENTATION ERRORS</h3>";
+      this.presentationErrors.forEach(error => {
+        htmlContent += "<p>- " + error.toGroupByCategories() + "</p>";
+      });
+    }
+
+    htmlContent += "<h3>Comments to Editors</h3><div class='editable'><textarea></textarea></div>";
+    // Append any additional content here
+
+    // Closing HTML tags
+    htmlContent += "</body></html>";
+
+    return htmlContent;
+  }
+
+// Function to format category sections like strengths, concerns, etc.
+  formatCategorySection(title, categoryArray, assessedCriteria, color) {
+    let htmlSection = "";
+    if (categoryArray.length > 0) {
+      categoryArray.forEach(item => {
+        if (item.annotations[0].criterion === assessedCriteria.criterion) {
+          htmlSection +=  item.toGroupByCategoriesHTML(color)
+        }
+      });
+    }
+    return htmlSection;
+  }
+
+// Function to format unsorted annotations
+  formatUnsortedAnnotations(annotations, assessedCriteria, color) {
+    let t = "";
+    if (annotations.length > 0) {
+      for (let i in annotations) {
+        if (annotations[i].highlightText === null) continue
+        t += "<div className='excerpt'>"
+        t += `<li style="color: ${color};">`;
+        if (annotations[i].page !== null) t += '(Page ' + annotations[i].page + '): '
+        t += '"' + annotations[i].highlightText + '". ' + '</li>';
+        if ((annotations[i].comment != null && annotations[i].comment != "") || (annotations[i].factChecking != null && annotations[i].factChecking != "") || (annotations[i].socialJudgement != null && annotations[i].socialJudgement != "") || (annotations[i].clarifications != null && annotations[i].clarifications != "")) {
+          t += "<div class='editable'><textarea>COMMENTS: "
+          if (annotations[i].comment != null && annotations[i].comment != "") t += this.isFirstCommentHTML(t) + + annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+          if (annotations[i].factChecking != null && annotations[i].factChecking != "") t += this.isFirstCommentHTML(t) + 'Fact checking suggests that ' + this._annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+          if (annotations[i].socialJudgement != null && annotations[i].socialJudgement != "") t += this.isFirstCommentHTML(t) + 'Social Judgement suggests that: ' + annotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
+          if (annotations[i].clarifications && annotations[i].clarifications.length > 0) {
+            for (let j in annotations[i].clarifications) {
+              t += this.isFirstCommentHTML(t) + '[' + annotations[i].clarifications[j].question + ']: ' + annotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+            }
+          }
+          t += '</textarea></div>'
+        }
+        t += '</div>'
+      }
+    }
+    return t;
+  }
+
   groupBySentiment(){
     // Summary of the work
-    let t = "<Summarize the work>\r\n\r\n";
+    let t = "Review report date: " + new Date().toLocaleDateString() + "\r\n\r\n";
 
     // Strengths
     let strengtCriteria = this._assessedCriteria.filter(e => {
@@ -331,6 +444,14 @@ export class AnnotationGroup {
     }
   }
 
+  isFirstCommentHTML (t) {
+    if (t.endsWith("COMMENTS: ")) {
+      return ''
+    } else {
+      return '\r\n\n-'
+    }
+  }
+
   toString () {
     let t = this._annotations[0].criterion + ':'
     for (let i in this._annotations) {
@@ -361,6 +482,31 @@ export class AnnotationGroup {
           }
         }
       }
+    }
+    return t
+  }
+
+  toGroupByCategoriesHTML (color) {
+    let t = ''
+    for (let i in this._annotations) {
+      if (this._annotations[i].highlightText === null) continue
+      t += "<div className='excerpt'>"
+      t += `<li style="color: ${color};">`;
+      if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
+      t += '"' + this._annotations[i].highlightText + '". ' + '</li>';
+      if ((this._annotations[i].comment != null && this._annotations[i].comment != "") || (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") || (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") || (this._annotations[i].clarifications != null && this._annotations[i].clarifications != "")) {
+        t += "<div class='editable'><textarea>COMMENTS: "
+        if (this._annotations[i].comment != null && this._annotations[i].comment != "") t += this.isFirstCommentHTML(t) + + this._annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") t += this.isFirstCommentHTML(t) + 'Fact checking suggests that ' + this._annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") t += this.isFirstCommentHTML(t) + 'Social Judgement suggests that: ' + this._annotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
+        if (this._annotations[i].clarifications && this._annotations[i].clarifications.length > 0) {
+          for (let j in this._annotations[i].clarifications) {
+            t += this.isFirstCommentHTML(t) + '[' + this._annotations[i].clarifications[j].question + ']: ' + this._annotations[i].clarifications[j].answer.replace(/(\r\n|\n|\r)/gm, '');
+          }
+        }
+        t += '</textarea></div>'
+      }
+      t += '</div>'
     }
     return t
   }

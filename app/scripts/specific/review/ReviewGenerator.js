@@ -209,12 +209,13 @@ class ReviewGenerator {
   generateReviewByCategory () {
     Alerts.loadingAlert({text: chrome.i18n.getMessage('GeneratingReviewReport')})
     let review = this.parseAnnotations(window.abwa.contentAnnotator.allAnnotations)
-    let report = review.groupByCategory()
-    let blob = new Blob([report], {type: 'text/plain;charset=utf-8'})
+    let report = review.groupByCategoryHTML()
+    // let blob = new Blob([report], {type: 'text/plain;charset=utf-8'})
+    let blob = new Blob([report], {type: 'text/html;charset=utf-8'});
     let title = window.PDFViewerApplication.baseUrl !== null ? window.PDFViewerApplication.baseUrl.split("/")[window.PDFViewerApplication.baseUrl.split("/").length-1].replace(/\.pdf/i,"") : ""
     let docTitle = 'Review report'
     if(title!=='') docTitle += ' for '+title
-    FileSaver.saveAs(blob, docTitle+'.txt')
+    FileSaver.saveAs(blob, docTitle+'.html')
     Alerts.closeAlert()
   }
 
