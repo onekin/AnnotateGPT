@@ -193,12 +193,12 @@ export class Review {
       }
 
       // Adding strengths, major concerns, minor concerns, and other comments
-      htmlContent += this.formatCategorySection('strength', this.strengths, assessedCriteria, 'green');
-      htmlContent += this.formatCategorySection('minorConcern', this.minorConcerns, assessedCriteria, '#DAA520');
-      htmlContent += this.formatCategorySection('majorConcern', this.majorConcerns, assessedCriteria, '#8b0000');
+      htmlContent += this.formatCategorySection('Strength', this.strengths, assessedCriteria);
+      htmlContent += this.formatCategorySection('Minor Concern', this.minorConcerns, assessedCriteria);
+      htmlContent += this.formatCategorySection('Major Concern', this.majorConcerns, assessedCriteria);
       const criterionUnsortedAnnotations = this.unsortedAnnotations.filter((e) => {return e.criterion === assessedCriteria.criterion})
       if (criterionUnsortedAnnotations && criterionUnsortedAnnotations.length > 0) {
-        htmlContent += this.formatUnsortedAnnotations(criterionUnsortedAnnotations, assessedCriteria, '#00316e');
+        htmlContent += this.formatUnsortedAnnotations(criterionUnsortedAnnotations, assessedCriteria);
       }
       htmlContent += "</div>"
     });
@@ -221,12 +221,12 @@ export class Review {
   }
 
 // Function to format category sections like strengths, concerns, etc.
-  formatCategorySection(title, categoryArray, assessedCriteria, color) {
+  formatCategorySection(sentiment, categoryArray, assessedCriteria) {
     let htmlSection = "";
     if (categoryArray.length > 0) {
       categoryArray.forEach(item => {
         if (item.annotations[0].criterion === assessedCriteria.criterion) {
-          htmlSection +=  item.toGroupByCategoriesHTML(color)
+          htmlSection +=  item.toGroupByCategoriesHTML(sentiment)
         }
       });
     }
@@ -486,13 +486,14 @@ export class AnnotationGroup {
     return t
   }
 
-  toGroupByCategoriesHTML (color) {
+  toGroupByCategoriesHTML (sentiment) {
     let t = ''
     for (let i in this._annotations) {
       if (this._annotations[i].highlightText === null) continue
       t += "<div className='excerpt'>"
-      t += `<li style="color: ${color};">`;
-      if (this._annotations[i].page !== null) t += '(Page ' + this._annotations[i].page + '): '
+      t += `<li>`;
+      if (this._annotations[i].page !== null && sentiment) t += sentiment + ': (Page ' + this._annotations[i].page + '): '
+      if (this._annotations[i].page !== null && !sentiment) t += '(Page ' + this._annotations[i].page + '): '
       t += '"' + this._annotations[i].highlightText + '". ' + '</li>';
       if ((this._annotations[i].comment != null && this._annotations[i].comment != "") || (this._annotations[i].factChecking != null && this._annotations[i].factChecking != "") || (this._annotations[i].socialJudgement != null && this._annotations[i].socialJudgement != "") || (this._annotations[i].clarifications != null && this._annotations[i].clarifications != "")) {
         t += "<div class='editable'><textarea>COMMENTS: "
