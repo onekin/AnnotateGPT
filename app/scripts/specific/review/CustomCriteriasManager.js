@@ -996,16 +996,16 @@ class CustomCriteriasManager {
           let body = JSON.parse(annotation.text)
           if (body.paragraph) {
             paragraphs.push('(page ' + pageSelector.page + '): ' + body.paragraph.replace(/(\r\n|\n|\r)/gm, ''))
-          }
-        } else {
-          let fragmentTextSelector
-          if (selectors) {
-            fragmentTextSelector = selectors.find((selector) => {
-              return selector.type === 'TextQuoteSelector'
-            })
-          }
-          if (fragmentTextSelector) {
-            paragraphs.push('(page' + pageSelector.page + '): ' + fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, ''))
+          } else {
+            let fragmentTextSelector
+            if (selectors) {
+              fragmentTextSelector = selectors.find((selector) => {
+                return selector.type === 'TextQuoteSelector'
+              })
+            }
+            if (fragmentTextSelector) {
+              paragraphs.push('(page' + pageSelector.page + '): ' + fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, ''))
+            }
           }
         }
       }
@@ -1076,18 +1076,18 @@ class CustomCriteriasManager {
           if (body.paragraph) {
             let paragraphNumber = i + 1
             paragraphs += 'paragraph' + paragraphNumber + ': ' + body.paragraph.replace(/(\r\n|\n|\r)/gm, '') + '\n'
-          }
-        } else {
-          let selectors = annotation.target[0].selector
-          let fragmentTextSelector
-          if (selectors) {
-            fragmentTextSelector = selectors.find((selector) => {
-              return selector.type === 'TextQuoteSelector'
-            })
-          }
-          if (fragmentTextSelector) {
-            let paragraphNumber = i + 1
-            paragraphs += 'paragraph' + paragraphNumber + ': ' + fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '') + '\n'
+          } else {
+            let selectors = annotation.target[0].selector
+            let fragmentTextSelector
+            if (selectors) {
+              fragmentTextSelector = selectors.find((selector) => {
+                return selector.type === 'TextQuoteSelector'
+              })
+            }
+            if (fragmentTextSelector) {
+              let paragraphNumber = i + 1
+              paragraphs += 'paragraph' + paragraphNumber + ': ' + fragmentTextSelector.exact.replace(/(\r\n|\n|\r)/gm, '') + '\n'
+            }
           }
         }
       }

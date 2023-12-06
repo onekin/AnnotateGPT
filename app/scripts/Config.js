@@ -15,7 +15,7 @@ const Config = {
   prompts: {
     annotatePrompt: 'Research Paper Context: [The research paper is provided above]\n' +
       'Criterion for Evaluation: [C_NAME]\n' + 'Criterion Description: [C_DESCRIPTION]\n' +
-      'Based on the above, please analyze the full research paper and generate a JSON response. The JSON should list THREE text excerpts of the paper that are associated with the criterion for evaluation and indicate whether it meets the specified criterion ("Met"), (“Partially Met”) or not ("Not Met"). The excerpts should come to the point and be quite brief, so be thrifty. The format should be as follows:\n' +
+      'Based on the above, please analyze the full research paper and generate a JSON response (Do not consider the abstract). The JSON should list THREE text excerpts of the paper, but not from paper\'s abstract,  that are associated with the criterion for evaluation and indicate whether it meets the specified criterion ("Met"), (“Partially Met”) or not ("Not Met"). The excerpts should come to the point and be quite brief, so be thrifty. The format should be as follows:\n' +
       '{\n' +
       '"name": "[Criterion Name]",\n' +
       '"excerpts": [\n' +
