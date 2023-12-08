@@ -246,7 +246,7 @@ export class Review {
         if ((annotations[i].comment != null && annotations[i].comment != "") || (annotations[i].factChecking != null && annotations[i].factChecking != "") || (annotations[i].socialJudgement != null && annotations[i].socialJudgement != "") || (annotations[i].clarifications != null && annotations[i].clarifications != "")) {
           t += "<div class='editable'><textarea>COMMENTS: "
           if (annotations[i].comment != null && annotations[i].comment != "") t += this.isFirstCommentHTML(t) + + annotations[i].comment.replace(/(\r\n|\n|\r)/gm, '');
-          if (annotations[i].factChecking != null && annotations[i].factChecking != "") t += this.isFirstCommentHTML(t) + 'Fact checking suggests that ' + this._annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
+          if (annotations[i].factChecking != null && annotations[i].factChecking != "") t += this.isFirstCommentHTML(t) + 'Fact checking suggests that ' + annotations[i].factChecking.replace(/(\r\n|\n|\r)/gm, '');
           if (annotations[i].socialJudgement != null && annotations[i].socialJudgement != "") t += this.isFirstCommentHTML(t) + 'Social Judgement suggests that: ' + annotations[i].socialJudgement.replace(/(\r\n|\n|\r)/gm, '');
           if (annotations[i].clarifications && annotations[i].clarifications.length > 0) {
             for (let j in annotations[i].clarifications) {

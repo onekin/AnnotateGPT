@@ -653,6 +653,15 @@ class CustomCriteriasManager {
     }
   }
 
+  removeTextBetween (s, start, end) {
+    let startIdx = s.indexOf(start)
+    let endIdx = s.indexOf(end, startIdx)
+    if (startIdx === -1 || endIdx === -1) {
+      return s // start or end not found, return original string
+    }
+    return s.substring(0, startIdx) + s.substring(endIdx + end.length)
+  }
+
   annotate (criterion, description) {
     if (description.length < 20) {
       Alerts.infoAlert({ text: 'You have to provide a description for the given criterion' })
@@ -671,6 +680,9 @@ class CustomCriteriasManager {
             callback: async () => {
               let documents = []
               documents = await LLMTextUtils.loadDocument()
+              if (documents[0].pageContent.includes('Abstract') && documents[0].pageContent.includes('Keywords')) {
+                documents[0].pageContent = this.removeTextBetween(documents[0].pageContent, 'Abstract', 'Keywords')
+              }
               chrome.runtime.sendMessage({
                 scope: 'llm',
                 cmd: 'getAPIKEY',
