@@ -12,6 +12,7 @@ Main features:
 * Sharing. Data is stored locally. Yet, it can be exported as a JSON file and emailed to colleagues who can then import it into their AnnotateGPT installations. On loading the manuscript, your colleagues will see the very same view as you. 
 
 ## Installation
+Use node 10.24.1
 
 	$ npm install
 
