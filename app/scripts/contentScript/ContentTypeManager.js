@@ -101,11 +101,6 @@ class ContentTypeManager {
     clearInterval(this.urlChangeInterval)
   }
 
-  getContextAndItemIdInLocalFile () {
-    this.fileMetadata.contextId = LanguageUtils.getStringBetween(this.fileMetadata.url, 'pluginfile.php/', '/assignsubmission_file')
-    this.fileMetadata.itemId = LanguageUtils.getStringBetween(this.fileMetadata.url, 'submission_files/', '/')
-  }
-
   waitUntilPDFViewerLoad (callback) {
     let interval = setInterval(() => {
       if (_.isObject(window.PDFViewerApplication.pdfDocument)) {

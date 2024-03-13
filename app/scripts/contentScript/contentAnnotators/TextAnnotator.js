@@ -14,6 +14,7 @@ import LLMTextUtils from '../../utils/LLMTextUtils'
 import Config from '../../Config'
 import AnthropicManager from '../../llm/anthropic/AnthropicManager'
 import OpenAIManager from '../../llm/openAI/OpenAIManager'
+import ColorUtils from '../../utils/ColorUtils'
 require('components-jqueryui')
 require('jquery-contextmenu/dist/jquery.contextMenu')
 let swal = null
@@ -472,9 +473,9 @@ class TextAnnotator extends ContentAnnotator {
   highlightAnnotation (annotation, callback) {
     let classNameToHighlight = this.retrieveHighlightClassName(annotation)
     // Get annotation color for an annotation
-    let tagInstance = window.abwa.tagManager.findAnnotationTagInstance(annotation)
+    let tagInstance = window.abwa.tagManager.findAnnotationTagInstanceForCode(annotation)
     if (tagInstance) {
-      let color = tagInstance.getColor()
+      let color = ColorUtils.setAlphaToColor(tagInstance.config.color, 0.5)
       try {
         let highlightedElements = []
         highlightedElements = DOMTextUtils.highlightContent(

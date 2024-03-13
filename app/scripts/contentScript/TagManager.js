@@ -139,7 +139,7 @@ class TagManager {
       }
     }
     // Get groups names
-    let groups = _.map(_.uniqBy(_.values(tagGroupsAnnotations), (criteria) => { return criteria.config.options.group }), 'config.options.group')
+    /* let groups = _.map(_.uniqBy(_.values(tagGroupsAnnotations), (criteria) => { return criteria.config.options.group }), 'config.options.group')
     // Get a list of colors
     // The list of colors to retrieve are 1 per group + 1 per groupTags in "Other" group
     let listOfOtherTags = _.filter(_.values(tagGroupsAnnotations), (tagGroup) => { return tagGroup.config.options.group === 'Other' })
@@ -159,8 +159,8 @@ class TagManager {
         color = colorsGroup[_.findIndex(groups, (groupName) => { return groupName === tagGroup.config.options.group })]
         colors[tagGroup.config.name] = color
       }
-      tagGroup.config.color = color
-    }
+      // tagGroup.config.color = color
+    } */
     // Get elements for each subgroup
     for (let i = 0; i < this.model.groupAnnotations.length; i++) {
       let tagAnnotation = this.model.groupAnnotations[i]
@@ -194,17 +194,20 @@ class TagManager {
       return tagGroup
     })
     // Set color for each code
-    tagGroupsAnnotations = _.map(tagGroupsAnnotations, (tagGroup) => {
+    let tagGroupsAnnotationsWithTags = _.filter(tagGroupsAnnotations, (tagGroup) => { return tagGroup.tags.length > 0 })
+    let colorsList = ColorUtils.getDifferentColors(tagGroupsAnnotationsWithTags.length)
+    for (let i = 0; i < tagGroupsAnnotations.length; i++) {
+      let tagGroup = tagGroupsAnnotations[i]
       if (tagGroup.tags.length > 0) {
         tagGroup.tags = _.map(tagGroup.tags, (tag, index) => {
-          let color = ColorUtils.setAlphaToColor(colors[tagGroup.config.name], 0.2 + index / tagGroup.tags.length * 0.6)
+          let color = ColorUtils.setAlphaToColor(colorsList[i], 0.2 + index / tagGroup.tags.length * 0.6)
           tag.options.color = color
           tag.color = color
           return tag
         })
+        tagGroup.config.color = ColorUtils.setAlphaToColor(colorsList[i], 0.5)
       }
-      return tagGroup
-    })
+    }
     // Hash to array
     tagGroupsAnnotations = _.orderBy(tagGroupsAnnotations, ['config.name'], ['asc']) // 'asc' for ascending order
     return _.sortBy(tagGroupsAnnotations, (tagGroupAnnotation) => { return _.get(tagGroupAnnotation, 'config.options.group').toLowerCase() })
@@ -246,11 +249,13 @@ class TagManager {
     }
     // Insert buttons in each of the groups
     let arrayOfTagGroups = _.values(this.currentTags)
+    // let colorsList = ColorUtils.getDifferentColors(arrayOfTagGroups.length)
+    // let colorsGroup = colorsList.slice(arrayOfTagGroups.length)
     for (let i = 0; i < arrayOfTagGroups.length; i++) {
       let tagGroup = arrayOfTagGroups[i]
       let button = TagManager.createButton({
         name: tagGroup.config.name,
-        color: ColorUtils.setAlphaToColor(tagGroup.config.color, 0.3),
+        color: tagGroup.config.color,
         description: tagGroup.config.options.description,
         tagGroup: tagGroup,
         handler: (event) => {
@@ -445,6 +450,19 @@ class TagManager {
     if (annotation.tags.length > 1) {
       if (this.hasCodeAnnotation(annotation)) {
         return this.getCodeFromAnnotation(annotation, groupTag)
+      } else {
+        return groupTag
+      }
+    } else {
+      return groupTag
+    }
+  }
+
+  findAnnotationTagInstanceForCode (annotation) {
+    let groupTag = this.getGroupFromAnnotation(annotation)
+    if (annotation.tags.length > 1) {
+      if (this.hasCodeAnnotation(annotation)) {
+        return groupTag
       } else {
         return groupTag
       }

@@ -18,7 +18,7 @@ class Sidebar {
         $('body').append($.parseHTML(html))
         // Initialize sidebar labels
         this.initSidebarLabels()
-        // Initialize sidebar toggle button
+        // Initialize sidebar toggle buttonq
         this.initSidebarButton()
         if (_.isFunction(callback)) {
           callback()
