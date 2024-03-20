@@ -2,7 +2,7 @@
   "criteria": [
     {
       "name": "Artifact description",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "describes the proposed artifact in adequate detail",
       "levels": [
         {
@@ -22,7 +22,7 @@
     },
     {
       "name": "Justification",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "justifies the need for, usefulness of, or relevance of the proposed artifact",
       "levels": [
         {
@@ -42,7 +42,7 @@
     },
     {
       "name": "Limitations",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "conceptually evaluates the artifact; discusses its strengths, weaknesses and limitations",
       "levels": [
         {
@@ -62,7 +62,7 @@
     },
     {
       "name": "State-of-art",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "EITHER: discusses state-of-art alternatives (and their strengths, weaknesses and limitations)\nOR: explains why no state-of-art alternatives exist\nOR: provides compelling argument that direct comparisons are impractical",
       "levels": [
         {
@@ -82,7 +82,7 @@
     },
     {
       "name": "Evaluation",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "Empirically evaluates the proposed artifact using:\naction research, in which the researchers intervene a real organization using the artifact,\na case study in which a real organization uses the artifact without researcher intervention,\na controlled experiment in which human participants use the artifact,\na simulation in which the artifact is used in an artificial environment, or\nanother method for which a clear and convincing rationale is provided",
       "levels": [
         {
@@ -102,7 +102,7 @@
     },
     {
       "name": "Methodology description",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "clearly indicates the empirical methodology being used (e.g. action research, controlled experiment)",
       "levels": [
         {
@@ -122,7 +122,7 @@
     },
     {
       "name": "Comparison",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "EITHER: empirically compares the artifact to one or more state-of-the-art alternative artifacts\nOR: empirically compares the artifact to one or more state-of-the-art benchmarks\nOR: provides a clear and convincing rationale for why comparative evaluation is impractical",
       "levels": [
         {
@@ -142,7 +142,7 @@
     },
     {
       "name": "Assumptions",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "assumptions (if any) are explicit; do not contradict each other or the contribution’s goals; plausibly\nhold for the evaluation subjects",
       "levels": [
         {
@@ -162,7 +162,7 @@
     },
     {
       "name": "Notation",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "uses notation consistently (if any notation is used)",
       "levels": [
         {
@@ -182,7 +182,7 @@
     },
     {
       "name": "Theoretical basis",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "reviews the theoretical basis of the artifact",
       "levels": [
         {
@@ -202,7 +202,7 @@
     },
     {
       "name": "Arguments",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "provides correctness arguments of the key analytical and theoretical contributions (e.g. theorems,\ncomplexity analyses, mathematical proofs)",
       "levels": [
         {
@@ -222,7 +222,7 @@
     },
     {
       "name": "Running example",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "includes one or more running examples to elucidate the artifact",
       "levels": [
         {
@@ -242,7 +242,7 @@
     },
     {
       "name": "Industrial evaluation",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "",
       "levels": [
         {
@@ -262,7 +262,7 @@
     },
     {
       "name": "Replication package",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "provides a replication package including datasets and analytical scripts and EITHER a\ncomprehensive description of the artifact OR source code if artifact is virtual",
       "levels": [
         {
@@ -282,7 +282,7 @@
     },
     {
       "name": "Replication justification",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "justifies any items missing from replication package based on practical or ethical grounds.",
       "levels": [
         {
@@ -302,7 +302,7 @@
     },
     {
       "name": "Contribution",
-      "group": "Extraordinary",
+      "group": "Criteria",
       "description": "contributes to our collective understanding of design practices or principles",
       "levels": [
         {
@@ -322,7 +322,7 @@
     },
     {
       "name": "Innovation",
-      "group": "Extraordinary",
+      "group": "Criteria",
       "description": "the paper presents ground-breaking innovations with obvious real-world benefits",
       "levels": [
         {

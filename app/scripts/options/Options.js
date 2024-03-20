@@ -24,6 +24,25 @@ class Options {
         this.showSelectedLLMConfiguration(llm || defaultLLM)
       })
 
+      document.querySelector('#numberOfAuthorsParameterButton').addEventListener('click', () => {
+        let currentValue = document.querySelector('#numberOfAuthorsParameterInput').value
+        let messageLabel = document.querySelector('#numberOfAuthorsParameterMessage')
+        if (this.checkNumberOfAuthorsParameter(currentValue)) {
+          this.setNumberOfAuthorsParameter(currentValue, messageLabel)
+        } else {
+          messageLabel.innerHTML = 'Invalid parameter'
+        }
+      })
+
+      chrome.runtime.sendMessage({ scope: 'parameterManager', cmd: 'getNumberOfAuthorsParameter' }, ({ parameter }) => {
+        if (parameter && parameter !== '') {
+          document.querySelector('#numberOfAuthorsParameterInput').value = parameter
+        } else {
+          document.querySelector('#numberOfAuthorsParameterInput').value = 3
+          this.setNumberOfAuthorsParameter(3)
+        }
+      })
+
       // Get all the buttons with the same class name
       const validationButtons = document.getElementsByClassName('APIKeyValidationButton')
       // Iterate over the buttons and add a listener to each button
@@ -132,6 +151,27 @@ class Options {
     }, ({llm}) => {
       console.debug('LLM selected ' + llm)
     })
+  }
+
+  setNumberOfAuthorsParameter (numberOfAuthorsParameter, messageLabel) {
+    chrome.runtime.sendMessage({
+      scope: 'parameterManager',
+      cmd: 'setNumberOfAuthorsParameter',
+      data: {numberOfAuthorsParameter: numberOfAuthorsParameter}
+    }, ({numberOfAuthorsParameter}) => {
+      console.debug('setNumberOfAuthorsParameter ' + numberOfAuthorsParameter)
+      if (messageLabel) {
+        messageLabel.innerHTML = 'Value saved'
+      }
+    })
+  }
+
+  checkNumberOfAuthorsParameter (parameter) {
+    if (parameter <= 10) {
+      return true
+    } else {
+      return false
+    }
   }
 
   showSelectedLLMConfiguration (selectedLLM) {

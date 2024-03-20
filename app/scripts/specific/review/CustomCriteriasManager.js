@@ -452,13 +452,33 @@ class CustomCriteriasManager {
       } else {
         buttonText = 'OK'
       }
-      Alerts.infoAlert({
+      Alerts.printUnannotatedParagraph({
         title: 'The LLM suggests this information for ' + criterion,
         text: annotation.paragraph,
         confirmButtonText: buttonText,
-        showCancelButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Save',
         callback: () => {
           CustomCriteriasManager.showParagraphs(annotations, criterion)
+        },
+        cancelCallback: () => {
+          let commentData = {
+            comment: '',
+            sentiment: annotation.sentiment,
+            llm: annotation.llm,
+            paragraph: annotation.paragraph
+          }
+          let model = window.abwa.tagManager.model
+          let tag = [
+            model.namespace + ':' + model.config.grouped.relation + ':' + criterion
+          ]
+          LanguageUtils.dispatchCustomEvent(Events.annotateByLLM, {
+            tags: tag,
+            commentData: commentData
+          })
+          if (annotations.length > 0) {
+            CustomCriteriasManager.showParagraphs(annotations, criterion)
+          }
         }
       })
     }
@@ -705,7 +725,9 @@ class CustomCriteriasManager {
                     let selectors = this.getSelectorsFromLLM(excerpt, documents)
                     let annotation = {
                       paragraph: excerpt,
-                      selectors: selectors
+                      selectors: selectors,
+                      sentiment: sentiment,
+                      llm: llm
                     }
                     annotations.push(annotation)
                     if (selectors.length > 0) {
@@ -723,6 +745,11 @@ class CustomCriteriasManager {
                         tags: tag,
                         selectors: selectors,
                         commentData: commentData
+                      })
+                    } else {
+                      Alerts.errorAlert({
+                        title: 'Unable to annotate',
+                        text: 'Unable to annotate the following paragraph:<br>' + excerpt
                       })
                     }
                   }
@@ -753,21 +780,24 @@ class CustomCriteriasManager {
                     if (!prompt) {
                       prompt = Config.prompts.annotatePrompt
                     }
-                    prompt = prompt.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion)
-                    let params = {
-                      criterion: criterion,
-                      description: description,
-                      apiKey: apiKey,
-                      documents: documents,
-                      callback: callback,
-                      prompt: prompt,
-                      selectedLLM
-                    }
-                    if (selectedLLM === 'anthropic') {
-                      AnthropicManager.askCriteria(params)
-                    } else if (selectedLLM === 'openAI') {
-                      OpenAIManager.askCriteria(params)
-                    }
+                    chrome.runtime.sendMessage({ scope: 'parameterManager', cmd: 'getNumberOfAuthorsParameter' }, async ({ parameter }) => {
+                      let numberOfAnnotations = parameter
+                      prompt = prompt.replaceAll('[C_DESCRIPTION]', description).replaceAll('[C_NAME]', criterion).replaceAll('[C_NUMBER]', numberOfAnnotations)
+                      let params = {
+                        criterion: criterion,
+                        description: description,
+                        apiKey: apiKey,
+                        documents: documents,
+                        callback: callback,
+                        prompt: prompt,
+                        selectedLLM
+                      }
+                      if (selectedLLM === 'anthropic') {
+                        AnthropicManager.askCriteria(params)
+                      } else if (selectedLLM === 'openAI') {
+                        OpenAIManager.askCriteria(params)
+                      }
+                    })
                   })
                 } else {
                   let callback = () => {
@@ -997,12 +1027,17 @@ class CustomCriteriasManager {
     if (tagGroupAnnotations) {
       for (let i = 0; i < tagGroupAnnotations.length; i++) {
         let annotation = tagGroupAnnotations[i]
-        let selectors = annotation.target[0].selector
+        let selectors
+        if (annotation.target[0]) {
+          selectors = annotation.target[0].selector
+        }
         let pageSelector
         if (selectors) {
           pageSelector = selectors.find((selector) => {
             return selector.type === 'FragmentSelector'
           })
+        } else {
+          pageSelector = { page: 'unknown' }
         }
         if (annotation.text) {
           let body = JSON.parse(annotation.text)

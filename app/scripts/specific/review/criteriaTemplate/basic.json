@@ -1,7 +1,7 @@
 {
   "criteria": [
     {
-      "group": "Essential",
+      "group": "Criteria",
       "name": "Research purpose",
       "description": "states a purpose, problem, objective, or research question",
       "levels": [
@@ -21,7 +21,7 @@
       "custom": true
     },
     {
-      "group": "Essential",
+      "group": "Criteria",
       "name": "Motivation",
       "description": "explains why the problem, objective, or research question is important (motivation)",
       "levels": [
@@ -41,7 +41,7 @@
       "custom": true
     },
     {
-      "group": "Essential",
+      "group": "Criteria",
       "name": "Artifact description",
       "description": "describes the proposed artifact in adequate detail",
       "levels": [
@@ -62,7 +62,7 @@
     },
     {
       "name": "Evaluation",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "Empirically evaluates the proposed artifact using:\naction research, in which the researchers intervene a real organization using the artifact,\na case study in which a real organization uses the artifact without researcher intervention,\na controlled experiment in which human participants use the artifact,\na simulation in which the artifact is used in an artificial environment, or\nanother method for which a clear and convincing rationale is provided",
       "levels": [
         {
@@ -81,7 +81,7 @@
       "custom": true
     },
     {
-      "group": "Essential",
+      "group": "Criteria",
       "name": "Result addressing research",
       "description": "results directly address research questions",
       "levels": [
@@ -101,7 +101,7 @@
       "custom": true
     },
     {
-      "group": "Essential",
+      "group": "Criteria",
       "name": "Study limitations",
       "description": "discusses the study's limitations and threats to validity",
       "levels": [
@@ -121,7 +121,7 @@
       "custom": true
     },
     {
-      "group": "Desirable",
+      "group": "Criteria",
       "name": "Related work synthesis",
       "description": "summarizes and synthesizes a reasonable selection of related work",
       "levels": [
@@ -141,7 +141,7 @@
       "custom": true
     },
     {
-      "group": "Desirable",
+      "group": "Criteria",
       "name": "Relation with related work",
       "description": "clearly describes relationship between contribution(s) and related work",
       "levels": [
@@ -161,7 +161,7 @@
       "custom": true
     },
     {
-      "group": "Desirable",
+      "group": "Criteria",
       "name": "Recommendation providing",
       "description": "provides plausibly useful interpretations or recommendations for practice, education or research",
       "levels": [
@@ -181,7 +181,7 @@
       "custom": true
     },
     {
-      "group": "Desirable",
+      "group": "Criteria",
       "name": "Open sharing",
       "description": "openly shares data and materials to the extent possible within practical and ethical limits (see the Open Science Supplement)",
       "levels": [
@@ -203,7 +203,7 @@
     {
       "name": "Contribution",
       "description": "contributes in some way to the collective body of knowledge",
-      "group": "Extraordinary",
+      "group": "Criteria",
       "levels": [
         {
           "name": "Strength",
@@ -221,7 +221,7 @@
       "custom": true
     },
     {
-      "group": "Extraordinary",
+      "group": "Criteria",
       "name": "Methodology",
       "description": "methodology is appropriate (not necessarily optimal) for stated purpose or questions",
       "levels": [
@@ -241,7 +241,7 @@
       "custom": true
     },
     {
-      "group": "Extraordinary",
+      "group": "Criteria",
       "name": "Data analysis description",
       "description": "describes in detail how the data were analyzed",
       "levels": [
@@ -261,7 +261,7 @@
       "custom": true
     },
     {
-      "group": "Extraordinary",
+      "group": "Criteria",
       "name": "Research methodology innovation",
       "description": "innovates on research methodology while completing an empirical study",
       "levels": [

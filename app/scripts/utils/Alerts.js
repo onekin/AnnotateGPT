@@ -77,6 +77,39 @@ class Alerts {
     }
   }
 
+  static printUnannotatedParagraph ({text = chrome.i18n.getMessage('expectedInfoMessageNotFound'), title = 'Info', callback, confirmButtonText = 'OK', showCancelButton = true, cancelCallback, cancelButtonText = 'Save'}) {
+    Alerts.tryToLoadSwal()
+    if (_.isNull(swal)) {
+      if (_.isFunction(callback)) {
+        callback(new Error('Unable to load swal'))
+      }
+    } else {
+      swal.fire({
+        type: 'info',
+        title: title,
+        showCancelButton: showCancelButton,
+        cancelButtonText: cancelButtonText,
+        confirmButtonText: confirmButtonText,
+        html: '<div style="text-align: justify;text-justify: inter-word" width=700px>' + text + '</div>',
+        onBeforeOpen: () => {
+          let element = document.querySelector('.swal2-popup')
+          element.style.width = '800px'
+          // Add event listeners to the buttons after they are rendered
+        }
+      }).then((result) => {
+        if (result.value) {
+          if (_.isFunction(callback)) {
+            callback(null, result.value)
+          }
+        } else {
+          if (_.isFunction(cancelCallback)) {
+            cancelCallback(null, result.value)
+          }
+        }
+      })
+    }
+  }
+
   static criterionInfoAlert ({text = chrome.i18n.getMessage('expectedInfoMessageNotFound'), title = 'Info', callback, confirmButtonText = 'OK', width}) {
     Alerts.tryToLoadSwal()
     if (_.isNull(swal)) {

@@ -2,7 +2,7 @@
   "criteria": [
     {
       "name": "Research purpose",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "states a purpose, problem, objective, or research question",
       "levels": [
         {
@@ -22,7 +22,7 @@
     },
     {
       "name": "Motivation",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "explains why the problem, objective, or research question is important (motivation)",
       "levels": [
         {
@@ -42,7 +42,7 @@
     },
     {
       "name": "Definitions",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "defines jargon, acronyms and key concepts",
       "levels": [
         {
@@ -62,7 +62,7 @@
     },
     {
       "name": "Methodology",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "methodology is appropriate (not necessarily optimal) for stated purpose or questions",
       "levels": [
         {
@@ -82,7 +82,7 @@
     },
     {
       "name": "Data collection",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "describes in detail what, where, when and how data were collected (see the Sampling Supplement)",
       "levels": [
         {
@@ -103,7 +103,7 @@
     },
     {
       "name": "Data analysis description",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "describes in detail how the data were analyzed",
       "levels": [
         {
@@ -123,7 +123,7 @@
     },
     {
       "name": "Result presentation",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "present results",
       "levels": [
         {
@@ -143,7 +143,7 @@
     },
     {
       "name": "Result addressing research",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "results directly address research questions",
       "levels": [
         {
@@ -163,7 +163,7 @@
     },
     {
       "name": "Supported claims",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "supports main claims or conclusions with explicit evidence (data/observations) or arguments",
       "levels": [
         {
@@ -183,7 +183,7 @@
     },
     {
       "name": "Results implications",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "discusses implications of the results",
       "levels": [
         {
@@ -203,7 +203,7 @@
     },
     {
       "name": "Study limitations",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "discusses the study's limitations and threats to validity",
       "levels": [
         {
@@ -223,7 +223,7 @@
     },
     {
       "name": "Contribution to BoK",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "contributes in some way to the collective body of knowledge",
       "levels": [
         {
@@ -243,7 +243,7 @@
     },
     {
       "name": "Language misleading",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "language is not misleading; any grammatical problems do not substantially hinder understanding",
       "levels": [
         {
@@ -263,7 +263,7 @@
     },
     {
       "name": "Benefit risk balance",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "balances the study's anticipated benefits with its potential risks or harms, minimizing risk or harm wherever possible (see the ethics supplements for studies with Human Participants or Secondary Data)",
       "levels": [
         {
@@ -283,7 +283,7 @@
     },
     {
       "name": "Visualizations",
-      "group": "Essential",
+      "group": "Criteria",
       "description": "visualizations/graphs are not misleading (see the Information Visualization Supplement)",
       "levels": [
         {
@@ -303,7 +303,7 @@
     },
     {
       "name": "Related work synthesis",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "summarizes and synthesizes a reasonable selection of related work",
       "levels": [
         {
@@ -323,7 +323,7 @@
     },
     {
       "name": "Epistemological stance",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "states epistemological stance (e.g. post-positivism, interpretivism, critical realism)",
       "levels": [
         {
@@ -343,7 +343,7 @@
     },
     {
       "name": "Statistical power/saturation",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "appropriate statistical power (for quantitative work) or saturation (for qualitative work",
       "levels": [
         {
@@ -363,7 +363,7 @@
     },
     {
       "name": "Limitations mitigation",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "reasonable attempts to investigate or mitigate limitations",
       "levels": [
         {
@@ -383,7 +383,7 @@
     },
     {
       "name": "Study realism",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "discusses study’s realism, assumptions and sensitivity of the results to its realism/assumptions",
       "levels": [
         {
@@ -403,7 +403,7 @@
     },
     {
       "name": "Recommendation providing",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "provides plausibly useful interpretations or recommendations for practice, education or research",
       "levels": [
         {
@@ -423,7 +423,7 @@
     },
     {
       "name": "Open sharing",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "openly shares data and materials to the extent possible within practical and ethical limits (see the Open Science Supplement)",
       "levels": [
         {
@@ -443,7 +443,7 @@
     },
     {
       "name": "Presentation",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "concise, precise, well-organized and easy-to-read presentation",
       "levels": [
         {
@@ -463,7 +463,7 @@
     },
     {
       "name": "Visualizations for argumentation",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "visualizations (e.g. graphs, diagrams, tables) advance the paper’s arguments or contribution",
       "levels": [
         {
@@ -483,7 +483,7 @@
     },
     {
       "name": "Researchers roles",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "clarifies the roles and responsibilities of the researchers (i.e. who did what?)",
       "levels": [
         {
@@ -503,7 +503,7 @@
     },
     {
       "name": "Auto-reflection",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "provides an auto-reflection or assessment of the authors’ own work (e.g. lessons learned)",
       "levels": [
         {
@@ -523,7 +523,7 @@
     },
     {
       "name": "Multiple raters use",
-      "group": "Desirable",
+      "group": "Criteria",
       "description": "uses multiple raters for any subjective judgments (see the IRR/IRA Supplement)",
       "levels": [
         {
@@ -543,7 +543,7 @@
     },
     {
       "name": "Multiple data collection",
-      "group": "Extraordinary",
+      "group": "Criteria",
       "description": "applies two or more data collection or analysis strategies to the same research question (see the Multimethodology Standard)",
       "levels": [
         {
@@ -563,7 +563,7 @@
     },
     {
       "name": "Multiple epistemological perspectives",
-      "group": "Extraordinary",
+      "group": "Criteria",
       "description": "approaches the same research question(s) from multiple epistemological perspectives",
       "levels": [
         {
@@ -582,7 +582,7 @@
       "custom": true
     }, {
       "name": "Research methodology innovation",
-      "group": "Extraordinary",
+      "group": "Criteria",
       "description": "innovates on research methodology while completing an empirical study",
       "levels": [
         {

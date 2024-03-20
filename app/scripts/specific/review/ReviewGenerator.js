@@ -89,13 +89,19 @@ class ReviewGenerator {
       let textQuoteSelector = null
       let highlightText = '';
       let pageNumber = null
-      for (let k in annotations[a].target) {
-        if (annotations[a].target[k].selector.find((e) => { return e.type === 'TextQuoteSelector' }) != null) {
-          textQuoteSelector = annotations[a].target[k].selector.find((e) => { return e.type === 'TextQuoteSelector' })
-          highlightText = textQuoteSelector.exact
-        }
-        if (annotations[a].target[k].selector.find((e) => { return e.type === 'FragmentSelector'}) != null){
-          pageNumber = annotations[a].target[k].selector.find((e) => { return e.type === 'FragmentSelector'}).page
+      for (let k in annotations[a]) {
+        if (annotations[a].target[0]) {
+          if (annotations[a].target[0].selector.find((e) => { return e.type === 'TextQuoteSelector' }) != null) {
+            textQuoteSelector = annotations[a].target[0].selector.find((e) => { return e.type === 'TextQuoteSelector' })
+            highlightText = textQuoteSelector.exact
+          }
+          if (annotations[a].target[0].selector.find((e) => { return e.type === 'FragmentSelector'}) != null) {
+            pageNumber = annotations[a].target[0].selector.find((e) => { return e.type === 'FragmentSelector'}).page
+          }
+        } else {
+          pageNumber = 'unknown'
+          const jsonObj = JSON.parse(annotations[a].text)
+          highlightText = jsonObj.paragraph
         }
       }
       let annotationText

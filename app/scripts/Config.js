@@ -15,7 +15,7 @@ const Config = {
   prompts: {
     annotatePrompt: 'Research Paper Context: [The research paper is provided above]\n' +
       'Criterion for Evaluation: [C_NAME]\n' + 'Criterion Description: [C_DESCRIPTION]\n' +
-      'Based on the above, please analyze the full research paper and generate a JSON response (Do not consider the abstract). The JSON should list THREE text excerpts of the paper, but not from paper\'s abstract,  that are associated with the criterion for evaluation and indicate whether it meets the specified criterion ("Met"), (“Partially Met”) or not ("Not Met"). The excerpts should come to the point and be quite brief, so be thrifty. The format should be as follows:\n' +
+      'Based on the above, please analyze the full research paper and generate a JSON response (Do not consider the abstract). The JSON should list [C_NUMBER] text excerpts of the paper, but not from paper\'s abstract,  that are associated with the criterion for evaluation and indicate whether it meets the specified criterion ("Met"), (“Partially Met”) or not ("Not Met"). The excerpts should come to the point and be quite brief, so be thrifty. The format should be as follows:\n' +
       '{\n' +
       '"name": "[Criterion Name]",\n' +
       '"excerpts": [\n' +
@@ -33,7 +33,7 @@ const Config = {
       '},\n' +
       ']\n' +
       '}\n' +
-      'When using this prompt, replace the placeholders with the actual content of the research paper and the specific criterion details.\n',
+      'When using this prompt, replace the placeholders with the actual content of the research paper and the specific criterion details. Remember that you must provide [C_NUMBER] excerpts if possible\n',
     compilePrompt: 'Research Paper Context: [The research paper is provided above]\n' +
       'Criterion for Evaluation: [C_NAME]\n' +
       'Criterion Description: [C_DESCRIPTION]\n' +
