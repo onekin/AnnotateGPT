@@ -8,7 +8,7 @@ Main features:
 * Canvas view. Have a global picture of the review so far. The canvas is plotted along with the attributes of the review model. Gradations and highlights are shown within each plot.
 * Review-draft generation. A first text draft is generated as a review head-start. Comments are placed by the manuscript quotes for authors to easily spot the rationales for the reviewer comments. 
 * Sharing. Data is stored locally. Yet, it can be exported as a JSON file and emailed to colleagues who can then import it into their AnnotateGPT installations. On loading the manuscript, your colleagues will see the very same view as you.
-* 
+  
 ## References
 
 
