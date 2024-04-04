@@ -105,6 +105,16 @@ The questions asked to the LLM display the following window with different optio
 - **Save.** The answer is save in the annotation comment.
 
 ### Review Criteria management
+Criterion can be created from the sidebar. The next figure shows which are the button (1) to create a criteria group and (2) to create a new criterion.
+![criterion](https://github.com/onekin/AnnotateGPT/assets/31988855/a5129c63-2356-4654-b5a0-63439c869f65)
+
+When you are creating a new criterion you have to provide a name and a description, which are important for asking later the LLM.
+
+![new](https://github.com/onekin/AnnotateGPT/assets/31988855/22fdcdde-ddb5-473a-a754-62af86e80e33)
+
+You can modify criterion's name by double clicking in its button. It will show the following window where you can modify the label and the description:
+![modfi](https://github.com/onekin/AnnotateGPT/assets/31988855/9bbb9d8b-3214-4366-baca-1c480e3f3c05)
+
 
 
 ### Review management
