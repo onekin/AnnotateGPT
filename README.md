@@ -97,6 +97,13 @@ These are the different operations that can be performed with the annotations:
 - Render. This displays the same window as with doing the double click.
 - Delete. The annotation can be removed.
 
+The questions asked to the LLM display the following window with different options:
+
+![answer](https://github.com/onekin/AnnotateGPT/assets/31988855/e6c17a92-23b0-4945-b4fe-6a3e0eaa90ae)
+
+- **Redo.** Repeats the question to the LLM.
+- **Save.** The answer is save in the annotation comment.
+
 #### Operations with Annotations
 
 
