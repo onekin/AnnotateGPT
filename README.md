@@ -86,7 +86,16 @@ LLMs provides a number of annotations, which can be established in the options p
 
 ![det](https://github.com/onekin/AnnotateGPT/assets/31988855/78e34a8a-006b-41a3-9118-c2880287ed67)
 
+Is it also possible to include the sentiment and comments for the annotations created by the reviewer. The comments can be written manually or you can ask the LLM about the annotated content. This operations can be performed by doing right click on the annotation:
 
+![annotation](https://github.com/onekin/AnnotateGPT/assets/31988855/b5f4a22e-ca81-487f-9b07-08a354bcd7d7)
+
+These are the different operations that can be performed with the annotations:
+- Clarify. Ask an open question to the LLM to clarify some doubts about annotation content.
+- Fact checking. Asks the LLM about the veracity of the text in the annotation.
+- Social judging. Asks the LLM the rise of social concerns about the annotated text.
+- Render. This displays the same window as with doing the double click.
+- Delete. The annotation can be removed.
 
 #### Operations with Annotations
 
