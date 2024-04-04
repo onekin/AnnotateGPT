@@ -42,9 +42,10 @@ In this page, you have to complete the following information:
 ![config](https://github.com/onekin/AnnotateGPT/assets/31988855/e80f7204-394c-4a89-86c0-8997b7b593ae)
 
 
-Finally, open the "details" panel of the web extension. You can find this page opening "Manage extensions" and then you can find a Details button in AnnotateGPT. Once, in the details page, you have to **Allow access to URL files**
+Finally, open the "details" panel of the web extension. You can find this page opening "Manage extensions" and then you can find a Details button in AnnotateGPT. Once, in the details page, you have to **Allow access to URL files**.
 
-<img width="1067" alt="Screenshot 2024-03-21 at 17 38 00" src="https://github.com/onekin/Chatin/assets/31988855/09f7e556-9def-461f-aaac-f13a28434e79">
+![allowaccess](https://github.com/onekin/AnnotateGPT/assets/31988855/22fa5dcd-0b8b-4336-a410-84a192ce0eb8)
+
 
 ## Getting Started
 You can create a Chatin mind map clicking on its template. Once you click there, an empty Chatin map is displayed:
