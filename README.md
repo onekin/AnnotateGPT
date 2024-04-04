@@ -72,9 +72,30 @@ Then, the new review criteria will be displayed in the sidebar:
 
 
 ## Features and Functionality
-We distinguish two kinds of functionalities: Divergent functionalities (those that help to create new nodes) and Convergence functionalities (those that help to decide which node select).
+We distinguish three different components while reviewing with AnnotateGPT: Annotation, Review criteria and the Review.
+
+### Annotation management
+Annotion can be performed by two different actors: the reviewer and the LLM.
+- **Annotations by the reviewer.** The user can create their own annotations selecting text in the PDF and clicking on the criterion button in the sidebar.
+![annotation](https://github.com/onekin/AnnotateGPT/assets/31988855/c5534a68-6d26-4794-ba68-9ce2acf24d1b)
+
+- **Annotations by the LLM.** The user can ask the LLM to annotate the criterion.
+![LLMannotation](https://github.com/onekin/AnnotateGPT/assets/31988855/6b9fe204-5223-4cce-b36e-2a3845c2f9ce)
+
+LLMs provides a number of annotations, which can be established in the options page of the extension. If you double click in the created annotations, you can see details of the annotation which contain the sentiment associated to the annotation and a comment field.
+
+![det](https://github.com/onekin/AnnotateGPT/assets/31988855/78e34a8a-006b-41a3-9118-c2880287ed67)
+
+
+
+#### Operations with Annotations
+
+
 
 ### Review Criteria management
+### Review management
+
+
 ## Support and Resources
 - You can ask support in the following mail: xabier.garmendiad@ehu.eus
 
