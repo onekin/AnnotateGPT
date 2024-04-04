@@ -1,13 +1,6 @@
 # AnnotateGPT
+AnnotateGPT is a Chrome extension designed to facilitate the peer review process for conference and journal submissions. Leveraging the capabilities of Large Language Models (LLMs), this tool enables reviewers to evaluate manuscripts through annotations directly within their browser. By offering a criterion-based approach, AnnotateGPT effectively addresses the challenges posed by the escalating volume of research submissions, alleviating the strain on traditional peer-review systems.
 
-## References
-
-
-# END-USERS MANUAL
-* Purpose: AnnotateGPT is designed to streamline the academic peer-review process by pre-annotating manuscripts using AI-generated highlights.
-* Background: Addresses the increasing pressure on traditional peer-review systems due to the growing number of research submissions.
-
-AnnotateGPT is a chrome extension to allow conference and journal reviewers to review papers using annotations. 
 Main features:
 * Ease to install.  AnnotateGPT is just two-click away. If you have previously installed any browser extension, installing AnnotateGPT is a doddle! Last but not least, AnnotateGPT is being certified by Chrome, before being uploaded to its web store. So, no security leaks.
 * Color-coding highlighting. You define a  Review Model (e.g., originality, legibility and so on), each model’s attribute is mapped to a colour to be used during highlighting at review time,
@@ -15,6 +8,12 @@ Main features:
 * Canvas view. Have a global picture of the review so far. The canvas is plotted along with the attributes of the review model. Gradations and highlights are shown within each plot.
 * Review-draft generation. A first text draft is generated as a review head-start. Comments are placed by the manuscript quotes for authors to easily spot the rationales for the reviewer comments. 
 * Sharing. Data is stored locally. Yet, it can be exported as a JSON file and emailed to colleagues who can then import it into their AnnotateGPT installations. On loading the manuscript, your colleagues will see the very same view as you.
+* 
+## References
+
+
+# END-USERS MANUAL
+* AnnotateGPT is designed to streamline the academic peer-review process by pre-annotating manuscripts using AI-generated highlights.
 
 ## Installation and Setup
 You can follow these steps to get AnnotateGPT up and running
@@ -42,13 +41,19 @@ In this page, you have to complete the following information:
 ![config](https://github.com/onekin/AnnotateGPT/assets/31988855/e80f7204-394c-4a89-86c0-8997b7b593ae)
 
 
-Finally, open the "details" panel of the web extension. You can find this page opening "Manage extensions" and then you can find a Details button in AnnotateGPT. Once, in the details page, you have to **Allow access to URL files**.
+After that, open the "details" panel of the web extension. You can find this page opening "Manage extensions" and then you can find a Details button in AnnotateGPT. Once, in the details page, you have to **Allow access to URL files**.
 
 ![allowaccess](https://github.com/onekin/AnnotateGPT/assets/31988855/22fa5dcd-0b8b-4336-a410-84a192ce0eb8)
 
+Finally, open a PDF file from you local system in the web browser a click on the AnnotateGPT icon. The extension must be executed and you should visualize a sidebar at the left of the page.
+
+![example](https://github.com/onekin/AnnotateGPT/assets/31988855/877a0eaf-392d-48b9-901b-3b60008f2643)
+
+If you encounter any difficulties reaching this point, please don't hesitate to contact xabier.garmendiad@ehu.eus.
 
 ## Getting Started
-You can create a Chatin mind map clicking on its template. Once you click there, an empty Chatin map is displayed:
+
+You can create a new review criteria mind map clicking on its template. Once you click there, an empty Chatin map is displayed:
 
 <img width="1466" alt="Screenshot 2024-03-21 at 17 44 07" src="https://github.com/onekin/Chatin/assets/31988855/61406ea0-cc33-45ba-b42e-43a7461ae45e">
 
