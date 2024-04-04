@@ -104,11 +104,9 @@ The questions asked to the LLM display the following window with different optio
 - **Redo.** Repeats the question to the LLM.
 - **Save.** The answer is save in the annotation comment.
 
-#### Operations with Annotations
-
-
-
 ### Review Criteria management
+
+
 ### Review management
 
 
