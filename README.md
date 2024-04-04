@@ -115,6 +115,17 @@ When you are creating a new criterion you have to provide a name and a descripti
 You can modify criterion's name by double clicking in its button. It will show the following window where you can modify the label and the description:
 ![modfi](https://github.com/onekin/AnnotateGPT/assets/31988855/9bbb9d8b-3214-4366-baca-1c480e3f3c05)
 
+#### Operations with review criteria
+If you click on a button with the right button four options appear:
+
+![newa](https://github.com/onekin/AnnotateGPT/assets/31988855/ceeeb2bd-caf6-4e33-8848-e2c3ecb23d8d)
+
+These are the different operations that can be performed with the annotations:
+- Annotate. Ask the LLM to create annotations.
+- Compile. Asks the LLM to provide a summary of the criterion, it uses the PDF content and the annotations.
+- Viewpoints. Asks the LLM to provide different viewpoints about the current criterion assessment
+- Render. This displays the assessments made for the review criteria, that is, the annotations, and the compilation and viewpoints if they were saved when were returned by the LLM.
+
 
 
 ### Review management
