@@ -53,20 +53,23 @@ If you encounter any difficulties reaching this point, please don't hesitate to 
 
 ## Getting Started
 
-You can create a new review criteria mind map clicking on its template. Once you click there, an empty Chatin map is displayed:
+You can create a new review criteria clicking on the arrow shown in the next figure:
 
-<img width="1466" alt="Screenshot 2024-03-21 at 17 44 07" src="https://github.com/onekin/Chatin/assets/31988855/61406ea0-cc33-45ba-b42e-43a7461ae45e">
+![review](https://github.com/onekin/AnnotateGPT/assets/31988855/5720b84a-a358-45b2-9d39-0e824943e5ca)
 
-First, you have to complete your problem space. To this aim, you have to complete the following nodes:
-- Perceived Problem: Indicate which is the problem you perceived in the practice.
-- Practice: Indicate which is the setting or context you want to address. An example can be “combating climate change”
-- Activity: Indicate one concrete task from the practice you want to research. An example of an activity within the practice of combating climate change could be “reduce the use of cars”.
-- Person [optional]: People that engage in the practice in which they perceive the problem
-- Optional variables: You can add extra variables adding new nodes in the Context node.
-  
-<img width="1272" alt="Screenshot 2024-03-21 at 18 14 10" src="https://github.com/onekin/Chatin/assets/31988855/1ff0c319-05eb-49d5-a61d-dffeea3f23ff">
+Here, AnnotateGPT provides different options to create a new review criteria to carry out the review
+- Create review model. This option creates an empty review criteria which you can later complete creating different criteria with their name and criterion.
+- Import review model. This option allows to import a previously exported review criteria created in AnnotateGPT
+- Standard review model. This option provides a set of review criteria templates derived from the The ACM SIGSOFT Empirical Standards for Software Engineering.
 
-Once the Problem Space is defined, you can start the analysis clicking on the "NEW" button in the Problem Analysis node. At the start of the analysis you will see that a new yellow/question node is created to start the analysis. Remember that you can refine or extend the problem space when you want during the problem analysis.
+Once you select one of the options, you will have to give a name for you review criteria, for example, the name of the conference/journal the paper belongs.
+
+![caise](https://github.com/onekin/AnnotateGPT/assets/31988855/f0b3fa24-00b0-488a-9a09-f70c097cd337)
+
+Then, the new review criteria will be displayed in the sidebar:
+
+![caisecri](https://github.com/onekin/AnnotateGPT/assets/31988855/f8aceef7-5b87-449f-ae52-55ca631feb51)
+
 
 ## Features and Functionality
 We distinguish two kinds of functionalities: Divergent functionalities (those that help to create new nodes) and Convergence functionalities (those that help to decide which node select).
