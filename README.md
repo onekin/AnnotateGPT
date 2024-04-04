@@ -60,7 +60,7 @@ You can create a new review criteria clicking on the arrow shown in the next fig
 Here, AnnotateGPT provides different options to create a new review criteria to carry out the review
 - **Create review model.** This option creates an empty review criteria which you can later complete creating different criteria with their name and criterion.
 - **Import review model.** This option allows to import a previously exported review criteria created in AnnotateGPT
-- **Standard review model.** This option provides a set of review criteria templates derived from the [[The ACM SIGSOFT Empirical Standards for Software Engineering](https://www2.sigsoft.org/EmpiricalStandards/tools/)].
+- **Standard review model.** This option provides a set of review criteria templates derived from the [The ACM SIGSOFT Empirical Standards for Software Engineering](https://www2.sigsoft.org/EmpiricalStandards/tools/).
 
 Once you select one of the options, you will have to give a name for you review criteria, for example, the name of the conference/journal the paper belongs.
 
