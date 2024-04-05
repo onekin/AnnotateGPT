@@ -126,9 +126,25 @@ These are the different operations that can be performed with the annotations:
 - Viewpoints. Asks the LLM to provide different viewpoints about the current criterion assessment
 - Render. This displays the assessments made for the review criteria, that is, the annotations, and the compilation and viewpoints if they were saved when were returned by the LLM.
 
+In the following image you can see an example of using Compile:
+![met](https://github.com/onekin/AnnotateGPT/assets/31988855/c1545e54-f193-42d9-8a14-50c4f6f72dc9)
+
+- **Redo.** Repeats the question to the LLM.
+- **Save answer.** The answer is save in the annotation comment.
+
+Save answer can be visualized by the render option and are also included in the review draft.
+
+![example](https://github.com/onekin/AnnotateGPT/assets/31988855/f2c9d53e-b0a1-423f-90f4-a874f7ae25fb)
 
 
 ### Review management
+
+AnnotateGPT provide different tools for managing the review. While you are working with AnnotateGPT you can also ask for review drafts or consult the current status through a Canvas view.
+![toolbar](https://github.com/onekin/AnnotateGPT/assets/31988855/a82e4f62-986c-4b79-a78d-bec71cb297b6)
+
+#### Review drafts
+
+#### Review drafts
 
 
 ## Support and Resources
