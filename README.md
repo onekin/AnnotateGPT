@@ -145,12 +145,17 @@ AnnotateGPT provide different tools for managing the review. While you are worki
 #### Review drafts
 There are two types of review drafts: review by criteria and review by sentiment. They are exported in html format and can be visualized in a browser. Here is a review example for a paper associated with AnnotateGPT [[Example](https://drive.google.com/file/d/1xcjVmIWyr9Gpu5A8FS065dTbCe9uHziE/view?usp=sharing)]
 
+![review](https://github.com/onekin/AnnotateGPT/assets/31988855/e3f3edd6-583a-4c61-bb3f-71caf509097b)
+
 #### Canvas view
+The canvas view allows to track the current status of the review by the annotations and their sentiment.
+![status](https://github.com/onekin/AnnotateGPT/assets/31988855/b1205497-1e44-4832-9640-40d741c5064f)
 
 #### Delete all annotations
+This option deletes all the annotations of the current manuscript.
 
 #### Settings
-
+Here you can access the options page and the prompt configuration page where you can customize and adapt the prompts.
 
 ## Support and Resources
 - You can ask support in the following mail: xabier.garmendiad@ehu.eus
@@ -163,10 +168,10 @@ There are two types of review drafts: review by criteria and review by sentiment
 
 # DEVELOPERS MANUAL
 ## Architecture Overview
-Chatin is a browser extension and it is developed with web development technologies: JavaScript, Node and Gulp.
+AnnotateGPT is a browser extension and it is developed with web development technologies: JavaScript, Node and Gulp.
 It is developed over the last Manifest version ([Manifest version 3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3?hl=es-419))
 
-The web extension follows the standard web browser extension architecture with content script modules to manage the web content and background scripts to manage the local storage, mindmeister and LLM communications.
+The web extension follows the standard web browser extension architecture with content script modules to manage the web content and background scripts to manage the local storage and LLM communications.
 
 ## Development Environment
 To develop from the source code, you will need to install node and gulp to build the extension. This are the required versions
