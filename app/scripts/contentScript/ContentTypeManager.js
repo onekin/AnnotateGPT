@@ -18,67 +18,90 @@ class ContentTypeManager {
   }
 
   init (callback) {
-    if (document.querySelector('embed[type="application/pdf"]')) {
+    // If we are already on the PDF viewer page, skip redirect detection
+    const isAlreadyOnViewer = window.location.pathname === '/content/pdfjs/web/viewer.html'
+
+    // Robust PDF detection: check embed, MIME type, and URL
+    const hasPdfEmbed = document.querySelector('embed[type="application/pdf"]') ||
+                        document.querySelector('embed[src$=".pdf"]')
+    const isPdfContentType = document.contentType === 'application/pdf'
+    const isPdfUrl = !isAlreadyOnViewer &&
+                     (window.location.href.toLowerCase().endsWith('.pdf') ||
+                      window.location.href.toLowerCase().includes('.pdf?') ||
+                      window.location.href.toLowerCase().includes('.pdf#'))
+
+    if (!isAlreadyOnViewer && (hasPdfEmbed || isPdfContentType || isPdfUrl)) {
+      console.log('ContentTypeManager: PDF detected, redirecting to viewer')
       window.location = chrome.runtime.getURL('content/pdfjs/web/viewer.html') + '?file=' + encodeURIComponent(window.location.href)
-    } else {
+      // Callback won't be reached due to redirect, but call it for consistency
+      if (_.isFunction(callback)) {
+        callback()
+      }
+    } else if (isAlreadyOnViewer) {
       // Load publication metadata
       this.tryToLoadDoi()
       this.tryToLoadPublicationPDF()
       this.tryToLoadURLParam()
-      // TODO this.tryToLoadLocalFIleURL() from file metadata
-      // If current web is pdf viewer.html, set document type as pdf
-      if (window.location.pathname === '/content/pdfjs/web/viewer.html') {
-        this.waitUntilPDFViewerLoad(() => {
-          // Save document type as pdf
-          this.documentType = ContentTypeManager.documentTypes.pdf
-          // Try to load title
-          this.tryToLoadTitle()
-          // Save pdf fingerprint
-          this.pdfFingerprint = window.PDFViewerApplication.pdfDocument.pdfInfo.fingerprint
-          // Get document URL
-          if (this.urlParam) {
-            this.documentURL = this.urlParam || 'urn:x-pdf:' + this.pdfFingerprint
-            if (_.isFunction(callback)) {
-              callback()
-            }
-          } else {
-            // Is a local file
-            if (window.PDFViewerApplication.url.startsWith('file:///')) {
-              this.localFile = true
-              this.localFilePath = URLUtils.retrieveMainUrl(window.PDFViewerApplication.url)
-              if (_.isFunction(callback)) {
-                callback()
-              }
-            } else { // Is an online resource
-              // Support in ajax websites web url change, web url can change dynamically, but locals never do
-              this.initSupportWebURLChange()
-              this.documentURL = window.PDFViewerApplication.url
-              if (_.isFunction(callback)) {
-                callback()
-              }
-            }
+      // Set document type as pdf and wait for viewer to load
+      this.waitUntilPDFViewerLoad((pdfApp) => {
+        if (!pdfApp || !pdfApp.pdfDocument) {
+          console.error('ContentTypeManager: PDF.js application failed to initialize')
+          this.documentType = ContentTypeManager.documentTypes.html
+          if (_.isFunction(callback)) {
+            callback()
           }
-        })
-      } else {
-        this.documentType = ContentTypeManager.documentTypes.html
+          return
+        }
+        // Save document type as pdf
+        this.documentType = ContentTypeManager.documentTypes.pdf
         // Try to load title
         this.tryToLoadTitle()
+        // Save pdf fingerprint
+        this.pdfFingerprint = window.PDFViewerApplication.pdfDocument.pdfInfo.fingerprint
+        // Get document URL
         if (this.urlParam) {
-          this.documentURL = this.urlParam
+          this.documentURL = this.urlParam || 'urn:x-pdf:' + this.pdfFingerprint
+          if (_.isFunction(callback)) {
+            callback()
+          }
         } else {
-          if (window.location.href.startsWith('file:///')) {
+          // Is a local file
+          if (window.PDFViewerApplication.url.startsWith('file:///')) {
             this.localFile = true
-            this.localFilePath = URLUtils.retrieveMainUrl(window.location.href)
+            this.localFilePath = URLUtils.retrieveMainUrl(window.PDFViewerApplication.url)
             if (_.isFunction(callback)) {
               callback()
             }
-          } else {
+          } else { // Is an online resource
             // Support in ajax websites web url change, web url can change dynamically, but locals never do
             this.initSupportWebURLChange()
-            this.documentURL = URLUtils.retrieveMainUrl(window.location.href)
+            this.documentURL = window.PDFViewerApplication.url
             if (_.isFunction(callback)) {
               callback()
             }
+          }
+        }
+      })
+    } else {
+      // HTML document
+      this.documentType = ContentTypeManager.documentTypes.html
+      // Try to load title
+      this.tryToLoadTitle()
+      if (this.urlParam) {
+        this.documentURL = this.urlParam
+      } else {
+        if (window.location.href.startsWith('file:///')) {
+          this.localFile = true
+          this.localFilePath = URLUtils.retrieveMainUrl(window.location.href)
+          if (_.isFunction(callback)) {
+            callback()
+          }
+        } else {
+          // Support in ajax websites web url change, web url can change dynamically, but locals never do
+          this.initSupportWebURLChange()
+          this.documentURL = URLUtils.retrieveMainUrl(window.location.href)
+          if (_.isFunction(callback)) {
+            callback()
           }
         }
       }
@@ -107,11 +130,20 @@ class ContentTypeManager {
   }
 
   waitUntilPDFViewerLoad (callback) {
+    let attempts = 0
+    const maxAttempts = 60 // 30 seconds max
     let interval = setInterval(() => {
-      if (_.isObject(window.PDFViewerApplication.pdfDocument)) {
+      attempts++
+      if (_.isObject(window.PDFViewerApplication) && _.isObject(window.PDFViewerApplication.pdfDocument)) {
         clearInterval(interval)
         if (_.isFunction(callback)) {
           callback(window.PDFViewerApplication)
+        }
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval)
+        console.error('ContentTypeManager: PDF viewer failed to load after ' + maxAttempts + ' attempts')
+        if (_.isFunction(callback)) {
+          callback(null)
         }
       }
     }, 500)

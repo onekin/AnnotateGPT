@@ -30,27 +30,53 @@
         </div>
       </div>
       <div class="card">
-        <div class="card-header card-header bg-dark text-white">Large Language Model selection</div>
+        <div class="card-header bg-dark text-white">AI Configuration</div>
         <div class="card-body">
-          <div class="form-check">
-            <label for="LLMDropdown">Select your Large Language Model</label>
-            <select class="form-control" id="LLMDropdown">
-              <option value="anthropic" selected="selected">Anthropic (Claude-2)</option>
-              <option value="openAI">OpenAI (GPT4-turbo)</option>
+
+          <!-- Step 1 -->
+          <div class="llm-step">
+            <div class="llm-step-header">
+              <span class="llm-step-number">1</span>
+              <span class="llm-step-title">Choose your AI provider</span>
+            </div>
+            <div class="provider-grid" id="providerGrid"></div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="llm-step" id="step2" style="display:none;">
+            <div class="llm-step-header">
+              <span class="llm-step-number">2</span>
+              <span class="llm-step-title">Enter your API key</span>
+              <a id="apiKeyHelpLink" href="#" target="_blank" class="llm-help-link">Where do I get one? &#x2197;</a>
+            </div>
+            <div class="llm-api-row">
+              <input type="password" class="form-control" id="endpointAPIKey" placeholder="Paste your API key here" autocomplete="off"/>
+              <button class="btn btn-primary" id="saveEndpointButton">Connect</button>
+            </div>
+            <div id="endpointURLGroup" style="display:none; margin-top:10px;">
+              <label for="endpointURL" style="font-size:0.85em; color:#666;">Base URL</label>
+              <input type="text" class="form-control" id="endpointURL" placeholder="e.g., http://localhost:11434/v1"/>
+            </div>
+            <div id="modelsLoadingIndicator" class="llm-loading" style="display:none;">&#9696; Connecting and fetching models&hellip;</div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="llm-step" id="step3" style="display:none;">
+            <div class="llm-step-header">
+              <span class="llm-step-number">3</span>
+              <span class="llm-step-title">Choose a model</span>
+            </div>
+            <select class="form-control" id="modelDropdown" disabled>
+              <option value="">-- Loading models --</option>
             </select>
+            <div id="currentConfigSummary" class="llm-summary" style="display:none;"></div>
+            <div style="margin-top:10px;">
+              <button class="btn btn-sm btn-outline-secondary" id="changeProviderButton">&#8592; Change provider</button>
+              <button class="btn btn-sm btn-outline-danger" id="deleteEndpointButton" style="display:none; float:right;">Remove</button>
+            </div>
           </div>
-          <br>
-          <div id="anthropic-ApiKeyContainer" class="APIKey-Configuration">
-            <label>Paste here your Anthropic API key:</label>
-            <input type="text" id="anthropic-APIKey"/>
-            <button id="anthropic-APIKeyValidationButton" class="APIKeyValidationButton">Save</button>
-          </div>
-          <div id="openAI-ApiKeyContainer" class="APIKey-Configuration">
-            <label>Paste here your OpenAI API key:</label>
-            <input type="text" id="openAI-APIKey" />
-            <button id="openAI-APIKeyValidationButton" class="APIKeyValidationButton">Save</button>
-          </div>
-        </div >
+
+        </div>
       </div>
       <div id="localStorageConfigurationCard" class="card storageConfiguration">
         <div class="card-header bg-dark text-white">Local storage</div>

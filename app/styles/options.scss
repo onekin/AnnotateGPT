@@ -38,10 +38,119 @@ input:invalid {
 }
 
 .logo {
- height: 100px;
+  height: 100px;
   width: auto;
 }
 
 .promptTextArea {
   width: 100%;
+}
+
+/* ── LLM Wizard styles ─────────────────────────────── */
+
+.llm-step {
+  margin-bottom: 24px;
+}
+
+.llm-step-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.llm-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #343a40;
+  color: #fff;
+  font-weight: bold;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.llm-step-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.llm-help-link {
+  font-size: 0.8em;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.provider-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.provider-card {
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  background: #fff;
+  user-select: none;
+}
+
+.provider-card:hover {
+  border-color: #6c757d;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.provider-card.selected {
+  border-color: #343a40;
+  box-shadow: 0 0 0 3px rgba(52,58,64,0.15);
+}
+
+.provider-card .provider-icon {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.provider-card .provider-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.provider-card .provider-desc {
+  font-size: 0.7rem;
+  color: #888;
+  margin-top: 2px;
+}
+
+.llm-api-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.llm-api-row input {
+  flex: 1;
+}
+
+.llm-loading {
+  color: #888;
+  font-size: 0.85em;
+  margin-top: 8px;
+}
+
+.llm-summary {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 0.82em;
+  color: #495057;
+  border-left: 3px solid #28a745;
 }

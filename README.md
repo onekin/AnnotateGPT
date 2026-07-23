@@ -1,13 +1,14 @@
-# AnnotateGPT
+﻿# AnnotateGPT
 AnnotateGPT is a Chrome extension designed to facilitate the peer review process for conference and journal submissions. Leveraging the capabilities of Large Language Models (LLMs), this tool enables reviewers to evaluate manuscripts through annotations directly within their browser. By offering a criterion-based approach, AnnotateGPT effectively addresses the challenges posed by the escalating volume of research submissions, alleviating the strain on traditional peer-review systems.
 
 Main features:
-* Ease to install.  AnnotateGPT is just two-click away. If you have previously installed any browser extension, installing AnnotateGPT is a doddle! Last but not least, AnnotateGPT is being certified by Chrome, before being uploaded to its web store. So, no security leaks.
-* Color-coding highlighting. You define a  Review Model (e.g., originality, legibility and so on), each model’s attribute is mapped to a colour to be used during highlighting at review time,
-* Qualify highlighting. Highlights can be associated with comments, grades (strengths and weaknesses) or references to the literature. Your comments would undertake a sentiment analysis to avoid offensive wordings.
-* Canvas view. Have a global picture of the review so far. The canvas is plotted along with the attributes of the review model. Gradations and highlights are shown within each plot.
-* Review-draft generation. A first text draft is generated as a review head-start. Comments are placed by the manuscript quotes for authors to easily spot the rationales for the reviewer comments. 
-* Sharing. Data is stored locally. Yet, it can be exported as a JSON file and emailed to colleagues who can then import it into their AnnotateGPT installations. On loading the manuscript, your colleagues will see the very same view as you.
+* **Easy to install.** AnnotateGPT is just two clicks away. If you have previously installed any browser extension, installing AnnotateGPT is a doddle!
+* **Any OpenAI-compatible LLM.** Connect to OpenAI, Google Gemini, Groq, OpenRouter, DeepSeek, Mistral AI, Together AI, or any local model via Ollama / LM Studio. Just provide your API key.
+* **Color-coding highlighting.** You define a Review Model (e.g., originality, legibility and so on); each model's attribute is mapped to a colour to be used during highlighting at review time.
+* **Qualify highlighting.** Highlights can be associated with comments, grades (strengths and weaknesses) or references to the literature. Your comments undertake a sentiment analysis to avoid offensive wordings.
+* **Canvas view.** Have a global picture of the review so far. The canvas is plotted along with the attributes of the review model. Gradations and highlights are shown within each plot.
+* **Review-draft generation.** A first text draft is generated as a review head-start. Comments are placed by the manuscript quotes for authors to easily spot the rationales for the reviewer comments.
+* **Sharing.** Data is stored locally. Yet, it can be exported as a JSON file and emailed to colleagues who can then import it into their AnnotateGPT installations. On loading the manuscript, your colleagues will see the very same view as you.
   
 ## References
 
@@ -16,57 +17,78 @@ Main features:
 * AnnotateGPT is designed to streamline the academic peer-review process by pre-annotating manuscripts using AI-generated highlights.
 
 ## Installation and Setup
-You can follow these steps to get AnnotateGPT up and running
+You can follow these steps to get AnnotateGPT up and running.
 
 ### Step 1: Requirements
-Ensure your computer and you meet the minimum requirements for running Chatin.
+Ensure your computer meets the minimum requirements for running AnnotateGPT.
 
 - Google Chrome browser
-- LLM API key. Chatin allows you to interact with GPT and Claude, therefore, in order to use them ensure you have an OpenAI or Anthropic API key
+- An API key for any supported AI provider (OpenAI, Google Gemini, Groq, OpenRouter, DeepSeek, Mistral AI, Together AI) **or** a locally running model server (Ollama, LM Studio, etc.)
 
-### Step 2: Install the Chatin Extension
-- Open your web browser and navigate to the AnnotateGPT extension page on the [[Browser Extension Store/Marketplace](https://chromewebstore.google.com/detail/annotategpt/gjocfhlnleefeikdcnebmohfkgckceip)].
-- Click the "Add to Browser" or "Install" button to begin the installation process.
-- Once the installation is complete, you will see a AnnotateGPT icon appear in your browser’s toolbar. This indicates that AnnotateGPT is successfully installed.
+### Step 2: Install the AnnotateGPT Extension
+- Open your web browser and navigate to the AnnotateGPT extension page on the [[Chrome Web Store](https://chromewebstore.google.com/detail/annotategpt/gjocfhlnleefeikdcnebmohfkgckceip)].
+- Click **"Add to Chrome"** to begin the installation.
+- Once the installation is complete, you will see an AnnotateGPT icon appear in your browser's toolbar.
 
 ### Step 3: Setup
-Open AnnotateGPT's options panel. You can do it by right click in AnnotateGPT's browser’s toolbar icon.
+Open AnnotateGPT's options panel by right-clicking the AnnotateGPT icon in your browser toolbar and selecting **"Options"**.
+
 ![options](https://github.com/onekin/AnnotateGPT/assets/31988855/911b49b6-d45b-4e93-b37a-f106a0b10c0d)
 
+#### Configure your AI provider (3-step wizard)
 
-In this page, you have to complete the following information:
+The options page guides you through a simple 3-step setup:
 
-1. Select your Large Language Model and include your API key
+**Step 1 — Choose your AI provider**
 
-![config](https://github.com/onekin/AnnotateGPT/assets/31988855/e80f7204-394c-4a89-86c0-8997b7b593ae)
+A grid of supported providers is displayed. Click the one you want to use:
+- **OpenAI** (GPT-4, GPT-4o…)
+- **Google Gemini** (Gemini 1.5…)
+- **Groq** (fast inference)
+- **OpenRouter** (200+ models)
+- **DeepSeek** (DeepSeek R1…)
+- **Mistral AI** (Mistral, Codestral…)
+- **Together AI** (open models)
+- **Local / Custom** (Ollama, LM Studio, or any OpenAI-compatible server)
 
+**Step 2 — Enter your API key**
 
-After that, open the "details" panel of the web extension. You can find this page opening "Manage extensions" and then you can find a Details button in AnnotateGPT. Once, in the details page, you have to **Allow access to URL files**.
+Paste your API key into the field and click **Connect**. A direct link to the provider's API key page is shown to make this easy. For local models, you will also be prompted for the base URL (e.g., `http://localhost:11434/v1`).
+
+**Step 3 — Choose a model**
+
+Once connected, AnnotateGPT fetches the list of available models automatically. Select the model you want to use from the dropdown.
+
+That's it — your configuration is saved.
+
+---
+
+After setup, open the **Details** panel of the extension. Go to **Manage extensions**, find AnnotateGPT and click **Details**. On that page, enable **"Allow access to file URLs"**.
 
 ![allowaccess](https://github.com/onekin/AnnotateGPT/assets/31988855/22fa5dcd-0b8b-4336-a410-84a192ce0eb8)
 
-Finally, open a PDF file from you local system in the web browser a click on the AnnotateGPT icon. The extension must be executed and you should visualize a sidebar at the left of the page.
+Finally, open a PDF file from your local system in Chrome and click the AnnotateGPT icon. The extension will activate and you will see a sidebar on the left of the page.
 
 ![example](https://github.com/onekin/AnnotateGPT/assets/31988855/877a0eaf-392d-48b9-901b-3b60008f2643)
 
-If you encounter any difficulties reaching this point, please don't hesitate to contact xabier.garmendiad@ehu.eus.
+If you encounter any difficulties, please contact xabier.garmendiad@ehu.eus.
 
 ## Getting Started
 
-You can create a new review criteria clicking on the arrow shown in the next figure:
+You can create a new review criteria by clicking on the arrow shown in the next figure:
 
 ![review](https://github.com/onekin/AnnotateGPT/assets/31988855/5720b84a-a358-45b2-9d39-0e824943e5ca)
 
-Here, AnnotateGPT provides different options to create a new review criteria to carry out the review
-- **Create review model.** This option creates an empty review criteria which you can later complete creating different criteria with their name and criterion.
-- **Import review model.** This option allows to import a previously exported review criteria created in AnnotateGPT
-- **Standard review model.** This option provides a set of review criteria templates derived from the [The ACM SIGSOFT Empirical Standards for Software Engineering](https://www2.sigsoft.org/EmpiricalStandards/tools/).
+AnnotateGPT provides different options to create a new review criteria:
+- **Create review model.** Creates an empty review criteria which you can complete by adding criteria with a name and description.
+- **Import review model.** Imports a previously exported review criteria created in AnnotateGPT.
+- **Standard review model.** Provides a set of review criteria templates derived from the [ACM SIGSOFT Empirical Standards for Software Engineering](https://www2.sigsoft.org/EmpiricalStandards/tools/).
 
-Once you select one of the options, you will have to give a name for you review criteria, for example, the name of the conference/journal the paper belongs.
+Once you select one of the options, you will name your review criteria (e.g., the name of the conference or journal).
 
 ![caise](https://github.com/onekin/AnnotateGPT/assets/31988855/f0b3fa24-00b0-488a-9a09-f70c097cd337)
 
-Then, the new review criteria will be displayed in the sidebar:
+The new review criteria will then be displayed in the sidebar:
 
 ![caisecri](https://github.com/onekin/AnnotateGPT/assets/31988855/f8aceef7-5b87-449f-ae52-55ca631feb51)
 
@@ -75,149 +97,149 @@ Then, the new review criteria will be displayed in the sidebar:
 We distinguish three different components while reviewing with AnnotateGPT: Annotation, Review criteria and the Review.
 
 ### Annotation management
-Annotion can be performed by two different actors: the reviewer and the LLM.
-- **Annotations by the reviewer.** The user can create their own annotations selecting text in the PDF and clicking on the criterion button in the sidebar.
+Annotations can be performed by two different actors: the reviewer and the LLM.
+- **Annotations by the reviewer.** The user can create their own annotations by selecting text in the PDF and clicking on the criterion button in the sidebar.
 ![annotation](https://github.com/onekin/AnnotateGPT/assets/31988855/c5534a68-6d26-4794-ba68-9ce2acf24d1b)
 
-- **Annotations by the LLM.** The user can ask the LLM to annotate the criterion.
+- **Annotations by the LLM.** The user can ask the LLM to annotate a criterion automatically.
 ![LLMannotation](https://github.com/onekin/AnnotateGPT/assets/31988855/6b9fe204-5223-4cce-b36e-2a3845c2f9ce)
 
-LLMs provides a number of annotations, which can be established in the options page of the extension. If you double click in the created annotations, you can see details of the annotation which contain the sentiment associated to the annotation and a comment field.
+The number of LLM-generated annotations can be configured in the options page. Double-clicking an annotation shows its details, including the associated sentiment and a comment field.
 
 ![det](https://github.com/onekin/AnnotateGPT/assets/31988855/78e34a8a-006b-41a3-9118-c2880287ed67)
 
-Is it also possible to include the sentiment and comments for the annotations created by the reviewer. The comments can be written manually or you can ask the LLM about the annotated content. This operations can be performed by doing right click on the annotation:
+It is also possible to include sentiment and comments for reviewer-created annotations. Comments can be written manually or generated by the LLM. These operations are accessible via right-click on an annotation:
 
 ![annotation](https://github.com/onekin/AnnotateGPT/assets/31988855/b5f4a22e-ca81-487f-9b07-08a354bcd7d7)
 
-These are the different operations that can be performed with the annotations:
-- Clarify. Ask an open question to the LLM to clarify some doubts about annotation content.
-- Fact checking. Asks the LLM about the veracity of the text in the annotation.
-- Social judging. Asks the LLM the rise of social concerns about the annotated text.
-- Render. This displays the same window as with doing the double click.
-- Delete. The annotation can be removed.
+Available annotation operations:
+- **Clarify.** Ask an open question to the LLM to clarify some doubts about the annotation content.
+- **Fact checking.** Ask the LLM about the veracity of the text in the annotation.
+- **Social judging.** Ask the LLM to surface social concerns about the annotated text.
+- **Render.** Display the annotation details.
+- **Delete.** Remove the annotation.
 
-The questions asked to the LLM display the following window with different options:
+The LLM response window offers:
 
 ![answer](https://github.com/onekin/AnnotateGPT/assets/31988855/e6c17a92-23b0-4945-b4fe-6a3e0eaa90ae)
 
 - **Redo.** Repeats the question to the LLM.
-- **Save.** The answer is save in the annotation comment.
+- **Save.** Saves the answer as the annotation comment.
 
 ### Review Criteria management
-Criterion can be created from the sidebar. The next figure shows which are the button (1) to create a criteria group and (2) to create a new criterion.
+Criteria can be created from the sidebar. The next figure shows button (1) to create a criteria group and button (2) to create a new criterion.
 ![criterion](https://github.com/onekin/AnnotateGPT/assets/31988855/a5129c63-2356-4654-b5a0-63439c869f65)
 
-When you are creating a new criterion you have to provide a name and a description, which are important for asking later the LLM.
+When creating a new criterion you must provide a name and a description, which are important for querying the LLM.
 
 ![new](https://github.com/onekin/AnnotateGPT/assets/31988855/22fdcdde-ddb5-473a-a754-62af86e80e33)
 
-You can modify criterion's name by double clicking in its button. It will show the following window where you can modify the label and the description:
+You can modify a criterion's name by double-clicking its button:
 ![modfi](https://github.com/onekin/AnnotateGPT/assets/31988855/9bbb9d8b-3214-4366-baca-1c480e3f3c05)
 
 #### Operations with review criteria
-If you click on a button with the right button four options appear:
+Right-clicking a criterion button shows four options:
 
 ![newa](https://github.com/onekin/AnnotateGPT/assets/31988855/ceeeb2bd-caf6-4e33-8848-e2c3ecb23d8d)
 
-These are the different operations that can be performed with the annotations:
-- Annotate. Ask the LLM to create annotations.
-- Compile. Asks the LLM to provide a summary of the criterion, it uses the PDF content and the annotations.
-- Viewpoints. Asks the LLM to provide different viewpoints about the current criterion assessment
-- Render. This displays the assessments made for the review criteria, that is, the annotations, and the compilation and viewpoints if they were saved when were returned by the LLM.
+- **Annotate.** Ask the LLM to create annotations for this criterion.
+- **Compile.** Ask the LLM to provide a summary of the criterion using the PDF content and the annotations.
+- **Viewpoints.** Ask the LLM to provide different viewpoints about the current criterion assessment.
+- **Render.** Display the assessments made for the criterion (annotations, compilation and viewpoints).
 
-In the following image you can see an example of using Compile:
+Example of Compile:
 ![met](https://github.com/onekin/AnnotateGPT/assets/31988855/c1545e54-f193-42d9-8a14-50c4f6f72dc9)
 
 - **Redo.** Repeats the question to the LLM.
-- **Save answer.** The answer is save in the annotation comment.
-
-Save answer can be visualized by the render option and are also included in the review draft.
+- **Save answer.** Saves the answer, which is then included in the review draft.
 
 ![example](https://github.com/onekin/AnnotateGPT/assets/31988855/f2c9d53e-b0a1-423f-90f4-a874f7ae25fb)
 
 
 ### Review management
 
-AnnotateGPT provide different tools for managing the review. While you are working with AnnotateGPT you can also ask for review drafts or consult the current status through a Canvas view.
+AnnotateGPT provides different tools for managing the review. While working you can also request review drafts or consult the current status through a Canvas view.
 ![toolbar](https://github.com/onekin/AnnotateGPT/assets/31988855/a82e4f62-986c-4b79-a78d-bec71cb297b6)
 
 #### Review drafts
-There are two types of review drafts: review by criteria and review by sentiment. They are exported in html format and can be visualized in a browser. Here is a review example for a paper associated with AnnotateGPT [[Example](https://drive.google.com/file/d/1xcjVmIWyr9Gpu5A8FS065dTbCe9uHziE/view?usp=sharing)]
+There are two types of review drafts: review by criteria and review by sentiment. They are exported in HTML format and can be visualised in a browser. [[Example](https://drive.google.com/file/d/1xcjVmIWyr9Gpu5A8FS065dTbCe9uHziE/view?usp=sharing)]
 
 ![review](https://github.com/onekin/AnnotateGPT/assets/31988855/e3f3edd6-583a-4c61-bb3f-71caf509097b)
 
 #### Canvas view
-The canvas view allows to track the current status of the review by the annotations and their sentiment.
+The canvas view allows tracking the current status of the review by annotations and their sentiment.
 ![status](https://github.com/onekin/AnnotateGPT/assets/31988855/b1205497-1e44-4832-9640-40d741c5064f)
 
 #### Delete all annotations
 This option deletes all the annotations of the current manuscript.
 
 #### Settings
-Here you can access the options page and the prompt configuration page where you can customize and adapt the prompts.
+Access the options page and the prompt configuration page to customise and adapt the prompts.
 
 ## Support and Resources
-- You can ask support in the following mail: xabier.garmendiad@ehu.eus
+- Support e-mail: xabier.garmendiad@ehu.eus
+- Video demo: [https://youtu.be/3FOdsqpyyDA?si=_rHj8NFvQ9eQhaL4](https://youtu.be/3FOdsqpyyDA?si=_rHj8NFvQ9eQhaL4)
 
-- Here there is a video demo: [https://youtu.be/lGInf5cqZ7Q?si=8Ks48PHibMiFXli9](https://youtu.be/3FOdsqpyyDA?si=_rHj8NFvQ9eQhaL4)
+## Supported AI Providers
+AnnotateGPT supports any **OpenAI-compatible** API endpoint. Built-in presets:
 
-## Available LLMs
-- OpenAI. GPT4
-- Anthropic. Claude2.0
+| Provider | Models |
+|---|---|
+| [OpenAI](https://platform.openai.com) | GPT-4o, GPT-4, GPT-3.5-turbo… |
+| [Google Gemini](https://aistudio.google.com) | Gemini 1.5 Pro/Flash… |
+| [Groq](https://groq.com) | Llama 3, Mixtral (fast inference) |
+| [OpenRouter](https://openrouter.ai) | 200+ models from multiple providers |
+| [DeepSeek](https://deepseek.com) | DeepSeek R1, V3… |
+| [Mistral AI](https://mistral.ai) | Mistral Large, Codestral… |
+| [Together AI](https://together.ai) | Open-source models |
+| Local / Custom | [Ollama](https://ollama.com), [LM Studio](https://lmstudio.ai), or any OpenAI-compatible server |
 
 # DEVELOPERS MANUAL
 ## Architecture Overview
-AnnotateGPT is a browser extension and it is developed with web development technologies: JavaScript, Node and Gulp.
-It is developed over the last Manifest version ([Manifest version 3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3?hl=es-419))
+AnnotateGPT is a browser extension developed with web technologies: JavaScript, Node.js and Gulp.
+It targets [Manifest Version 3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3).
 
-The web extension follows the standard web browser extension architecture with content script modules to manage the web content and background scripts to manage the local storage and LLM communications.
+The extension follows the standard MV3 architecture:
+- **Content scripts** — manage PDF annotation within the browser tab
+- **Service worker (background)** — handles storage, LLM communication, and message routing
+- **Options page** — endpoint and model configuration
 
 ## Development Environment
-To develop from the source code, you will need to install node and gulp to build the extension. This are the required versions
-- Node v12.22
+To build from source you need:
+- Node.js v18+ (tested on v26)
+- npm v9+
 - Gulp v4
 
 ## Library Documentation
-AnnotateGPT uses Langchain for LLM communications through the [LangChain JS library](https://js.langchain.com/docs/get_started/introduction)
+- [LangChain JS](https://js.langchain.com/docs/get_started/introduction) — LLM communication (`ChatOpenAI` with configurable `baseURL`)
+- [pdf.js](https://mozilla.github.io/pdf.js/) — bundled PDF viewer
 
 ## Code Structure
-The artifact code is organized as follows:
-
-![structure](https://github.com/onekin/AnnotateGPT/assets/31988855/c57efbff-0919-40ad-9ee2-7be7f52970ce)
-
 
 These are the main components:
-- images. This folder contains the images within the browser extension.
-- pages. This folder contains the html files of the extension.
-- resources. This folder contains mind map templates and the pdf.js library to process pdfs.
-- scripts. This is the main component, it contains the scripts to make the extension work. Based on a web extension architecture this is the main classes:
-  - Content Script: contentScript.js, this is the script that is executed when MindMeister is accessed
-  - Service worker: background.js, this script initializes all the background scripts to enable the communications
-  - Options file: options.js, this is the script executed when the option page is opened
-  - The rest of scripts are organized in the following folders.
-     	- contentScript folder. This folder contains the scripts that are executed in the PDF view.
-    		- contentAnnotator -> TextAnnotator is the script where annotations are manage.
-    		- specific -> here you can find the functions associated with the review criteria.
-        - TagManager.js aims to create the review criteria buttons. 
-  	- llm. Here you can find the scripts aimed to establish the communications with Langchain.
+- `images/` — extension images
+- `pages/` — HTML files (options, popup, sidebar, PDF viewer)
+- `scripts/` — main source code
+  - `background.js` — service worker entry point
+  - `contentScript.js` — content script entry point
+  - `options.js` — options page entry point
+  - `background/LLM_Manager.js` — all LLM operations (endpoint CRUD, model fetching, inference)
+  - `llm/LLMManager.js` — content-script-side LLM caller
+  - `contentScript/` — PDF annotation logic
+  - `options/Options.js` — options page wizard logic
+  - `utils/` — shared utilities
 
 ## Building and Testing
-To compile the project, you only need to execute the following lines, but make sure you have the node and gulp versions specified in the Development Enviroment section.
+Make sure you have the Node.js version specified above, then:
 
-	$ npm install
-	$ gulp default
+$ npm install
+$ gulp default
+
+The compiled extension will be in the `dist/` directory. Load it in Chrome via `chrome://extensions` → **Load unpacked**.
 
 ## Usage
 
-Run `$ gulp --watch` and load the `dist`-directory into chrome.
-
-## Entryfiles (bundles)
-
-There are two kinds of entryfiles that create bundles.
-
-1. All js-files in the root of the `./app/scripts` directory
-2. All css-,scss- and less-files in the root of the `./app/styles` directory
+Run `$ gulp --watch` and load the `dist` directory into Chrome.
 
 ## Tasks
 
@@ -238,41 +260,3 @@ There are two kinds of entryfiles that create bundles.
 ### pack
 
 Zips your `dist` directory and saves it in the `packages` directory.
-
-    $ gulp pack --vendor=firefox
-
-### Version
-
-Increments version number of `manifest.json` and `package.json`,
-commits the change to git and adds a git tag.
-
-
-    $ gulp patch      // => 0.0.X
-
-or
-
-    $ gulp feature    // => 0.X.0
-
-or
-
-    $ gulp release    // => X.0.0
-
-
-## Globals
-
-The build tool also defines a variable named `process.env.NODE_ENV` in your scripts. It will be set to `development` unless you use the `--production` option.
-
-## Testing
-
-## Contribution Guidelines
-To contribute please contact xabier.garmendiad@ehu.eus.
-
-## Roadmap and Future Plans
-This project has been developed in a research setting. The aim is to explore the benefits of AI for problem analysis so future plans seek to evaluate the artifact in real settings
-
-## Installation
-Use node 10.24.1
-
-	$ npm install
-
-

@@ -426,11 +426,13 @@ class Alerts {
   }
 
   static closeAlert () {
-    swal.close()
+    if (swal) {
+      swal.close()
+    }
   }
 
   static isVisible () {
-    return swal.isVisible()
+    return swal && swal.isVisible ? swal.isVisible() : false
   }
 }
 

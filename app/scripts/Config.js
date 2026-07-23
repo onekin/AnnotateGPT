@@ -3,7 +3,7 @@ const Config = {
     groupName: 'AnnotatorGPT',
     namespace: 'review',
     urlParamName: 'rag',
-    defaultLLM: 'anthropic',
+    defaultLLM: 'generic',
     tags: { // Defined tags for the domain
       grouped: { // Grouped annotations
         group: 'criteria',

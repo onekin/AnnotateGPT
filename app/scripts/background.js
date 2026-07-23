@@ -77,7 +77,7 @@ class Background {
           }
           sendResponse(true)
         } else if (request.cmd === 'amIActivated') {
-          if (this.tabs[sender.tab.id].activated) {
+          if (this.tabs[sender.tab.id] && this.tabs[sender.tab.id].activated) {
             sendResponse({activated: true})
           } else {
             sendResponse({activated: false})
